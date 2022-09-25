@@ -20,8 +20,8 @@ class CreateLocatairesTable extends Migration
             $table->string('prenom');
             $table->string('CNI')->nullable();
             $table->string('telephone');
-            $table->unsignedBigInteger('proprietaire_id');
-            $table->foreign('proprietaire_id')->references('id')->on('proprietaires');
+            $table->unsignedBigInteger('bien_immo_id');
+            $table->foreign('bien_immo_id')->references('id')->on('bien_immos');
             $table->timestamps();
         });
     }

@@ -18,4 +18,9 @@ class BienImmo extends Model
     {
         return $this->belongsTo(TypeBienImmo::class);
     }
+
+    public function locataires()
+    {
+        return $this->hasMany(Locataire::class);
+    }
 }

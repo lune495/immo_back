@@ -59,8 +59,8 @@ class LocatairesQuery extends Query
                 'prenom'                  => $item->prenom,
                 'telephone'               => $item->telephone,
                 'CNI'                     => $item->CNI,
-                'proprietaire_id'         => $item->proprietaire_id,
-                'proprietaire'            => $item->proprietaire,
+                'bien_immo_id'            => $item->bien_immo_id,
+                'bien_immo'               => $item->bien_immo,
             ];
         });
 

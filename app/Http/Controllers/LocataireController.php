@@ -33,7 +33,7 @@ class LocataireController extends Controller
                 $item->prenom = $request->prenom;
                 $item->cni = $request->cni;
                 $item->telephone = $request->telephone;
-                $item->proprietaire_id = $request->proprietaire_id;
+                $item->bien_immo_id = $request->bien_immo_id;
                 if (!isset($errors)) 
                 {
                     $item->save();

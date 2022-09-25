@@ -51,7 +51,6 @@ class BienImmoQuery extends Query
                 'montant'                 => $item->montant,
                 'type_bien_immo_id'       => $item->type_bien_immo_id,
                 'type_bien_immo'          => $item->type_bien_immo,
-                'proprietaire'            => $item->proprietaire,
                 'proprietaire_id'         => $item->proprietaire_id,
                 'proprietaire'            => $item->proprietaire,
             ];
