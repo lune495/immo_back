@@ -26,8 +26,8 @@ class LocataireType extends GraphQLType
             'nom'                               => ['type' => Type::string()],
             'prenom'                            => ['type' => Type::string()],
             'telephone'                         => ['type' => Type::string()],
-            'proprietaire_id'                   => ['type' => Type::int()],
-            'proprietaire'                       => ['type' => GraphQL::type('Proprietaire')],
+            'bien_immo_id'                      => ['type' => Type::int()],
+            'bien_immo'                         => ['type' => GraphQL::type('BienImmo')],
 
         ];
     }

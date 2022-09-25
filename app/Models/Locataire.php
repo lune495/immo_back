@@ -9,8 +9,8 @@ class Locataire extends Model
 {
     use HasFactory;
 
-    public  function proprietaire()
+    public  function bien_immo()
     {
-        return $this->belongsTo(Proprietaire::class);
+        return $this->belongsTo(BienImmo::class);
     }
 }
