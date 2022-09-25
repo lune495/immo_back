@@ -27,7 +27,7 @@ class BienImmoController extends Controller
                 }
                 $item->adresse = $request->adresse;
                 $item->code = "000001";
-                $item->desc = $request->desc;
+                $item->description = $request->desc;
                 $item->montant = $request->loyer;
                 $item->proprietaire_id = $request->proprietaire_id;
                 $item->type_bien_immo_id = $request->type_bien_immo_id;

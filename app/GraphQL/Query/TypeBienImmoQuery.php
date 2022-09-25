@@ -42,7 +42,7 @@ class TypeBienImmoQuery extends Query
             return
             [
                 'id'                                => $item->id,
-                'nom'                               => $item->nom_agence
+                'nom'                               => $item->nom
                 //'deleted_at'                        => empty($item->deleted_at) ? $item->deleted_at : $item->deleted_at->format(Outil::formatdate()),
             ];
         });
