@@ -5,12 +5,12 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class TypeBienImmo extends Model
+class Locataire extends Model
 {
     use HasFactory;
 
-    public function bien_immos()
+    public  function proprietaire()
     {
-        return $this->hasMany(BienImmo::class);
+        return $this->belongsTo(Proprietaire::class);
     }
 }

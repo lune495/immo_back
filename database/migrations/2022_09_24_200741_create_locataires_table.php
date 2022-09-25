@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateBienImmosTable extends Migration
+class CreateLocatairesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,17 +13,16 @@ class CreateBienImmosTable extends Migration
      */
     public function up()
     {
-        Schema::create('bien_immos', function (Blueprint $table) {
+        Schema::create('locataires', function (Blueprint $table) {
             $table->id();
             $table->string('code');
-            $table->string('description');
-            $table->string('adresse')->nullable();
-            $table->string('montant');
-            $table->unsignedBigInteger('type_bien_immo_id');
-            $table->foreign('type_bien_immo_id')->references('id')->on('type_bien_immos');
+            $table->string('nom');
+            $table->string('prenom');
+            $table->string('CNI')->nullable();
+            $table->string('telephone');
             $table->unsignedBigInteger('proprietaire_id');
             $table->foreign('proprietaire_id')->references('id')->on('proprietaires');
-            $table->timestamps();   
+            $table->timestamps();
         });
     }
 
@@ -34,6 +33,6 @@ class CreateBienImmosTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('bien_immos');
+        Schema::dropIfExists('locataires');
     }
 }

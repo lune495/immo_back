@@ -8,4 +8,9 @@ use Illuminate\Database\Eloquent\Model;
 class Agence extends Model
 {
     use HasFactory;
+
+     public function proprietaires()
+    {
+        return $this->hasMany(Proprietaire::class);
+    }
 }

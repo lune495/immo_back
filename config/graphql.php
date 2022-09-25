@@ -75,8 +75,15 @@ return [
         'default' => [
             'query' => [
                 // ExampleQuery::class,
-                \App\GraphQL\Query\AgenceQuery::class,
+                \App\GraphQL\Query\AgencesQuery::class,
                 \App\GraphQL\Query\AgencePaginatedQuery::class,
+                \App\GraphQL\Query\ProprietairesQuery::class,
+                \App\GraphQL\Query\ProprietairePaginatedQuery::class,
+                \App\GraphQL\Query\LocatairesQuery::class,
+                \App\GraphQL\Query\LocatairePaginatedQuery::class,
+                \App\GraphQL\Query\BienImmoQuery::class,
+                \App\GraphQL\Query\TypeBienImmoQuery::class,
+                \App\GraphQL\Query\BienImmoPaginatedQuery::class,
             ],
             'mutation' => [
                 // ExampleMutation::class,
@@ -88,7 +95,7 @@ return [
             ],
 
             // Laravel HTTP middleware
-            'middleware' => ['web'],
+            'middleware' => [],
 
             // Which HTTP methods to support; must be given in UPPERCASE!
             'method' => ['GET', 'POST'],
@@ -113,6 +120,14 @@ return [
         // \Rebing\GraphQL\Support\UploadType::class,
         \App\GraphQL\Type\AgenceType::class,
         \App\GraphQL\Type\AgencePaginatedType::class,
+        \App\GraphQL\Type\ProprietaireType::class,
+        \App\GraphQL\Type\ProprietairePaginatedType::class,
+        \App\GraphQL\Type\LocataireType::class,
+        \App\GraphQL\Type\LocatairePaginatedType::class,
+        \App\GraphQL\Type\BienImmoType::class,
+        \App\GraphQL\Type\TypeBienImmoType::class,
+        \App\GraphQL\Type\BienImmoPaginatedType::class,
+        \App\GraphQL\Type\Metadata::class,
     ],
 
     // The types will be loaded on demand. Default is to load all types on each request

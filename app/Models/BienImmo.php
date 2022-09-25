@@ -8,4 +8,14 @@ use Illuminate\Database\Eloquent\Model;
 class BienImmo extends Model
 {
     use HasFactory;
+
+    public  function proprietaire()
+    {
+        return $this->belongsTo(Proprietaire::class);
+    }
+
+    public  function type_bien_immo()
+    {
+        return $this->belongsTo(TypeBienImmo::class);
+    }
 }

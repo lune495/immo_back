@@ -8,4 +8,20 @@ use Illuminate\Database\Eloquent\Model;
 class Proprietaire extends Model
 {
     use HasFactory;
+    protected $guarded = [];
+
+    public  function agence()
+    {
+        return $this->belongsTo(Agence::class);
+    }
+
+    public function locataires()
+    {
+        return $this->hasMany(Locataire::class);
+    }
+
+     public function bien_immos()
+    {
+        return $this->hasMany(BienImmo::class);
+    }
 }
