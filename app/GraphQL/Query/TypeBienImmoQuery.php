@@ -2,7 +2,7 @@
 
 namespace App\GraphQL\Query;
 
-use App\Models\{TypeBienImmo};
+use App\Models\{TypeBienImmo,Outil};
 use Carbon\Carbon;
 use GraphQL\Type\Definition\Type;
 use Rebing\GraphQL\Support\Query;
@@ -24,6 +24,7 @@ class TypeBienImmoQuery extends Query
         return
         [
             'id'                       => ['type' => Type::int()],
+            'nom'                       => ['type' => Type::string()],
         ];
     }
 
@@ -34,7 +35,10 @@ class TypeBienImmoQuery extends Query
         {
             $query->where('id', $args['id']);
         }
-
+        if (isset($args['nom']))
+        {
+            $query = $query->where('nom',Outil::getOperateurLikeDB(),'%'.$args['nom'].'%');
+        }
         $query = $query->get();
 
         return $query->map(function (TypeBienImmo $item)
@@ -42,8 +46,8 @@ class TypeBienImmoQuery extends Query
             return
             [
                 'id'                                => $item->id,
-                'nom'                               => $item->nom
-                //'deleted_at'                        => empty($item->deleted_at) ? $item->deleted_at : $item->deleted_at->format(Outil::formatdate()),
+                'nom'                               => $item->nom,
+                'bien_immos'                        => $item->bien_immos,
             ];
         });
     }

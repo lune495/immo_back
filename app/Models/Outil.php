@@ -22,16 +22,17 @@ class Outil extends Model
 {
 
     public static $queries = array(
-        "proprietaires"              => " id,code,nom,prenom,telephone,agence_id,agence{id,nom_agence}",
+        "proprietaires"              => " id,code,nom,prenom,telephone,agence_id,agence{id,nom_agence},proprio_bien_immos{id,bien_immo_id,bien_immo{id,code,description,montant}}",
         "locataires"                 => " id,code,nom,prenom,telephone,bien_immo_id,bien_immo{id,code,desc,montant,proprietaire_id,proprietaire{id,code,nom,prenom,telephone,agence_id,agence{id,nom_agence}}}",
         "users"                      => " id,name,email,role{id,nom}",
-        "bien_immos"                 => " id,code,desc,montant,proprietaire_id,proprietaire{id,code,nom,prenom,telephone,agence_id,agence{id,nom_agence}}",
+        "bien_immos"                 => " id,code,desc,montant",
+        "proprio_bien_immos"         => " id,user_id,user{id,name,email,role{id,nom}},proprietaire_id,proprietaire{id,code,nom,prenom,telephone,agence_id,agence{id,nom_agence}},bien_immo_id,bien_immo{id,code,description,montant}",
 
     );
 
     public static function redirectgraphql($itemName, $critere,$liste_attributs)
     {
-        $path='{'.$itemName.'('.$critere.'){'.$liste_attributs.'}}';
+    $path='{'.$itemName.'('.$critere.'){'.$liste_attributs.'}}';
         return redirect('graphql?query='.urlencode($path));
     }
 
@@ -53,7 +54,7 @@ class Outil extends Model
 
         $critere = (is_numeric($id_critere)) ? "id:{$id_critere}" : $id_critere;
         $queryAttr = Outil::$queries[$queryName];
-        $response = $guzzleClient->get("http://localhost/laravel-app/public/graphql?query={{$queryName}({$critere}){{$queryAttr}}}");
+        $response = $guzzleClient->get("http://localhost/immo_back/public/graphql?query={{$queryName}({$critere}){{$queryAttr}}}");
         $data = json_decode($response->getBody(), true);
         return ($justone) ? $data['data'][$queryName][0] : $data;
     }

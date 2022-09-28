@@ -21,8 +21,6 @@ class CreateBienImmosTable extends Migration
             $table->string('montant');
             $table->unsignedBigInteger('type_bien_immo_id');
             $table->foreign('type_bien_immo_id')->references('id')->on('type_bien_immos');
-            $table->unsignedBigInteger('proprietaire_id');
-            $table->foreign('proprietaire_id')->references('id')->on('proprietaires');
             $table->timestamps();   
         });
     }

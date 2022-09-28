@@ -2,18 +2,18 @@
 
 namespace App\GraphQL\Type;
 
-use  App\Models\{TypeBienImmo};
+use  App\Models\{Proprietaire};
 use Carbon\Carbon;
 use GraphQL\Type\Definition\Type;
 use Rebing\GraphQL\Support\Type as GraphQLType;
 use Rebing\GraphQL\Support\Facades\GraphQL;
 use Illuminate\Support\Facades\DB;
 
-class TypeBienImmoType extends GraphQLType
+class ProprioBienImmoType extends GraphQLType
 {
     protected $attributes =
     [
-        'name' => 'TypeBienImmo',
+        'name' => 'ProprioBienImmo',
         'description' => ''
     ];
 
@@ -21,9 +21,12 @@ class TypeBienImmoType extends GraphQLType
     {
         return
         [
-            'id'                    => ['type' => Type::int(), 'description' => ''],
-            'nom'                   => ['type' => Type::string()],
-            'bien_immos'            => ['type' => Type::listOf(GraphQL::type('BienImmo')), 'description' => ''],
+            'id'                                => ['type' => Type::int(), 'description' => ''],
+            'proprietaire_id'                   => ['type' => Type::int()],
+            'proprietaire'                      => ['type' => GraphQL::type('Proprietaire')],
+            'bien_immo_id'                      => ['type' => Type::int()],
+            'bien_immo'                         => ['type' => GraphQL::type('BienImmo')],
+
         ];
     }
 

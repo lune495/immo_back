@@ -7,6 +7,7 @@ use App\Http\Controllers\ProprietaireController;
 use App\Http\Controllers\BienImmoController;
 use App\Http\Controllers\LocataireController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\AffectationBienController;
 
 
 /*
@@ -27,6 +28,7 @@ Route::post('/login',[AuthController::class,'login']);
 Route::post('/proprietaire',[ProprietaireController::class,'save']);
 Route::post('/locataire',[LocataireController::class,'save']);
 Route::post('/bienimmo',[BienImmoController::class,'save']);
+Route::post('/affectationbien',[AffectationBienController::class,'save']);
 
 // Protected Routes
 Route::group(['middleware' => ['auth:sanctum']],function()
