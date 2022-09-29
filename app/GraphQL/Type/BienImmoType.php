@@ -28,6 +28,8 @@ class BienImmoType extends GraphQLType
             'adresse'                           => ['type' => Type::string()],
             'type_bien_immo_id'                 => ['type' => Type::int()],
             'type_bien_immo'                    => ['type' => GraphQL::type('TypeBienImmo')],
+            'proprietaire_id'                   => ['type' => Type::int()],
+            'proprietaire'                      => ['type' => GraphQL::type('Proprietaire')],
 
         ];
     }

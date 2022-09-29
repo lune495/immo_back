@@ -28,7 +28,8 @@ class ProprietaireType extends GraphQLType
             'telephone'                         => ['type' => Type::string()],
             'agence_id'                         => ['type' => Type::int()],
             'agence'                            => ['type' => GraphQL::type('Agence')],
-            'proprio_bien_immos'                => ['type' => Type::listOf(GraphQL::type('ProprioBienImmo')), 'description' => ''],
+            'locataires'                        => ['type' => Type::listOf(GraphQL::type('Locataire')), 'description' => ''],
+            'bien_immos'                        => ['type' => Type::listOf(GraphQL::type('BienImmo')), 'description' => ''],
 
         ];
     }

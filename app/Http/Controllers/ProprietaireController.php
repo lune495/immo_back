@@ -30,12 +30,15 @@ class ProprietaireController extends Controller
                     $errors = "Renseignez le prenom du proprietaire";
                 }
                 $item->nom = $request->nom;
-                $item->code = "000001";
+                $item->code = "GB000-0";
                 $item->prenom = $request->prenom;
                 $item->telephone = $request->telephone;
                 $item->agence_id = $agence->id;
                 if (!isset($errors)) 
                 {
+                    $item->save();
+                    $id = $item->id;
+                    $item->code = "GB000-0-{$id}";
                     $item->save();
                     $id = $item->id;
                     return  Outil::redirectgraphql($this->queryName, "id:{$id}", Outil::$queries[$this->queryName]);
