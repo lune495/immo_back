@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\{Proprietaire,Agence,Outil};
+use Illuminate\Support\Facades\DB;
 
 class ProprietaireController extends Controller
 {
@@ -12,8 +13,10 @@ class ProprietaireController extends Controller
 
      public function save(Request $request)
     {
-        try 
-        {
+        try {
+            return DB::transaction(function () use ($request)
+            {
+                DB::beginTransaction();
                 $errors =null;
                 $item = new Proprietaire();
                 $agence = Agence::find(1);
@@ -41,14 +44,17 @@ class ProprietaireController extends Controller
                     $item->code = "GB000-0-{$id}";
                     $item->save();
                     $id = $item->id;
-                    return  Outil::redirectgraphql($this->queryName, "id:{$id}", Outil::$queries[$this->queryName]);
                 }
                 if (isset($errors))
                 {
-                    throw new \Exception('{"data": null, "errors": "'. $errors .'" }');
+                    throw new \Exception($errors);
                 }
-        } catch (exception $e) {
-                return $e->getMessage();
+                DB::commit();
+                return  Outil::redirectgraphql($this->queryName, "id:{$id}", Outil::$queries[$this->queryName]);
+          });
+        } catch (exception $e) {            
+             DB::rollback();
+             return $e->getMessage();
         }
     }
 }

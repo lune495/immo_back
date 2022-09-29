@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\{Locataire,Outil};
+use Illuminate\Support\Facades\DB;
 
 class LocataireController extends Controller
 {
@@ -12,8 +13,9 @@ class LocataireController extends Controller
 
      public function save(Request $request)
     {
-        try 
-        {
+        try {
+            return DB::transaction(function () use ($request)
+            {
                 $errors =null;
                 $item = new Locataire();
                 if (!empty($request->id))
@@ -37,15 +39,21 @@ class LocataireController extends Controller
                 if (!isset($errors)) 
                 {
                     $item->save();
+                    $proprio_id = $item->bien_immo->proprietaire_id;
                     $id = $item->id;
-                    return  Outil::redirectgraphql($this->queryName, "id:{$id}", Outil::$queries[$this->queryName]);
+                    $item->code = "L000{$id}-{$proprio_id}-{$id}";
+                    $item->save();
                 }
                 if (isset($errors))
                 {
-                    throw new \Exception('{"data": null, "errors": "'. $errors .'" }');
+                    throw new \Exception($errors);
                 }
-        } catch (exception $e) {
-                return $e->getMessage();
+                DB::commit();
+                return  Outil::redirectgraphql($this->queryName, "id:{$id}", Outil::$queries[$this->queryName]);
+          });
+        } catch (exception $e) {            
+             DB::rollback();
+             return $e->getMessage();
         }
     }
 }
