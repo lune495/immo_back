@@ -53,6 +53,7 @@ class BienImmoQuery extends Query
                 'type_bien_immo'          => $item->type_bien_immo,
                 'proprietaire_id'         => $item->proprietaire_id,
                 'proprietaire'            => $item->proprietaire,
+                'locataires'              => $item->locataires,
             ];
         });
 

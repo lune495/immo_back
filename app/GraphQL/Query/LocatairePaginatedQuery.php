@@ -44,7 +44,7 @@ class LocatairePaginatedQuery extends Query
         }
         if (isset($args['code']))
         {
-            $query->where('code',$args['code']);
+            $query = $query->where('code',Outil::getOperateurLikeDB(),'%'.$args['code'].'%');
         }
         if (isset($args['nom']))
         {
