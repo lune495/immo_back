@@ -49,6 +49,7 @@ class BienImmoQuery extends Query
                 'description'             => $item->description,
                 'loyer'                   => $item->loyer,
                 'locataire'               => $item->locataire,
+                'bien'                    => $item->bien,
             ];
         });
 
