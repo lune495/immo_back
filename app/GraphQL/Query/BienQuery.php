@@ -5,16 +5,16 @@ namespace App\GraphQL\Query;
 use GraphQL\Type\Definition\Type;
 use Rebing\GraphQL\Support\Query;
 use Rebing\GraphQL\Support\Facades\GraphQL;
-use App\Models\{BienImmo,Outil};
-class BienImmoQuery extends Query
+use App\Models\{Bien,Outil};
+class BienQuery extends Query
 {
     protected $attributes = [
-        'name' => 'bien_immos'
+        'name' => 'biens'
     ];
 
     public function type(): Type
     {
-        return Type::listOf(GraphQL::type('BienImmo'));
+        return Type::listOf(GraphQL::type('Bien'));
     }
 
     public function args(): array
@@ -22,33 +22,37 @@ class BienImmoQuery extends Query
         return
         [
             'id'                  => ['type' => Type::int()],
-            'desc'                => ['type' => Type::string()],
+            'code'                => ['type' => Type::string()],
         ];
     }
 
     public function resolve($root, $args)
     {
-        $query = BienImmo::query();
+        $query = Bien::query();
         if (isset($args['id']))
         {
             $query = $query->where('id', $args['id']);
         }
-        if (isset($args['desc']))
+        if (isset($args['code']))
         {
-            $query = $query->where('desc',Outil::getOperateurLikeDB(),'%'.$args['desc'].'%');
+            $query = $query->where('code',Outil::getOperateurLikeDB(),'%'.$args['code'].'%');
         }
         
         $query->orderBy('id', 'desc');
         $query = $query->get();
-        return $query->map(function (BienImmo $item)
+        return $query->map(function (Bien $item)
         {
             return
             [
                 'id'                      => $item->id,
                 'code'                    => $item->code,
                 'description'             => $item->description,
-                'loyer'                   => $item->loyer,
-                'locataire'               => $item->locataire,
+                'adresse'                 => $item->adresse,
+                'type_bien_immo_id'       => $item->type_bien_immo_id,
+                'type_bien_immo'          => $item->type_bien_immo,
+                'proprietaire_id'         => $item->proprietaire_id,
+                'proprietaire'            => $item->proprietaire,
+                'bien_immos'              => $item->bien_immos,
             ];
         });
 

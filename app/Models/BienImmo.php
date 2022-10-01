@@ -7,20 +7,15 @@ use Illuminate\Database\Eloquent\Model;
 
 class BienImmo extends Model
 {
-    use HasFactory;
+    use HasFactory; 
 
-    public  function proprietaire()
+    public function locataire()
     {
-        return $this->belongsTo(Proprietaire::class);
+        return $this->belongsTo(Locataire::class);
     }
 
-    public  function type_bien_immo()
+    public function bien()
     {
-        return $this->belongsTo(TypeBienImmo::class);
-    }
-
-    public function locataires()
-    {
-        return $this->hasMany(Locataire::class);
+        return $this->belongsTo(Bien::class);
     }
 }

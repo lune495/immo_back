@@ -6,18 +6,18 @@ use GraphQL\Type\Definition\Type;
 use Rebing\GraphQL\Support\Query;
 use Rebing\GraphQL\Support\Facades\GraphQL;
 use Illuminate\Support\Arr;
-use \App\Models\{BienImmo,Outil};
+use \App\Models\{Bien,Outil};
 
-class BienImmoPaginatedQuery extends Query
+class BienPaginatedQuery extends Query
 {
     protected $attributes = [
-        'name'              => 'bienimmospaginated',
+        'name'              => 'bienspaginated',
         'description'       => ''
     ];
 
     public function type():type
     {
-        return GraphQL::type('bienimmospaginated');
+        return GraphQL::type('bienspaginated');
     }
 
     public function args():array
@@ -35,7 +35,7 @@ class BienImmoPaginatedQuery extends Query
 
     public function resolve($root, $args)
     {
-        $query = BienImmo::query();
+        $query = Bien::query();
         if (isset($args['id']))
         {
             $query->where('id', $args['id']);

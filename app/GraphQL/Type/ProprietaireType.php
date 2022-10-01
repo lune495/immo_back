@@ -28,8 +28,8 @@ class ProprietaireType extends GraphQLType
             'telephone'                         => ['type' => Type::string()],
             'agence_id'                         => ['type' => Type::int()],
             'agence'                            => ['type' => GraphQL::type('Agence')],
-            'locataires'                        => ['type' => Type::listOf(GraphQL::type('Locataire')), 'description' => ''],
-            'bien_immos'                        => ['type' => Type::listOf(GraphQL::type('BienImmo')), 'description' => ''],
+            'biens'                             => ['type' => Type::listOf(GraphQL::type('Bien')), 'description' => ''],
+            'nbr_bien'                          => ['type' => Type::int()],
 
         ];
     }
@@ -84,6 +84,12 @@ class ProprietaireType extends GraphQLType
             $date_at = $root['created_at'];
         }
         return Carbon::parse($date_at)->format('d/m/Y H:i:s');
+    }
+
+    protected function resolveNbrBienField($root, $args)
+    {
+        $proprio = Proprietaire::with('biens')->find($root['id']);
+        return count($proprio->biens);
     }
     
 }

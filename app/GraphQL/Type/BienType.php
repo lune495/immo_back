@@ -2,18 +2,18 @@
 
 namespace App\GraphQL\Type;
 
-use  App\Models\{BienImmo};
+use  App\Models\{Bien};
 use Carbon\Carbon;
 use GraphQL\Type\Definition\Type;
 use Rebing\GraphQL\Support\Type as GraphQLType;
 use Rebing\GraphQL\Support\Facades\GraphQL;
 use Illuminate\Support\Facades\DB;
 
-class BienImmoType extends GraphQLType
+class BienType extends GraphQLType
 {
     protected $attributes =
     [
-        'name' => 'BienImmo',
+        'name' => 'Bien',
         'description' => ''
     ];
 
@@ -24,9 +24,13 @@ class BienImmoType extends GraphQLType
             'id'                                => ['type' => Type::int(), 'description' => ''],
             'code'                              => ['type' => Type::string()],
             'description'                       => ['type' => Type::string()],
-            'loyer'                             => ['type' => Type::string()],
             'adresse'                           => ['type' => Type::string()],
-            'locataire'                         => ['type' => GraphQL::type('Locataire'), 'description' => ''],
+            'type_bien_immo_id'                 => ['type' => Type::int()],
+            'type_bien_immo'                    => ['type' => GraphQL::type('TypeBienImmo')],
+            'proprietaire_id'                   => ['type' => Type::int()],
+            'proprietaire'                      => ['type' => GraphQL::type('Proprietaire')],
+            'bien_immos'                        => ['type' => Type::listOf(GraphQL::type('BienImmo')), 'description' => ''],
+            'nbr_bien_immo'                     => ['type' => Type::int()],
 
         ];
     }
@@ -83,4 +87,9 @@ class BienImmoType extends GraphQLType
         return Carbon::parse($date_at)->format('d/m/Y H:i:s');
     }
     
+    protected function resolveNbrBienImmoField($root, $args)
+    {
+        $bien = Bien::with('bien_immos')->find($root['id']);
+        return count($bien->bien_immos);
+    }
 }

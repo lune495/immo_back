@@ -17,10 +17,7 @@ class CreateBienImmosTable extends Migration
             $table->id();
             $table->string('code');
             $table->string('description');
-            $table->string('adresse')->nullable();
-            $table->string('montant');
-            $table->unsignedBigInteger('type_bien_immo_id');
-            $table->foreign('type_bien_immo_id')->references('id')->on('type_bien_immos');
+            $table->string('loyer');
             $table->timestamps();   
         });
     }

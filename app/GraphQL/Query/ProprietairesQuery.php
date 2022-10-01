@@ -60,8 +60,8 @@ class ProprietairesQuery extends Query
                 'telephone'               => $item->telephone,
                 'agence_id'               => $item->agence_id,
                 'agence'                  => $item->agence,
-                'locataires'              => $item->locataires,
-                'bien_immos'              => $item->bien_immos,
+                'biens'                   => $item->biens,
+                'nbr_bien'                => $item->nbr_bien,
             ];
         });
 
