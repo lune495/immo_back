@@ -8,8 +8,9 @@ use Illuminate\Database\Eloquent\Model;
 class Locataire extends Model
 {
     use HasFactory;
+    protected $guarded = [];
 
-    public  function bien_immo()
+    public function bien_immo()
     {
         return $this->belongsTo(BienImmo::class);
     }

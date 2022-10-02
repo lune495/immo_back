@@ -35,7 +35,7 @@ class BienImmoPaginatedQuery extends Query
 
     public function resolve($root, $args)
     {
-        $query = BienImmo::query();
+        $query = BienImmo::query()->wherenotnull('bien_id');
         if (isset($args['id']))
         {
             $query->where('id', $args['id']);

@@ -28,7 +28,7 @@ class BienImmoQuery extends Query
 
     public function resolve($root, $args)
     {
-        $query = BienImmo::query();
+        $query = BienImmo::with('locataire')->wherenotnull('bien_id');
         if (isset($args['id']))
         {
             $query = $query->where('id', $args['id']);

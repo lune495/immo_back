@@ -8,10 +8,12 @@ use Illuminate\Database\Eloquent\Model;
 class BienImmo extends Model
 {
     use HasFactory; 
+    protected $guarded = [];
+
 
     public function locataire()
     {
-        return $this->belongsTo(Locataire::class);
+        return $this->hasOne(Locataire::class);
     }
 
     public function bien()
