@@ -23,6 +23,7 @@ class BienImmoQuery extends Query
         [
             'id'                  => ['type' => Type::int()],
             'desc'                => ['type' => Type::string()],
+            'proprietaire_id'     => ['type' => Type::int()],
         ];
     }
 
@@ -32,6 +33,12 @@ class BienImmoQuery extends Query
         if (isset($args['id']))
         {
             $query = $query->where('id', $args['id']);
+        }
+        if (isset($args['proprietaire_id']))
+        {
+            $query = $query->join('biens', 'bien_immos.bien_id', '=', 'biens.id')
+            ->where('biens.proprietaire_id', $args['proprietaire_id'])
+            ->selectRaw('biens.*');
         }
         if (isset($args['desc']))
         {
@@ -46,6 +53,7 @@ class BienImmoQuery extends Query
             [
                 'id'                      => $item->id,
                 'code'                    => $item->code,
+                'adresse'                 => $item->adresse,
                 'description'             => $item->description,
                 'loyer'                   => $item->loyer,
                 'locataire'               => $item->locataire,
