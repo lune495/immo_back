@@ -45,7 +45,7 @@ class BienImmoPaginatedQuery extends Query
         {
             $query = $query->join('biens', 'bien_immos.bien_id', '=', 'biens.id')
             ->where('biens.proprietaire_id', $args['proprietaire_id'])
-            ->selectRaw('biens.*');
+            ->selectRaw('bien_immos.*');
         }
         if (isset($args['code']))
         {
