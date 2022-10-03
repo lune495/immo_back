@@ -25,6 +25,7 @@ class BienImmoPaginatedQuery extends Query
         return
         [
             'id'                            => ['type' => Type::int()],
+            'proprietaire_id'               => ['type' => Type::int()],
             'code'                          => ['type' => Type::string()],
         
             'page'                          => ['name' => 'page', 'description' => 'The page', 'type' => Type::int() ],
@@ -39,6 +40,12 @@ class BienImmoPaginatedQuery extends Query
         if (isset($args['id']))
         {
             $query->where('id', $args['id']);
+        }
+        if (isset($args['proprietaire_id']))
+        {
+            $query = $query->join('biens', 'bien_immos.bien_id', '=', 'biens.id')
+            ->where('biens.proprietaire_id', $args['proprietaire_id'])
+            ->selectRaw('biens.*');
         }
         if (isset($args['code']))
         {
