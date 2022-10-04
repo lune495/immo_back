@@ -26,8 +26,7 @@ class BienImmoType extends GraphQLType
             'description'                       => ['type' => Type::string()],
             'loyer'                             => ['type' => Type::string()],
             'adresse'                           => ['type' => Type::string()],
-            'locataire'                         => ['type' => GraphQL::type('Locataire')],
-            'bien'                              => ['type' => GraphQL::type('Bien'), 'description' => ''],
+            'locataires'                        => ['type' => Type::listOf(GraphQL::type('Locataire'))],
 
         ];
     }

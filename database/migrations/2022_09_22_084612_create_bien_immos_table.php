@@ -16,7 +16,12 @@ class CreateBienImmosTable extends Migration
         Schema::create('bien_immos', function (Blueprint $table) {
             $table->id();
             $table->string('code');
-            $table->string('description');
+            $table->text('description')->nullable();
+            $table->string('adresse');
+            $table->unsignedBigInteger('proprietaire_id');
+            $table->foreign('proprietaire_id')->nullable()->references('id')->on('proprietaires');
+            $table->unsignedBigInteger('type_bien_immo_id');
+            $table->foreign('type_bien_immo_id')->references('id')->on('type_bien_immos');
             $table->string('loyer');
             $table->timestamps();   
         });

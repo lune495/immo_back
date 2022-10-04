@@ -11,13 +11,17 @@ class BienImmo extends Model
     protected $guarded = [];
 
 
-    public function locataire()
+    public function locataires()
     {
-        return $this->hasOne(Locataire::class);
+        return $this->hasMany(Locataire::class);
+    }
+    public  function proprietaire()
+    {
+        return $this->belongsTo(Proprietaire::class);
     }
 
-    public function bien()
+    public  function type_bien_immo()
     {
-        return $this->belongsTo(Bien::class);
+        return $this->belongsTo(TypeBienImmo::class);
     }
 }

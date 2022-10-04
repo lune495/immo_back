@@ -29,16 +29,14 @@ class BienImmoQuery extends Query
 
     public function resolve($root, $args)
     {
-        $query = BienImmo::with('locataire')->wherenotnull('bien_id');
+        $query = BienImmo::with('locataire');
         if (isset($args['id']))
         {
             $query = $query->where('id', $args['id']);
         }
         if (isset($args['proprietaire_id']))
         {
-            $query = $query->join('biens', 'bien_immos.bien_id', '=', 'biens.id')
-            ->where('biens.proprietaire_id', $args['proprietaire_id'])
-            ->selectRaw('bien_immos.*');
+            $query = $query->where('proprietaire_id', $args['proprietaire_id']);
         }
         if (isset($args['desc']))
         {
@@ -56,8 +54,7 @@ class BienImmoQuery extends Query
                 'adresse'                 => $item->adresse,
                 'description'             => $item->description,
                 'loyer'                   => $item->loyer,
-                'locataire'               => $item->locataire,
-                'bien'                    => $item->bien,
+                'locataires'              => $item->locataires,
             ];
         });
 

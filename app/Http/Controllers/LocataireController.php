@@ -39,7 +39,7 @@ class LocataireController extends Controller
                 if (!isset($errors)) 
                 {
                     $item->save();
-                    $proprio_id = $item->bien_immo->bien->proprietaire_id;
+                    $proprio_id = $item->bien_immo->proprietaire_id;
                     $id = $item->id;
                     $item->code = "L000{$id}-{$proprio_id}-{$id}";
                     $item->save();

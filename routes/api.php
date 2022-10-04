@@ -29,7 +29,6 @@ Route::post('/login',[AuthController::class,'login']);
 Route::post('/proprietaire',[ProprietaireController::class,'save']);
 Route::post('/locataire',[LocataireController::class,'save']);
 Route::post('/bienimmo',[BienImmoController::class,'save']);
-Route::post('/bien',[BienController::class,'save']);
 // Route::post('/affectationbien',[AffectationBienController::class,'save']);
 
 // Protected Routes

@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 
-use App\Models\{BienImmo,Outil,Bien};
+use App\Models\{BienImmo,Outil,Proprietaire};
 use Illuminate\Support\Facades\DB;
 
 
@@ -31,18 +31,20 @@ class BienImmoController extends Controller
                 $item->code = "000001";
                 $item->description = $request->description;
                 $item->loyer = $request->loyer;
-                $item->bien_id = $request->bien_id;
+                $item->adresse = $request->adresse;
+                $item->proprietaire_id = $request->proprietaire_id;
+                $item->type_bien_immo_id = $request->type_bien_immo_id;
                 if (!isset($errors)) 
                 {
                     $item->save();
                     $id = $item->id;
                     $item->code = "GB0000-{$id}";
                     $item->save();
-                    $bien = Bien::with('bien_immos')->find($item->bien_id);
-                    $nbr_bien = count($bien->bien_immos);
-                    $bien_id = $bien->id;
-                    $bien->code = "B000-{$nbr_bien}-{$bien_id}";
-                    $bien->save();
+                    $proprio = Proprietaire::with('bien_immos')->find($item->proprietaire_id);
+                    $nbr_bien = count($proprio->bien_immos);
+                    $proprio_id = $proprio->id;
+                    $proprio->code = "B000-{$nbr_bien}-{$proprio_id}";
+                    $proprio->save();
                 }
                 if (isset($errors))
                 {

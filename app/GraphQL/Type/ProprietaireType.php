@@ -28,7 +28,7 @@ class ProprietaireType extends GraphQLType
             'telephone'                         => ['type' => Type::string()],
             'agence_id'                         => ['type' => Type::int()],
             'agence'                            => ['type' => GraphQL::type('Agence')],
-            'biens'                             => ['type' => Type::listOf(GraphQL::type('Bien')), 'description' => ''],
+            'bien_immos'                        => ['type' => Type::listOf(GraphQL::type('BienImmo')), 'description' => ''],
             'nbr_bien'                          => ['type' => Type::int()],
 
         ];
@@ -88,8 +88,8 @@ class ProprietaireType extends GraphQLType
 
     protected function resolveNbrBienField($root, $args)
     {
-        $proprio = Proprietaire::with('biens')->find($root['id']);
-        return count($proprio->biens);
+        $proprio = Proprietaire::with('bien_immos')->find($root['id']);
+        return count($proprio->bien_immos);
     }
     
 }

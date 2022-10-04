@@ -15,8 +15,8 @@ class Proprietaire extends Model
         return $this->belongsTo(Agence::class);
     }
 
-    public function biens()
+    public function bien_immos()
     {
-        return $this->hasMany(Bien::class);
+        return $this->hasMany(BienImmo::class);
     }
 }
