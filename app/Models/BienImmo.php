@@ -10,7 +10,6 @@ class BienImmo extends Model
     use HasFactory; 
     protected $guarded = [];
 
-
     public function locataires()
     {
         return $this->hasMany(Locataire::class);

@@ -30,7 +30,7 @@ class TypeBienImmoQuery extends Query
 
     public function resolve($root, $args)
     {
-        $query = TypeBienImmo::with('biens');
+        $query = TypeBienImmo::with('bien_immos');
         if (isset($args['id']))
         {
             $query->where('id', $args['id']);
@@ -47,7 +47,7 @@ class TypeBienImmoQuery extends Query
             [
                 'id'                                => $item->id,
                 'nom'                               => $item->nom,
-                'biens'                             => $item->biens,
+                'bien_immos'                        => $item->bien_immos,
             ];
         });
     }

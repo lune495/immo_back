@@ -29,7 +29,7 @@ class BienImmoQuery extends Query
 
     public function resolve($root, $args)
     {
-        $query = BienImmo::with('locataire');
+        $query = BienImmo::with('locataires');
         if (isset($args['id']))
         {
             $query = $query->where('id', $args['id']);
@@ -55,6 +55,10 @@ class BienImmoQuery extends Query
                 'description'             => $item->description,
                 'loyer'                   => $item->loyer,
                 'locataires'              => $item->locataires,
+                'proprietaire_id'         => $item->proprietaire_id,
+                'proprietaire'            => $item->proprietaire,
+                'type_bien_immo_id'       => $item->type_bien_immo_id,
+                'type_bien_immo'          => $item->type_bien_immo,
             ];
         });
 

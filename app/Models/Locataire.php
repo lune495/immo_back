@@ -15,4 +15,5 @@ class Locataire extends Model
         return $this->belongsTo(BienImmo::class);
     }
     
+    
 }

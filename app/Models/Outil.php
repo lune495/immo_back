@@ -66,19 +66,6 @@ class Outil extends Model
     {
         return "Y-m-d H:i:s";
     }
-    public static function getTotalvente($from,$to)
-    {
-         $Totalvent=Vente::whereBetween('created_at', array($from, $to))->count();
-        return   $Totalvent;
-    }
-    public static function getCaProduit($id,$from,$to)
-    {
-          $ca = DB::select(DB::raw("select (select coalesce(sum(vp.prix_vente*vp.qte),0) from vente_produits as vp,produits as p,ventes as v where vp.produit_id = ? and vp.vente_id = v.id and vp.produit_id=p.id and vp.created_at >= ? and vp.created_at <= ?  )
-        as ca "),[$id,$from,$to])[0]->ca;
-        $pa = DB::select(DB::raw("select (SELECT COALESCE(SUM(p.pa),0) FROM `vente_produits` as vp,`produits` as p,`ventes` as v WHERE vp.`produit_id` = ? and vp.`vente_id` = v.id and vp.`produit_id`=p.id and vp.created_at >= ? and vp.created_at <= ?) 
-        as pa"),[$id,$from,$to])[0]->pa;
-        return  $ca - $pa;
-    }
     public static function premereLettreMajuscule($val)
     {
         return ucfirst($val);
@@ -170,47 +157,6 @@ class Outil extends Model
     {
         $retour = ' F CFA';
         return $retour;
-    }
-
-    public static function getCavente($from,$to)
-    {
-        $sommetotal = DB::select(DB::raw("select (select coalesce(sum(vp.prix_vente*vp.qte),0) from vente_produits as vp,produits as p,ventes as v where  vp.created_at >= ?  and vp.vente_id = v.id  and vp.created_at <= ? and vp.produit_id=p.id )
-        as solde "),[$from, $to])[0]->solde;
-        $sommetotal = Outil::formatPrixToMonetaire($sommetotal, false, true);
-        return  $sommetotal;
-
-
-       /*  $allventes= Vente::whereBetween('created_at', array($from, $to))->get();
-        $allbon = Bon::whereBetween('created_at', array($from, $to))->get();
-        $totalallvente = 0 ;
-        foreach ($allventes as $onevente)
-        {
-            $paiemevent = PaiementVente::where('vente_id',$onevente->id)->get();
-            if(count($paiemevent) >0)
-            {
-                foreach ($paiemevent as $onepaiementvente)
-                {
-                    $totalallvente+=$onepaiementvente->montant;
-                }
-            }
-        }
-        foreach ($allbon as $one_bon)
-        {
-            $ventebon = Vente::where('bon_id',$one_bon->id)->first();
-            if(!isset($ventebon))
-            {
-                $totalallvente += $one_bon->montant;
-            }
-        }
-        return $totalallvente ; */
-    }
-
-    public static function getTotalproduitvente($from,$to)
-    {
-
-        return VenteProduit::whereBetween('created_at', array($from, $to))
-        ->groupBy('produit_id')
-        ->count();
     }
 
     public static function getOperateurLikeDB()

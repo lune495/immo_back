@@ -23,7 +23,7 @@ class TypeBienImmoType extends GraphQLType
         [
             'id'                    => ['type' => Type::int(), 'description' => ''],
             'nom'                   => ['type' => Type::string()],
-            'biens'                 => ['type' => Type::listOf(GraphQL::type('Bien')), 'description' => ''],
+            'bien_immos'            => ['type' => Type::listOf(GraphQL::type('BienImmo')), 'description' => ''],
         ];
     }
 

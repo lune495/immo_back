@@ -9,8 +9,8 @@ class TypeBienImmo extends Model
 {
     use HasFactory;
 
-    public function biens()
+    public function bien_immos()
     {
-        return $this->hasMany(Bien::class);
+        return $this->hasMany(BienImmo::class);
     }
 }

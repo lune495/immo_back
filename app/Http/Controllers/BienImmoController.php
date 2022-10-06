@@ -34,6 +34,7 @@ class BienImmoController extends Controller
                 $item->adresse = $request->adresse;
                 $item->proprietaire_id = $request->proprietaire_id;
                 $item->type_bien_immo_id = $request->type_bien_immo_id;
+
                 if (!isset($errors)) 
                 {
                     $item->save();
