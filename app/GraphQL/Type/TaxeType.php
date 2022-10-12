@@ -2,18 +2,18 @@
 
 namespace App\GraphQL\Type;
 
-use App\Models\{Locataire};
+use  App\Models\{Taxe};
 use Carbon\Carbon;
 use GraphQL\Type\Definition\Type;
 use Rebing\GraphQL\Support\Type as GraphQLType;
 use Rebing\GraphQL\Support\Facades\GraphQL;
 use Illuminate\Support\Facades\DB;
 
-class LocataireType extends GraphQLType
+class TaxeType extends GraphQLType
 {
     protected $attributes =
     [
-        'name' => 'Locataire',
+        'name' => 'Taxe',
         'description' => ''
     ];
 
@@ -21,16 +21,9 @@ class LocataireType extends GraphQLType
     {
         return
         [
-            'id'                                => ['type' => Type::int(), 'description' => ''],
-            'code'                              => ['type' => Type::string()],
-            'nom'                               => ['type' => Type::string()],
-            'prenom'                            => ['type' => Type::string()],
-            'telephone'                         => ['type' => Type::string()],
-            'montant_loyer_ttc'                 => ['type' => Type::float()],
-            'montant_loyer_ht'                  => ['type' => Type::float()],
-            'descriptif_loyer'                  => ['type' => Type::string()],
-            'bien_immo_id'                      => ['type' => Type::int()],
-            'bien_immo'                         => ['type' => GraphQL::type('BienImmo')],
+            'id'                    => ['type' => Type::int(), 'description' => ''],
+            'nom'                   => ['type' => Type::string()],
+            'value'                 => ['type' => Type::float()],
         ];
     }
 

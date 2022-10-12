@@ -76,6 +76,7 @@ return [
             'query' => [
                 // ExampleQuery::class,
                 \App\GraphQL\Query\AgencesQuery::class,
+                \App\GraphQL\Query\TaxeQuery::class,
                 \App\GraphQL\Query\AgencePaginatedQuery::class,
                 \App\GraphQL\Query\ProprietairesQuery::class,
                 \App\GraphQL\Query\ProprietairePaginatedQuery::class,
@@ -119,6 +120,7 @@ return [
         // ExampleRelationType::class,
         // \Rebing\GraphQL\Support\UploadType::class,
         \App\GraphQL\Type\AgenceType::class,
+        \App\GraphQL\Type\TaxeType::class,
         \App\GraphQL\Type\AgencePaginatedType::class,
         \App\GraphQL\Type\ProprietaireType::class,
         \App\GraphQL\Type\ProprietairePaginatedType::class,

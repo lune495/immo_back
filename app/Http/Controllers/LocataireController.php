@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\{Locataire,Outil};
+use App\Models\{Locataire,Outil,Taxe};
 use Illuminate\Support\Facades\DB;
 
 class LocataireController extends Controller
@@ -30,18 +30,32 @@ class LocataireController extends Controller
                 {
                     $errors = "Renseignez le prenom du proprietaire";
                 }
+                $montant_loyer_ttc = $request->montant_loyer_ttc;
+                $tva = !(array_key_exists('tva', $request->all())) ? false : true;
+                $tom = !(array_key_exists('tom', $request->all())) ? false : true;
+                $tlv = !(array_key_exists('tlv', $request->all())) ? false : true;
+                $cc =  !(array_key_exists('cc', $request->all())) ? false : true;
+                $tva = $tva == true ? Taxe::where('nom','tva')->first()->value : false;
+                $tom = $tom == true ? Taxe::where('nom','tom')->first()->value : false;
+                $tlv = $tlv == true ? Taxe::where('nom','tlv')->first()->value : false;
+                $cc = $cc == true ?  $request->cc : false;
+                $loyerHt = Outil::loyerht($montant_loyer_ttc,$tva,$tom,$tlv,$cc);
+                
                 $item->nom = $request->nom;
                 $item->code = "000001";
                 $item->prenom = $request->prenom;
                 $item->cni = $request->cni;
                 $item->telephone = $request->telephone;
                 $item->bien_immo_id = $request->bien_immo_id;
+                $item->montant_loyer_ttc = $request->montant_loyer_ttc;
+                $item->montant_loyer_ht = $loyerHt;
+                $item->descriptif_loyer = $request->descriptif_loyer;
                 if (!isset($errors)) 
                 {
                     $item->save();
                     $proprio_id = $item->bien_immo->proprietaire_id;
                     $id = $item->id;
-                    $item->code = "L000{$id}-{$proprio_id}-{$id}";
+                    $item->code = "L000{$id}/{$proprio_id}";
                     $item->save();
                 }
                 if (isset($errors))

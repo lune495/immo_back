@@ -44,7 +44,7 @@ class BienImmoController extends Controller
                     $proprio = Proprietaire::with('bien_immos')->find($item->proprietaire_id);
                     $nbr_bien = count($proprio->bien_immos);
                     $proprio_id = $proprio->id;
-                    $proprio->code = "B000-{$nbr_bien}-{$proprio_id}";
+                    $proprio->code = "B000{$proprio_id}/{$nbr_bien}";
                     $proprio->save();
                 }
                 if (isset($errors))

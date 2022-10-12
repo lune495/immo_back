@@ -23,9 +23,10 @@ class Outil extends Model
 
     public static $queries = array(
         "proprietaires"              => " id,code,nom,prenom,telephone,agence_id,agence{id,nom_agence},biens_immo{id,code,adresse,description}",
-        "locataires"                 => " id,code,nom,prenom,telephone,bien_immo_id,bien_immo{id,code,description,loyer,proprietaire_id,proprietaire{id,code,nom,prenom,telephone,agence_id,agence{id,nom_agence}}}",
+        "locataires"                 => " id,code,nom,prenom,telephone,montant_loyer_ttc,montant_loyer_ht,descriptif_loyer,bien_immo_id,bien_immo{id,code,description,loyer,proprietaire_id,proprietaire{id,code,nom,prenom,telephone,agence_id,agence{id,nom_agence}}}",
         "users"                      => " id,name,email,role{id,nom}",
         "bien_immos"                 => " id,code,adresse,description,proprietaire_id,proprietaire{id,code,nom,prenom,telephone,agence_id,agence{id,nom_agence}},type_bien_immo{id,nom},locataires{id,code,nom,prenom,telephone}",
+        "taxes"                      => " id,nom,value",
         // "proprio_bien_immos"         => " id,user_id,user{id,name,email,role{id,nom}},proprietaire_id,proprietaire{id,code,nom,prenom,telephone,agence_id,agence{id,nom_agence}},bien_immo_id,bien_immo{id,code,description,montant}",
 
     );
@@ -34,6 +35,16 @@ class Outil extends Model
     {
     $path='{'.$itemName.'('.$critere.'){'.$liste_attributs.'}}';
         return redirect('graphql?query='.urlencode($path));
+    }
+    public static function loyerht($montant_loyer_ttc,$tva,$tom,$tlv,$cc)
+    {
+       $tva =  $tva != false ? $tva = $tva/100 : 0;
+       $tom =  $tom != false ? $tom = $tom/100 : 0;
+       $tlv =  $tlv != false ? $tlv = $tlv/100 : 0;
+       $cc =   $cc != false ?  $cc = $cc/100 : 0;
+        $somme_tva = 1 + ($tva+$tom+$tlv+$cc);
+        $loyer_ht = $montant_loyer_ttc / $somme_tva;
+        return $loyer_ht;
     }
 
     public static function getResponseError(\Exception $e)
