@@ -23,7 +23,7 @@ class Outil extends Model
 
     public static $queries = array(
         "proprietaires"              => " id,code,nom,prenom,telephone,agence_id,agence{id,nom_agence},biens_immo{id,code,adresse,description}",
-        "locataires"                 => " id,code,nom,prenom,telephone,montant_loyer_ttc,montant_loyer_ht,descriptif_loyer,bien_immo_id,bien_immo{id,code,description,loyer,proprietaire_id,proprietaire{id,code,nom,prenom,telephone,agence_id,agence{id,nom_agence}}}",
+        "locataires"                 => " id,code,nom,prenom,telephone,montant_loyer_ttc,montant_loyer_ht,descriptif_loyer,bien_immo_id,bien_immo{id,code,description,loyer,proprietaire_id,proprietaire{id,code,nom,prenom,telephone,agence_id,agence{id,nom_agence}}},locataire_taxes{locataire{nom,prenom},taxe{nom,value}}",
         "users"                      => " id,name,email,role{id,nom}",
         "bien_immos"                 => " id,code,adresse,description,proprietaire_id,proprietaire{id,code,nom,prenom,telephone,agence_id,agence{id,nom_agence}},type_bien_immo{id,nom},locataires{id,code,nom,prenom,telephone}",
         "taxes"                      => " id,nom,value",

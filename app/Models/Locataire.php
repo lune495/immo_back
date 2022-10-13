@@ -14,6 +14,11 @@ class Locataire extends Model
     {
         return $this->belongsTo(BienImmo::class);
     }
+
+    public function locataire_taxes()
+    {
+        return $this->hasMany(LocataireTaxe::class);
+    }
     
     
 }

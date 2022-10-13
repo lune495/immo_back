@@ -64,6 +64,7 @@ class LocatairesQuery extends Query
                 'CNI'                     => $item->CNI,
                 'bien_immo_id'            => $item->bien_immo_id,
                 'bien_immo'               => $item->bien_immo,
+                'locataire_taxes'         => $item->locataire_taxes,
             ];
         });
 

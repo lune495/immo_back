@@ -8,4 +8,8 @@ use Illuminate\Database\Eloquent\Model;
 class Taxe extends Model
 {
     use HasFactory;
+    public function locataire_taxes()
+    {
+        return $this->hasMany(LocataireTaxe::class);
+    }
 }
