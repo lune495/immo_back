@@ -26,6 +26,7 @@ class LocataireType extends GraphQLType
             'nom'                               => ['type' => Type::string()],
             'prenom'                            => ['type' => Type::string()],
             'telephone'                         => ['type' => Type::string()],
+            'montant_loyer'                     => ['type' => Type::int()],
             'montant_loyer_ttc'                 => ['type' => Type::float()],
             'montant_loyer_ht'                  => ['type' => Type::float()],
             'descriptif_loyer'                  => ['type' => Type::string()],

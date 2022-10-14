@@ -23,7 +23,7 @@ class Outil extends Model
 
     public static $queries = array(
         "proprietaires"              => " id,code,nom,prenom,telephone,agence_id,agence{id,nom_agence},biens_immo{id,code,adresse,description}",
-        "locataires"                 => " id,code,nom,prenom,telephone,montant_loyer_ttc,montant_loyer_ht,descriptif_loyer,bien_immo_id,bien_immo{id,code,description,loyer,proprietaire_id,proprietaire{id,code,nom,prenom,telephone,agence_id,agence{id,nom_agence}}},locataire_taxes{locataire{nom,prenom},taxe{nom,value}}",
+        "locataires"                 => " id,code,nom,prenom,telephone,montant_loyer,montant_loyer_ttc,montant_loyer_ht,descriptif_loyer,bien_immo_id,bien_immo{id,code,description,loyer,proprietaire_id,proprietaire{id,code,nom,prenom,telephone,agence_id,agence{id,nom_agence}}},locataire_taxes{locataire{nom,prenom},taxe{nom,value}}",
         "users"                      => " id,name,email,role{id,nom}",
         "bien_immos"                 => " id,code,adresse,description,proprietaire_id,proprietaire{id,code,nom,prenom,telephone,agence_id,agence{id,nom_agence}},type_bien_immo{id,nom},locataires{id,code,nom,prenom,telephone}",
         "taxes"                      => " id,nom,value",
@@ -45,6 +45,17 @@ class Outil extends Model
         $somme_tva = 1 + ($tva+$tom+$tlv+$cc);
         $loyer_ht = $montant_loyer_ttc / $somme_tva;
         return $loyer_ht;
+    }
+
+    public static function loyerttc($montant_loyer,$tva,$tom,$tlv,$cc)
+    {
+       $tva =  $tva != false ? $tva = $tva/100 : 0;
+       $tom =  $tom != false ? $tom = $tom/100 : 0;
+       $tlv =  $tlv != false ? $tlv = $tlv/100 : 0;
+       $cc =   $cc != false ?  $cc = $cc/100 : 0;
+        $somme_tva = 1 + ($tva+$tom+$tlv+$cc);
+        $loyer_ttc = $montant_loyer * $somme_tva;
+        return $loyer_ttc;
     }
 
     public static function getResponseError(\Exception $e)
