@@ -72,6 +72,7 @@ class LocataireController extends Controller
                             array_push($array, $tlv->id);
                         }   
                     }elseif ($request->type_taxe == 'ht') {
+                        $montant_loyer = $request->montant_loyer;
                         $tva = !(array_key_exists('tva', $request->all())) ? false : true;
                         $tom = !(array_key_exists('tom', $request->all())) ? false : true;
                         $tlv = !(array_key_exists('tlv', $request->all())) ? false : true;
@@ -82,7 +83,6 @@ class LocataireController extends Controller
                         $cc = $cc == true ?  $request->cc : false;
                         $loyerttc = Outil::loyerttc($montant_loyer,$tva->value,$tom->value,$tlv->value,$cc);
                         $montant_loyer_ttc = $loyerttc;
-                        $montant_loyer = $request->montant_loyer;
                         $item->montant_loyer_ht = $request->montant_loyer;
                         $item->montant_loyer = $montant_loyer;
                         if($tva != false)
@@ -107,6 +107,7 @@ class LocataireController extends Controller
                 $item->telephone = $request->telephone;
                 $item->bien_immo_id = $request->bien_immo_id;
                 $item->descriptif_loyer = $request->descriptif_loyer;
+                dd($item);
                 if (!isset($errors)) 
                 {
                     $item->save();
