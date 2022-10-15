@@ -96,7 +96,11 @@ class LocataireController extends Controller
                             $avec_taxe = true;
                             array_push($array, $tlv->id);
                         }
+                    }else{
+                        $errors = "Type taxe non existant";
                     }
+                }else{
+                    $errors = "Statut non valide";
                 }          
                 $item->nom = $request->nom;
                 $item->code = "000001";
@@ -105,7 +109,6 @@ class LocataireController extends Controller
                 $item->telephone = $request->telephone;
                 $item->bien_immo_id = $request->bien_immo_id;
                 $item->descriptif_loyer = $request->descriptif_loyer;
-                dd($item);
                 if (!isset($errors)) 
                 {
                     $item->save();
