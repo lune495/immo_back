@@ -38,9 +38,9 @@ class Outil extends Model
     }
     public static function loyerht($montant_loyer_ttc,$tva,$tom,$tlv,$cc)
     {
-       $tva =  $tva != false ? $tva = $tva/100 : 0;
-       $tom =  $tom != false ? $tom = $tom/100 : 0;
-       $tlv =  $tlv != false ? $tlv = $tlv/100 : 0;
+       $tva =  $tva != false ? $tva = $tva->value/100 : 0;
+       $tom =  $tom != false ? $tom = $tom->value/100 : 0;
+       $tlv =  $tlv != false ? $tlv = $tlv->value/100 : 0;
        $cc =   $cc != false ?  $cc = $cc/100 : 0;
         $somme_tva = 1 + ($tva+$tom+$tlv+$cc);
         $loyer_ht = $montant_loyer_ttc / $somme_tva;
