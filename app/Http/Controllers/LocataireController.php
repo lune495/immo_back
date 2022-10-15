@@ -19,6 +19,7 @@ class LocataireController extends Controller
                 $errors =null;
                 $item = new Locataire();
                 $array[] = null;
+                $avec_taxe = false;
                 if (!empty($request->id))
                 {
                     $item = Locataire::find($request->id);
@@ -35,13 +36,13 @@ class LocataireController extends Controller
                 {
                     $errors = "Renseignez le statut de la location";
                 }
-                if($request->statut = 'habitation')
+                if($request->statut == 'habitation')
                 {
                     $item->montant_loyer = $request->montant_loyer;
                     $item->montant_loyer_ttc = $request->montant_loyer;
                     $item->montant_loyer_ht = $request->montant_loyer;
                 }
-                elseif($request->statut = 'commerciale'){
+                elseif($request->statut == 'commerciale'){
                     if($request->type_taxe == 'ttc'){
                         $montant_loyer = $request->montant_loyer;
                         $tva = !(array_key_exists('tva', $request->all())) ? false : true;
@@ -55,6 +56,21 @@ class LocataireController extends Controller
                         $loyerHt = Outil::loyerht($montant_loyer,$tva->value,$tom->value,$tlv->value,$cc);
                         $montant_loyer = $request->montant_loyer;
                         $item->montant_loyer_ht = $loyerHt;
+                        $item->montant_loyer = $montant_loyer;
+                        $item->montant_loyer_ttc = $montant_loyer;
+                        if($tva != false)
+                        {
+                            array_push($array, $tva->id);
+                            $avec_taxe = true;
+                        }
+                        if($tom != false)
+                        {
+                            array_push($array, $tom->id);
+                        }
+                        if($tlv != false)
+                        {
+                            array_push($array, $tlv->id);
+                        }   
                     }elseif ($request->type_taxe == 'ht') {
                         $tva = !(array_key_exists('tva', $request->all())) ? false : true;
                         $tom = !(array_key_exists('tom', $request->all())) ? false : true;
@@ -68,24 +84,22 @@ class LocataireController extends Controller
                         $montant_loyer_ttc = $loyerttc;
                         $montant_loyer = $request->montant_loyer;
                         $item->montant_loyer_ht = $request->montant_loyer;
+                        $item->montant_loyer = $montant_loyer;
+                        if($tva != false)
+                        {
+                            array_push($array, $tva->id);
+                            $avec_taxe = true;
+                        }
+                        if($tom != false)
+                        {
+                            array_push($array, $tom->id);
+                        }
+                        if($tlv != false)
+                        {
+                            array_push($array, $tlv->id);
+                        }
                     }
-                }
-                if($tva != false)
-                {
-                    array_push($array, $tva->id);
-                }
-                if($tom != false)
-                {
-                    array_push($array, $tom->id);
-                }
-                if($tlv != false)
-                {
-                    array_push($array, $tlv->id);
-                }
-                if($cc != false)
-                {
-                    array_push($array, $cc->id);
-                }               
+                }          
                 $item->nom = $request->nom;
                 $item->code = "000001";
                 $item->prenom = $request->prenom;
@@ -100,11 +114,14 @@ class LocataireController extends Controller
                     $id = $item->id;
                     $item->code = "L000{$id}/{$proprio_id}";
                     $item->save();
-                     for ($i = 1; $i <= count($array) -1; $i++) {
+                    if($avec_taxe)
+                    {
+                        for ($i = 1; $i <= count($array) -1; $i++) {
                         $lt = new LocataireTaxe();
                         $lt->locataire_id = $id;
                         $lt->taxe_id = $array[$i];
                         $lt->save();
+                    }
                     }
                 }
                 if (isset($errors))
