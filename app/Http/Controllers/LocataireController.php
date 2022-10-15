@@ -49,9 +49,6 @@ class LocataireController extends Controller
                         $tom = !(array_key_exists('tom', $request->all())) ? false : Taxe::where('nom','tom')->first();
                         $tlv = !(array_key_exists('tlv', $request->all())) ? false : Taxe::where('nom','tlv')->first();
                         $cc =  !(array_key_exists('cc', $request->all())) ? false : true;
-                        // $tva = $tva == true ? Taxe::where('nom','tva')->first() : false;
-                        // $tom = $tom == true ? Taxe::where('nom','tom')->first() : false;
-                        // $tlv = $tlv == true ? Taxe::where('nom','tlv')->first() : false;
                         $cc = $cc == true ?  $request->cc : false;
                         $loyerHt = Outil::loyerht($montant_loyer,$tva,$tom,$tlv,$cc);
                         $montant_loyer = $request->montant_loyer;
@@ -75,15 +72,12 @@ class LocataireController extends Controller
                         }   
                     }elseif ($request->type_taxe == 'ht') {
                         $montant_loyer = $request->montant_loyer;
-                        $tva = !(array_key_exists('tva', $request->all())) ? false : true;
-                        $tom = !(array_key_exists('tom', $request->all())) ? false : true;
-                        $tlv = !(array_key_exists('tlv', $request->all())) ? false : true;
+                        $tva = !(array_key_exists('tva', $request->all())) ? false : Taxe::where('nom','tva')->first();
+                        $tom = !(array_key_exists('tom', $request->all())) ? false : Taxe::where('nom','tom')->first();
+                        $tlv = !(array_key_exists('tlv', $request->all())) ? false : Taxe::where('nom','tlv')->first();
                         $cc =  !(array_key_exists('cc', $request->all())) ? false : true;
-                        $tva = $tva == true ? Taxe::where('nom','tva')->first() : false;
-                        $tom = $tom == true ? Taxe::where('nom','tom')->first() : false;
-                        $tlv = $tlv == true ? Taxe::where('nom','tlv')->first() : false;
                         $cc = $cc == true ?  $request->cc : false;
-                        $loyerttc = Outil::loyerttc($montant_loyer,$tva->value,$tom->value,$tlv->value,$cc);
+                        $loyerttc = Outil::loyerttc($montant_loyer,$tva,$tom,$tlv,$cc);
                         $montant_loyer_ttc = $loyerttc;
                         $item->montant_loyer_ht = $request->montant_loyer;
                         $item->montant_loyer = $montant_loyer;
@@ -111,6 +105,7 @@ class LocataireController extends Controller
                 $item->telephone = $request->telephone;
                 $item->bien_immo_id = $request->bien_immo_id;
                 $item->descriptif_loyer = $request->descriptif_loyer;
+                dd($item);
                 if (!isset($errors)) 
                 {
                     $item->save();
