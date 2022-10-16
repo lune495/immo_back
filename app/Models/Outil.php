@@ -26,7 +26,9 @@ class Outil extends Model
         "locataires"                 => " id,code,nom,prenom,telephone,montant_loyer,montant_loyer_ttc,montant_loyer_ht,descriptif_loyer,bien_immo_id,bien_immo{id,code,description,loyer,proprietaire_id,proprietaire{id,code,nom,prenom,telephone,agence_id,agence{id,nom_agence}}},locataire_taxes{locataire{nom,prenom},taxe{nom,value}}",
         "users"                      => " id,name,email,role{id,nom}",
         "bien_immos"                 => " id,code,adresse,description,proprietaire_id,proprietaire{id,code,nom,prenom,telephone,agence_id,agence{id,nom_agence}},type_bien_immo{id,nom},locataires{id,code,nom,prenom,telephone}",
-        "taxes"                      => " id,nom,value",
+        "taxes"                      => " id,nom,value",    
+        "agences"                    => " id,nom_agence,adresse,num_fixe",
+        "type_bien_immos"            => " id,nom,bien_immos{id,code,adresse,description,loyer,locataires{id,code,nom,prenom,telephone,montant_loyer,montant_loyer_ttc,montant_loyer_ht,descriptif_loyer}}",
         // "proprio_bien_immos"         => " id,user_id,user{id,name,email,role{id,nom}},proprietaire_id,proprietaire{id,code,nom,prenom,telephone,agence_id,agence{id,nom_agence}},bien_immo_id,bien_immo{id,code,description,montant}",
 
     );

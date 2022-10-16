@@ -9,6 +9,7 @@ use App\Http\Controllers\BienController;
 use App\Http\Controllers\LocataireController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\TaxeController;
+use App\Http\Controllers\TypeBienImmoController;
 // use App\Http\Controllers\AffectationBienController;
 
 
@@ -24,7 +25,8 @@ use App\Http\Controllers\TaxeController;
 */
 // Public Routes
 //Route::resource('produits', ProduitController::class);
-Route::get('/agences',[AgenceController::class, 'index']);
+Route::post('/agence',[AgenceController::class, 'save']);
+Route::post('/typebien',[TypeBienImmoController::class, 'save']);
 Route::post('/register',[AuthController::class,'register']);
 Route::post('/login',[AuthController::class,'login']);
 Route::post('/proprietaire',[ProprietaireController::class,'save']);
@@ -37,5 +39,5 @@ Route::post('/bienimmo',[BienImmoController::class,'save']);
 Route::group(['middleware' => ['auth:sanctum']],function()
 {
     Route::post('/agences',[AgenceController::class,'save']);
-    Route::delete('/proprietaires/{id}',[ProprietaireController::class,'delete']);
+    Route::delete('/proprietaires/{id}',[ProprietaireContzroller::class,'delete']);
 });

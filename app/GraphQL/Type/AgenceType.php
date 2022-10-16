@@ -24,6 +24,7 @@ class AgenceType extends GraphQLType
             'id'                                => ['type' => Type::int(), 'description' => ''],
             'nom_agence'                        => ['type' => Type::string()],
             'adresse'                           => ['type' => Type::string()],
+            'num_fixe'                          => ['type' => Type::string()],
         ];
     }
 
