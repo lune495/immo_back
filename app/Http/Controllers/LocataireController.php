@@ -36,13 +36,13 @@ class LocataireController extends Controller
                 {
                     $errors = "Renseignez le statut de la location";
                 }
-                if($request->statut == 'habitation')
-                {
-                    $item->montant_loyer = $request->montant_loyer;
-                    $item->montant_loyer_ttc = $request->montant_loyer;
-                    $item->montant_loyer_ht = $request->montant_loyer;
-                }
-                elseif($request->statut == 'commerciale'){
+                // if($request->statut == 'habitation')
+                // {
+                //     $item->montant_loyer = $request->montant_loyer;
+                //     $item->montant_loyer_ttc = $request->montant_loyer;
+                //     $item->montant_loyer_ht = $request->montant_loyer;
+                // }
+                elseif($request->statut == 'commerciale' || $request->statut == 'habitation'){
                     if($request->type_taxe == 'ttc'){
                         $montant_loyer = $request->montant_loyer;
                         $tva = !(array_key_exists('tva', $request->all())) ? false : Taxe::where('nom','tva')->first();
@@ -50,6 +50,7 @@ class LocataireController extends Controller
                         $tlv = !(array_key_exists('tlv', $request->all())) ? false : Taxe::where('nom','tlv')->first();
                         $cc =  !(array_key_exists('cc', $request->all())) ? false : true;
                         $cc = $cc == true ?  $request->cc : false;
+                        $tva = $request->statut == 'habitation' ? false : $tva;
                         $loyerHt = Outil::loyerht($montant_loyer,$tva,$tom,$tlv,$cc);
                         $montant_loyer = $request->montant_loyer;
                         $item->montant_loyer_ht = $loyerHt;
@@ -77,10 +78,12 @@ class LocataireController extends Controller
                         $tlv = !(array_key_exists('tlv', $request->all())) ? false : Taxe::where('nom','tlv')->first();
                         $cc =  !(array_key_exists('cc', $request->all())) ? false : true;
                         $cc = $cc == true ?  $request->cc : false;
+                        $tva = $request->statut == 'habitation' ? false : $tva;
                         $loyerttc = Outil::loyerttc($montant_loyer,$tva,$tom,$tlv,$cc);
                         $montant_loyer_ttc = $loyerttc;
                         $item->montant_loyer_ht = $request->montant_loyer;
                         $item->montant_loyer = $montant_loyer;
+                        $item->montant_loyer_ttc = $montant_loyer_ttc;
                         if($tva != false)
                         {
                             array_push($array, $tva->id);
@@ -97,7 +100,7 @@ class LocataireController extends Controller
                             array_push($array, $tlv->id);
                         }
                     }else{
-                        $errors = "Type taxe non existant";
+                        $errors = "Type taxe on existant";
                     }
                 }else{
                     $errors = "Statut non valide";
