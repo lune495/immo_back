@@ -36,6 +36,10 @@ class LocataireController extends Controller
                 {
                     $errors = "Renseignez le statut de la location";
                 }
+                if (empty($request->descriptif_loyer))
+                {
+                    $errors = "Renseignez la description de location";
+                }
                 // if($request->statut == 'habitation')
                 // {
                 //     $item->montant_loyer = $request->montant_loyer;
