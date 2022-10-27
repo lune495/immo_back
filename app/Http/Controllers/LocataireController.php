@@ -115,6 +115,7 @@ class LocataireController extends Controller
                 $item->cni = $request->cni;
                 $item->telephone = $request->telephone;
                 $item->bien_immo_id = $request->bien_immo_id;
+                $item->cc = $cc == true ?  $request->cc : 0;
                 $item->descriptif_loyer = $request->descriptif_loyer;
                 if (!isset($errors)) 
                 {

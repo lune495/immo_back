@@ -57,6 +57,7 @@ class LocatairesQuery extends Query
                 'code'                    => $item->code,
                 'nom'                     => $item->nom,
                 'prenom'                  => $item->prenom,
+                'cc'                      => $item->cc,
                 'telephone'               => $item->telephone,
                 'montant_loyer'           => $item->montant_loyer,
                 'montant_loyer_ttc'       => $item->montant_loyer_ttc,

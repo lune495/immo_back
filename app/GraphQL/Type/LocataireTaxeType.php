@@ -25,6 +25,7 @@ class LocataireTaxeType extends GraphQLType
             'locataire'                         => ['type' => GraphQL::type('Locataire')],
             'taxe_id'                           => ['type' => Type::int()],
             'taxe'                              => ['type' => GraphQL::type('Taxe')],
+            'valeur_taxe'                       => ['type' => Type::float()],
         ];
     }
 
@@ -78,6 +79,11 @@ class LocataireTaxeType extends GraphQLType
             $date_at = $root['created_at'];
         }
         return Carbon::parse($date_at)->format('d/m/Y H:i:s');
+    }
+
+    protected function resolveValeurTaxeField($root, $args)
+    {
+        return $root->locataire->montant_loyer * ($root->taxe->value/100);
     }
     
 }

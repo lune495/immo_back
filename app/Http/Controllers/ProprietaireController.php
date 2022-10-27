@@ -33,7 +33,10 @@ class ProprietaireController extends Controller
                     $errors = "Renseignez le prenom du proprietaire";
                 }
                 $item->nom = $request->nom;
-                $item->code = "B000-0";
+                if (empty($request->id))
+                {
+                    $item->code = "B000-0";
+                }
                 $item->prenom = $request->prenom;
                 $item->telephone = $request->telephone;
                 $item->agence_id = $agence->id;
@@ -41,7 +44,10 @@ class ProprietaireController extends Controller
                 {
                     $item->save();
                     $id = $item->id;
-                    $item->code = "B000{$id}/0";
+                    if (empty($request->id))
+                    {
+                        $item->code = "B000{$id}/0";
+                    }
                     $item->save();
                     $id = $item->id;
                 }

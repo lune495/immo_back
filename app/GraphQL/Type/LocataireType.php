@@ -31,6 +31,7 @@ class LocataireType extends GraphQLType
             'montant_loyer_ht'                  => ['type' => Type::float()],
             'descriptif_loyer'                  => ['type' => Type::string()],
             'bien_immo_id'                      => ['type' => Type::int()],
+            'cc'                                => ['type' => Type::int()],
             'locataire_taxes'                   => ['type' => Type::listOf(GraphQL::type('LocataireTaxe')), 'description' => ''],
             'bien_immo'                         => ['type' => GraphQL::type('BienImmo')],
         ];
