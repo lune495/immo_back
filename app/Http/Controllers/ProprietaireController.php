@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\{Proprietaire,Agence,Outil};
+use App\Models\{Proprietaire,Compte,Agence,Outil};
 use Illuminate\Support\Facades\DB;
 
 class ProprietaireController extends Controller
@@ -50,6 +50,13 @@ class ProprietaireController extends Controller
                     }
                     $item->save();
                     $id = $item->id;
+                    $comptes = Compte::where("proprietaire_id",$id)->get();
+                    if(!$comptes->first())
+                    {
+                        $compte = new Compte();
+                        $compte->proprietaire_id = $id;
+                        $compte->save();
+                    }
                 }
                 if (isset($errors))
                 {

@@ -52,7 +52,7 @@ class BienImmoPaginatedQuery extends Query
         $count = Arr::get($args, 'count', 10);
         $page  = Arr::get($args, 'page', 1);
 
-        return $query->orderBy('id', 'desc')->paginate($count, ['*'], 'page', $page);
+        return $query->orderBy('id', 'asc')->paginate($count, ['*'], 'page', $page);
     }
 }
 

@@ -47,7 +47,7 @@ class ProprietairesQuery extends Query
         {
             $query = $query->where('prenom',Outil::getOperateurLikeDB(),'%'.$args['prenom'].'%');
         }
-        $query->orderBy('id', 'desc');
+        $query->orderBy('id', 'asc');
         $query = $query->get();
         return $query->map(function (Proprietaire $item)
         {

@@ -6,18 +6,18 @@ use GraphQL\Type\Definition\Type;
 use Rebing\GraphQL\Support\Query;
 use Rebing\GraphQL\Support\Facades\GraphQL;
 use Illuminate\Support\Arr;
-use \App\Models\{Proprietaire,Outil};
+use \App\Models\{Journal,Outil};
 
-class ProprietairePaginatedQuery extends Query
+class JournalPaginatedQuery extends Query
 {
     protected $attributes = [
-        'name'              => 'proprietairespaginated',
+        'name'              => 'journalspaginated',
         'description'       => ''
     ];
 
     public function type():type
     {
-        return GraphQL::type('proprietairespaginated');
+        return GraphQL::type('journalspaginated');
     }
 
     public function args():array
@@ -25,9 +25,7 @@ class ProprietairePaginatedQuery extends Query
         return
         [
             'id'                            => ['type' => Type::int()],
-            'nom'                           => ['type' => Type::string()],
-            'prenom'                        => ['type' => Type::string()],
-            'code'                          => ['type' => Type::string()],
+            'locataire_id'                  => ['type' => Type::int()],
         
             'page'                          => ['name' => 'page', 'description' => 'The page', 'type' => Type::int() ],
             'count'                         => ['name' => 'count',  'description' => 'The count', 'type' => Type::int() ]
@@ -37,23 +35,15 @@ class ProprietairePaginatedQuery extends Query
 
     public function resolve($root, $args)
     {
-        $query = Proprietaire::query();
+        $query = Journal::query();
         if (isset($args['id']))
         {
             $query->where('id', $args['id']);
         }
-        if (isset($args['code']))
-        {
-            $query = $query->where('code',Outil::getOperateurLikeDB(),'%'.$args['code'].'%');
-        }
-        if (isset($args['nom']))
-        {
-            $query = $query->where('nom',Outil::getOperateurLikeDB(),'%'.$args['nom'].'%');
-        }
-        if (isset($args['prenom']))
-        {
-            $query = $query->where('prenom',Outil::getOperateurLikeDB(),'%'.$args['prenom'].'%');
-        }
+        // if (isset($args['locataire_id']))
+        // {
+        //     $query = $query->where('code',Outil::getOperateurLikeDB(),'%'.$args['code'].'%');
+        // }
         $count = Arr::get($args, 'count', 10);
         $page  = Arr::get($args, 'page', 1);
 

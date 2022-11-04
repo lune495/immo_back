@@ -2,17 +2,18 @@
 
 namespace App\GraphQL\Type;
 
+use App\Models\{Journal};
 use Carbon\Carbon;
 use GraphQL\Type\Definition\Type;
 use Rebing\GraphQL\Support\Type as GraphQLType;
 use Rebing\GraphQL\Support\Facades\GraphQL;
 use Illuminate\Support\Facades\DB;
 
-class LocataireTaxeType extends GraphQLType
+class JournalType extends GraphQLType
 {
     protected $attributes =
     [
-        'name' => 'LocataireTaxe',
+        'name' => 'Journal',
         'description' => ''
     ];
 
@@ -21,11 +22,12 @@ class LocataireTaxeType extends GraphQLType
         return
         [
             'id'                                => ['type' => Type::int(), 'description' => ''],
+            'libelle'                           => ['type' => Type::string()],
+            'entree'                            => ['type' => Type::int()],
+            'sortie'                            => ['type' => Type::int()],
+            'solde'                             => ['type' => Type::int()],
             'locataire_id'                      => ['type' => Type::int()],
-            'locataire'                         => ['type' => GraphQL::type('Locataire')],
-            'taxe_id'                           => ['type' => Type::int()],
-            'taxe'                              => ['type' => GraphQL::type('Taxe')],
-            'valeur_taxe'                       => ['type' => Type::float()],
+            'locataire'                       => ['type' => GraphQL::type('Locataire')],
         ];
     }
 
@@ -79,11 +81,6 @@ class LocataireTaxeType extends GraphQLType
             $date_at = $root['created_at'];
         }
         return Carbon::parse($date_at)->format('d/m/Y H:i:s');
-    }
-
-    protected function resolveValeurTaxeField($root, $args)
-    {
-        return $root->locataire->montant_loyer_ht * ($root->taxe->value/100);
     }
     
 }

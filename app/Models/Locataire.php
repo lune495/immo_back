@@ -19,6 +19,11 @@ class Locataire extends Model
     {
         return $this->hasMany(LocataireTaxe::class);
     }
+
+     public function journals()
+    {
+        return $this->hasMany(Journal::class);
+    }
     
     
 }

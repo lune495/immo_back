@@ -19,4 +19,9 @@ class Proprietaire extends Model
     {
         return $this->hasMany(BienImmo::class);
     }
+
+    public function comptes()
+    {
+        return $this->hasMany(Compte::class);
+    }
 }
