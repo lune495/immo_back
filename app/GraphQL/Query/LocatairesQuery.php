@@ -25,6 +25,7 @@ class LocatairesQuery extends Query
             'code'                => ['type' => Type::string()],
             'nom'                 => ['type' => Type::string()],
             'prenom'              => ['type' => Type::string()],
+            'search'              => ['type' => Type::string()],
         ];
     }
 
@@ -35,9 +36,11 @@ class LocatairesQuery extends Query
         {
             $query = $query->where('id', $args['id']);
         }
-        if (isset($args['code']))
+        if (isset($args['search']))
         {
-            $query = $query->where('code',Outil::getOperateurLikeDB(),'%'.$args['code'].'%');
+            $query = $query->where('code',Outil::getOperateurLikeDB(),'%'.$args['search'].'%')
+            ->orWhere('nom', Outil::getOperateurLikeDB(),'%'. $args['search'] . '%')
+            ->orWhere('prenom', Outil::getOperateurLikeDB(),'%'. $args['search'] . '%');
         }
         if (isset($args['nom']))
         {

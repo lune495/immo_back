@@ -117,7 +117,7 @@ class LocataireController extends Controller
                 $item->bien_immo_id = $request->bien_immo_id;
                 $item->cc = $cc == true ?  $request->cc : 0;
                 $item->descriptif_loyer = $request->descriptif_loyer;
-                if (!isset($errors)) 
+                if (!isset($errors))
                 {
                     $item->save();
                     $proprio_id = $item->bien_immo->proprietaire_id;
