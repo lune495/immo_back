@@ -2,42 +2,53 @@
 
 namespace App\GraphQL\Query;
 
-use  App\Models\{Journal};
-use Carbon\Carbon;
+use App\Models\DetailJournal;
+use App\Models\Outil;
 use GraphQL\Type\Definition\Type;
 use Rebing\GraphQL\Support\Query;
 use Rebing\GraphQL\Support\Facades\GraphQL;
 
-class JournalQuery extends Query
+class DetailJournalQuery extends Query
 {
-    protected $attributes = [
-        'name' => 'journals'
+    protected $attributes =
+    [
+        'name' => 'detail_journals'
     ];
 
     public function type():type
     {
-        return Type::listOf(GraphQL::type('Journal'));
+        return Type::listOf(GraphQL::type('DetailJournal'));
     }
 
     public function args():array
     {
         return
         [
-            'id'                       => ['type' => Type::int()],
+            'id'                => ['type' => Type::int()],
+            'locataire_id'      => ['type' => Type::int()],
+            'journal_id'        => ['type' => Type::int()]
         ];
     }
 
     public function resolve($root, $args)
     {
-        $query = Journal::query();
+        $query = DetailJournal::with('journal');
         if (isset($args['id']))
         {
             $query->where('id', $args['id']);
         }
-
+        if (isset($args['locataire_id']))
+        {
+            $query->where('locataire_id', $args['locataire_id']);
+        }
+        if (isset($args['journal_id']))
+        {
+            $query->where('journal_id', $args['journal_id']);
+        }
+        $query->orderBy('id', 'desc');
         $query = $query->get();
 
-        return $query->map(function (Journal $item)
+        return $query->map(function (DetailJournal $item)
         {
             return
             [
@@ -45,10 +56,10 @@ class JournalQuery extends Query
                 'libelle'                           => $item->libelle,
                 'entree'                            => $item->entree,
                 'sortie'                            => $item->sortie,
-                'solde'                             => $item->solde,
                 'locataire_id'                      => $item->locataire_id,
                 'locataire'                         => $item->locataire,
-                'detail_journals'                   => $item->detail_journals,
+                'journal_id'                        => $item->journal_id,
+                'journal'                           => $item->journal,   
             ];
         });
     }

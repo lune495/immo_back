@@ -8,8 +8,8 @@ use Illuminate\Database\Eloquent\Model;
 class Journal extends Model
 {
     use HasFactory;
-     public  function locataire()
+     public function detail_journals()
     {
-        return $this->belongsTo(Locataire::class);
+        return $this->hasMany(DetailJournal::class);
     }
 }

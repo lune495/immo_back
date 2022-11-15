@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\{Compte,Locataire,Outil,Journal};
+use App\Models\{Compte,Locataire,DetailJournal,Outil,Journal};
 use Illuminate\Support\Facades\DB;
 class JournalController extends Controller
 {
@@ -19,14 +19,17 @@ class JournalController extends Controller
                 $errors =null;
                 $str_json = json_encode($request->detail_journals);
                 $detail_journals = json_decode($str_json, true);
+                $item = new Journal();
                 if (!empty($request->id))
                 {
                     $item = Journal::find($request->id);
                 }
                 
+                $item->solde = $request->solde;
+                $item->save();
                 foreach ($detail_journals as $detail) 
                 {
-                    $item = new Journal();
+                    $detail_journals= new DetailJournal();
                     if (isset($detail['locataire_id']))
                     {
                         $locataire = Locataire::where("id",$detail['locataire_id'])->get();
@@ -43,22 +46,23 @@ class JournalController extends Controller
                     {
                         $errors = "veuillez préciser le type d'opération";
                     }
-                    $item->libelle = $detail['libelle'];
-                    $item->entree =   $detail['entree'];
-                    $item->sortie = $detail['sortie'];
-                    $item->solde = $detail['solde'];
-                    $item->locataire_id = $detail['locataire_id'];
+                    $detail_journals->libelle = $detail['libelle'];
+                    $detail_journals->entree =   $detail['entree'];
+                    $detail_journals->sortie = $detail['sortie'];
+                    $detail_journals->locataire_id = $detail['locataire_id'];
+                    $detail_journals->journal_id = $item->id;
                 if (!isset($errors)) 
                 {
-                    $item->save();
+                    $detail_journals->save();
+                    $id = $item->id;
                     if($request->entree !=0 && $request->sortie ==0){
-                        $proprio_id = $item->locataire->bien_immo->proprietaire_id;
+                        $proprio_id = $detail->locataire->bien_immo->proprietaire_id;
                         $compte = Compte::where('proprietaire_id', $proprio_id)->first();
                         $compte->montant_compte = $compte->montant_compte + $request->entree;
                         $compte->save();
                     }
                     if($request->sortie !=0 && $request->entree ==0){
-                        $proprio_id = $item->locataire->bien_immo->proprietaire_id;
+                        $proprio_id = $detail->locataire->bien_immo->proprietaire_id;
                         $compte = Compte::where('proprietaire_id', $proprio_id)->first();
                         $compte->montant_compte = $compte->montant_compte - $request->sortie;
                         $compte->save();
@@ -70,7 +74,7 @@ class JournalController extends Controller
                     throw new \Exception($errors);
                 }
                 DB::commit();
-                return  Outil::redirectgraphql2($this->queryName,Outil::$queries[$this->queryName]);
+                return  Outil::redirectgraphql($this->queryName,"id:{$id}",Outil::$queries[$this->queryName]);
           });
         } catch (exception $e) {            
              DB::rollback();
