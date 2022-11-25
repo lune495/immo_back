@@ -13,4 +13,8 @@ class Agence extends Model
     {
         return $this->hasMany(Proprietaire::class);
     }
+    public function comptes()
+    {
+        return $this->hasMany(Compte::class);
+    }
 }

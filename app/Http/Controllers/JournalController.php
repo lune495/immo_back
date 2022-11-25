@@ -62,10 +62,19 @@ class JournalController extends Controller
                         $compte->save();
                     }
                     if($request->sortie !=0 && $request->entree ==0){
-                        $proprio_id = $detail->locataire->bien_immo->proprietaire_id;
-                        $compte = Compte::where('proprietaire_id', $proprio_id)->first();
-                        $compte->montant_compte = $compte->montant_compte - $request->sortie;
-                        $compte->save();
+                        if(!empty($request->proprietaire_id)){
+                            $proprio_id = $detail->locataire->bien_immo->proprietaire_id;
+                            $compte = Compte::where('proprietaire_id', $proprio_id)->first();
+                            $compte->montant_compte = $compte->montant_compte - $request->sortie;
+                            $compte->save();
+                        }
+                         if(!empty($request->agence_id)){
+                            $agence_id = $request->agence_id;
+                            $compte = Compte::where('agence_id', $agence_id)->first();
+                            $compte->montant_compte = $compte->montant_compte - $request->sortie;
+                            $compte->save();
+                        }
+                        
                         }
                 }
                 }

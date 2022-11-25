@@ -17,6 +17,13 @@ class RoleSeeder extends Seeder
     public function run()
     {
         $newrole = Role::where('nom','ADMIN')->first();
+        // $newCompteProprio = Proprietaire::count();
+        // if($newCompteProprio==0){
+        //    DB::table('comptes')->insert([
+        //         'proprietaire_id '=>'ADMIN',
+        //         'montant_compte '=>'ADMIN',
+        //       ]);
+        // }
         if(!isset($newrole))
         {
               DB::table('roles')->insert([

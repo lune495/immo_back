@@ -12,4 +12,9 @@ class Compte extends Model
     {
         return $this->belongsTo(Proprietaire::class);
     }
+
+    public  function agence()
+    {
+        return $this->belongsTo(Agence::class);
+    }
 }
