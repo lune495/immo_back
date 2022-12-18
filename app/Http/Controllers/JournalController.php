@@ -29,14 +29,14 @@ class JournalController extends Controller
                 $item->save();
                 foreach ($detail_journals as $detail) 
                 {
-                    $detail_journals= new DetailJournal();
+                    $detail_journals = new DetailJournal();
                     if (isset($detail['locataire_id']))
                     {
                         $locataire = Locataire::where("id",$detail['locataire_id'])->get();
-                    }
-                    if(!$locataire->first())
-                    {
-                        $errors = "Ce locataire n'existe pas";
+                        if(!$locataire->first())
+                        {
+                            $errors = "Ce locataire n'existe pas";
+                        }
                     }
                     if (empty($detail['libelle']))
                     {
@@ -47,12 +47,12 @@ class JournalController extends Controller
                         $errors = "veuillez préciser le type d'opération";
                     }
                     $detail_journals->libelle = $detail['libelle'];
-                    $detail_journals->entree =   $detail['entree'];
-                    $detail_journals->sortie = $detail['sortie'];
-                    $detail_journals->locataire_id = $detail['locataire_id'];
+                    $detail_journals->entree = empty($detail['entree']) ? 0 : $detail['entree'];
+                    $detail_journals->sortie = empty($detail['sortie']) ? 0 : $detail['sortie'];
+                    $detail_journals->locataire_id = isset($detail['locataire_id']) ? $detail['locataire_id'] : 2;
                     $detail_journals->journal_id = $item->id;
                 if (!isset($errors)) 
-                {
+                { 
                     $detail_journals->save();
                     $id = $item->id;
                     if($request->entree !=0 && $request->sortie ==0){
