@@ -2,7 +2,7 @@
 
 namespace App\GraphQL\Query;
 
-use  App\Models\{Journal};
+use  App\Models\{Journal,Outil};
 use Carbon\Carbon;
 use GraphQL\Type\Definition\Type;
 use Rebing\GraphQL\Support\Query;
@@ -42,13 +42,10 @@ class JournalQuery extends Query
             return
             [
                 'id'                                => $item->id,
-                'libelle'                           => $item->libelle,
-                'entree'                            => $item->entree,
-                'sortie'                            => $item->sortie,
                 'solde'                             => $item->solde,
-                'locataire_id'                      => $item->locataire_id,
-                'locataire'                         => $item->locataire,
                 'detail_journals'                   => $item->detail_journals,
+                'created_at'                        => $item->created_at->format(Outil::formatdate()),
+                'updated_at'                        => $item->updated_at->format(Outil::formatdate())
             ];
         });
     }

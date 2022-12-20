@@ -54,7 +54,7 @@ class JournalController extends Controller
                 if (!isset($errors)) 
                 { 
                     $detail_journals->save();
-                    $id = $item->id;
+                    $id = $item->id; 
                     if($request->entree !=0 && $request->sortie ==0){
                         $proprio_id = $detail->locataire->bien_immo->proprietaire_id;
                         $compte = Compte::where('proprietaire_id', $proprio_id)->first();

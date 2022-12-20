@@ -2,7 +2,7 @@
 
 namespace App\GraphQL\Type;
 
-use App\Models\{Journal};
+use App\Models\{Journal,DetailJournal};
 use Carbon\Carbon;
 use GraphQL\Type\Definition\Type;
 use Rebing\GraphQL\Support\Type as GraphQLType;
@@ -24,6 +24,10 @@ class JournalType extends GraphQLType
             'id'                                => ['type' => Type::int(), 'description' => ''],
             'solde'                             => ['type' => Type::int()],
             'detail_journals'                   => ['type' => Type::listOf(GraphQL::type('DetailJournal'))],
+            'created_at'                        => [ 'type' => Type::string(), 'description' => ''],
+            'created_at_fr'                     => [ 'type' => Type::string(), 'description' => ''],
+            'updated_at'                        => [ 'type' => Type::string(), 'description' => ''],
+            'updated_at_fr'                     => [ 'type' => Type::string(), 'description' => ''],
         ];
     }
 
@@ -52,7 +56,26 @@ class JournalType extends GraphQLType
         }
         return Carbon::parse($created_at)->format('d/m/Y H:i:s');
     }
-
+    protected function resolveSoldeField($root, $args)
+    {
+        if (!isset($root['id']))
+        {
+            $id = $root->id;
+        }
+        else
+        {
+            $id = $root['id'];
+        }
+        $journaldetails = DetailJournal::where('journal_id',$id)->get();
+        $total_entree = 0;
+        $total_sortie = 0;
+        foreach ($journaldetails as $journaldetail) {
+            $total_entree = $total_entree + $journaldetail->entree;
+            $total_sortie = $total_sortie + $journaldetail->sortie;
+        }
+        $solde = $total_entree - $total_sortie;
+        return $solde;
+    }
     protected function resolveUpdatedAtField($root, $args)
     {
         if (!isset($root['updated_at']))
