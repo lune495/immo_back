@@ -90,4 +90,32 @@ class JournalController extends Controller
              return $e->getMessage();
         }
     }
+
+     public function genereallPDf($id)
+    {
+        // $pdf = PDF::loadView('pdf.Approvisionnement', [
+        //     'items'  => self::getDataForExport(),
+        //         ]);
+        // $measure = array(0,0,1200,700);
+        // return $pdf->setPaper($measure, 'landscape')->stream();
+
+        // $data = Outil::getOneItemWithGraphQl($this->queryName, $id, true);
+        // dd($data);
+        // $pdf = PDF::loadView("pdf.ventesold", $data);
+        // $measure = array(0,0,225.772,650.197);
+        // return $pdf->setPaper($measure, 'orientation')->stream();
+
+        $appro = Journal::find($id);
+        if($appro!=null)
+        {
+         $data = Outil::getOneItemWithGraphQl($this->queryName, $id, true);
+         $pdf = PDF::loadView("pdf.approvisionnements", $data);
+        return $pdf->stream();
+        }
+        else
+        {
+         $data = Outil::getOneItemWithGraphQl($this->queryName, $id, false);
+            return view('notfound');
+        }
+    }
 }

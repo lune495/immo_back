@@ -24,6 +24,8 @@ class JournalQuery extends Query
         return
         [
             'id'                       => ['type' => Type::int()],
+            'created_at_start'         => ['type' => Type::string()],
+            'created_at_end'           => ['type' => Type::string()],
         ];
     }
 
@@ -33,6 +35,19 @@ class JournalQuery extends Query
         if (isset($args['id']))
         {
             $query->where('id', $args['id']);
+        }
+        if (isset($args['created_at_start']) && isset($args['created_at_end']))
+        {
+            $from = $args['created_at_start'];
+            $to   = $args['created_at_end'];
+
+            // Eventuellement la date fr
+            $from = (strpos($from, '/') !== false) ? Carbon::createFromFormat('d/m/Y', $from)->format('Y-m-d') : $from;
+            $to   = (strpos($to, '/') !== false) ? Carbon::createFromFormat('d/m/Y', $to)->format('Y-m-d') : $to;
+
+            $from = date($from.' 00:00:00');
+            $to   = date($to.' 23:59:59');
+            $query->whereBetween('created_at', array($from, $to));
         }
 
         $query = $query->get();

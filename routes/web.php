@@ -1,7 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\VenteController;
+use App\Http\Controllers\JournalController;
 
 /*
 |--------------------------------------------------------------------------
@@ -13,6 +13,7 @@ use App\Http\Controllers\VenteController;
 | contains the "web" middleware group. Now create something great!
 |
 */
+Route::get('/journalpdf/{id}', [JournalController::class,'genereallPDf']);
 Route::get('/', function () {
     return view('welcome');
 });

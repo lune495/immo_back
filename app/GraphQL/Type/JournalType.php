@@ -21,9 +21,9 @@ class JournalType extends GraphQLType
     {
         return
         [
-            'id'                                => ['type' => Type::int(), 'description' => ''],
-            'solde'                             => ['type' => Type::int()],
-            'detail_journals'                   => ['type' => Type::listOf(GraphQL::type('DetailJournal'))],
+            'id'                                => [ 'type' => Type::int(), 'description' => ''],
+            'solde'                             => [ 'type' => Type::int()],
+            'detail_journals'                   => [ 'type' => Type::listOf(GraphQL::type('DetailJournal'))],
             'created_at'                        => [ 'type' => Type::string(), 'description' => ''],
             'created_at_fr'                     => [ 'type' => Type::string(), 'description' => ''],
             'updated_at'                        => [ 'type' => Type::string(), 'description' => ''],
