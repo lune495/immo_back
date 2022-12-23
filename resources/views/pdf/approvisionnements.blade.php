@@ -6,64 +6,33 @@
             <td  style="border: none">
                 <div style="" >
                     <p  style="text-align:left;line-height:5px"> Dakar, Senegal </p>
-                    <p style="text-align:left;line-height:5px"> +221 33 842 80 82</p>
-                    <p style="text-align:left;line-height:5px"> +221 77 497 85 85</p>
+                    <p style="text-align:left;line-height:5px"> +221 33 889 88 06</p>
+                    <p style="text-align:left;line-height:5px"> +221 33 823 40 53</p>
                 </div>
             </td>
 
             <td style="border:none;">
                 <div style="border-left: 3px solid black">
-                    <p style="text-align:left ; margin-left:15px;line-height:5px ">www.hoballahome.com</p>
-                    <p style="text-align:left ; margin-left:15px;line-height:5px ">Instagram:  @hoballahome</p>
-                    <p style="text-align:left ; margin-left:15px;line-height:5px ">Facebook:  Hoballahome Sénégal</p>
-                </div>
-            </td>
-            <td style="border:none;"></td>
-            <td style="border:none;"></td>
-            <td style="border: none; margin-left: 15px">
-                <div>
-                    <p class="badge" style="text-align:left;line-height:15px">Fournisseur</p>
-                    <p style="text-align:left;line-height:5px">{{ $fournisseur ? $fournisseur["nom_complet"] : "FOURNISSEUR DE PASSAGE"}}</p>
-                    <p style="text-align:left ; margin-left:15px;line-height:5px ">{{ $fournisseur ? "Téléphone: " . $fournisseur["telephone"] : " "}}</p>
-                    <p style="text-align:left; margin-left:15px;line-height:5px;text-transform: capitalize "> {{ $fournisseur ? "Adresse:" . $fournisseur["adresse"] : ""}}</p>
-
+                    <p style="text-align:left ; margin-left:15px;line-height:5px ">www.imalga@orange.sn</p>
+                    <p style="text-align:left ; margin-left:15px;line-height:5px ">Instagram:  @imalga</p>
+                    <p style="text-align:left ; margin-left:15px;line-height:5px ">Facebook:  imalga Sénégal</p>
                 </div>
             </td>
         </tr>
     </table>
 
-    <table style="border: none;font-size: 11px; margin-top:30px">
-        <tr  style="border: none">
-            <td style="border: none; margin-left: 15px">
-                <div>
-                    <p class="badge" style="text-align:left;line-height:15px">Numero</p>
-                    {{-- <p style="text-align:left;line-height:5px">{{ $data[0]['code']}}</p> --}}
-                    <p style="text-align:left;line-height:5px">{{$numero ? $numero : "SN0002022FA01"}}</p>
-                </div>
-            </td>
-            <td style="border:none;"></td>
-            <td style="border: none; margin-left: 15px">
-                <div>
-                    <p class="badge" style="text-align:left;line-height:15px">Date</p>
-                    <p style="text-align:left;line-height:5px">{{ $created_at_fr}}</p>
-                </div>
-            </td>
-            <td style="border:none;"></td>
-        </tr>
-    </table>
-
-    <h2 style="margin:0">Facture Achat </h2>
-    <p class="badge" style="text-align:left;line-height:15px">{{$type_appro}}</p>
+    <h2 style="margin:0">Grand Journal </h2>
+    <p style="text-align:left;line-height:15px">Test</p>
     <br>
-    <table class="table table-bordered w-100">
-        <tr style="font-size: 1.2em;">
-            <th style="border:none"> <p class="badge">Produit</p> </th>
-            <th style="border:none"><p class="badge">Qté</p></th>
-            <th style="border:none"><p class="badge">P U</p></th>
-            <th style="border:none"><p class="badge">Remise</p></th>
-            <th style="border:none"><p class="badge">Montant HT</p></th>
+    <table>
+        <tr>
+            <th>Produit</th>
+            <th>Qté</th>
+            <th>P U</th>
+            <th>Remise</th>
+            <th>Montant HT</th>
         </tr>
-    <tbody style="border:none">
+    {{-- <tbody style="border:none">
         @foreach($ligne_approvisionnements as $ligne_approvisionnement)
             <tr style="padding:0px">
                 <td style="font-size:11px;padding: 2px"> {{$ligne_approvisionnement["produit"]["designation"]}}</td>
@@ -110,6 +79,6 @@
             <td style="padding-top : 10px;font-weight: bold;font-size: 11px"> {{\App\Models\Outil::formatPrixToMonetaire($montant, false, true)}} </td>
         </tr>
         
-    </tbody>
+    </tbody> --}}
 </table>
 @endsection

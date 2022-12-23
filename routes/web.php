@@ -13,7 +13,7 @@ use App\Http\Controllers\JournalController;
 | contains the "web" middleware group. Now create something great!
 |
 */
-Route::get('/journalpdf/{id}', [JournalController::class,'genereallPDf']);
+Route::get('/journalpdf/{start?}/{end?}', [JournalController::class,'genereallPDf']);
 Route::get('/', function () {
     return view('welcome');
 });

@@ -137,12 +137,12 @@
         </head>
         <body>
 
-            <header class = "mb-4"  style="width:100%;">
-                <div class="header text-center" style="font-size: 300px;font-weight:bold">
-                    <img style="width: 100%" src="{{ asset('app-assets/assets/images/logo_saloum_digital.jpg') }}" alt="">
+            <header class = "mb-4">
+                <div class="header">
+                   
                 </div>
             </header>
-
+             <img src="{{ asset('app-assets/assets/images/logo_saloum_digital.png') }}" style="margin-left:auto" style="margin-right:auto" alt="">
             <div class="mt-4">
                 @yield('content')
             </div>

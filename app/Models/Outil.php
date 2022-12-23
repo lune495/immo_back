@@ -31,7 +31,7 @@ class Outil extends Model
         "journals"                   => " id,solde,detail_journals{libelle,entree,sortie,locataire_id,locataire{id,code,nom,prenom,bien_immo{id,code,description,loyer,proprietaire_id,proprietaire{id,code,nom,prenom,telephone,agence_id,agence{id,nom_agence}}}}}",
         "detail_journals"            => " id,libelle,entree,sortie,solde,locataire_id,journal_id,journal{id solde},locataire{id,code,nom,prenom,bien_immo{id,code,description,loyer,proprietaire_id,proprietaire{id,code,nom,prenom,telephone,agence_id,agence{id,nom_agence}}}}",
         "type_bien_immos"            => " id,nom,bien_immos{id,code,adresse,description,loyer,locataires{id,code,nom,prenom,telephone,montant_loyer,montant_loyer_ttc,montant_loyer_ht,descriptif_loyer}}",
-        // "proprio_bien_immos"         => " id,user_id,user{id,name,email,role{id,nom}},proprietaire_id,proprietaire{id,code,nom,prenom,telephone,agence_id,agence{id,nom_agence}},bien_immo_id,bien_immo{id,code,description,montant}",
+        // "proprio_bien_immos"      => " id,user_id,user{id,name,email,role{id,nom}},proprietaire_id,proprietaire{id,code,nom,prenom,telephone,agence_id,agence{id,nom_agence}},bien_immo_id,bien_immo{id,code,description,montant}",
 
     );
 
@@ -82,6 +82,21 @@ class Outil extends Model
         $queryAttr = Outil::$queries[$queryName];
         $response = $guzzleClient->get("http://localhost/immo_back/public/graphql?query={{$queryName}({$critere}){{$queryAttr}}}");
         $data = json_decode($response->getBody(), true);
+        return ($justone) ? $data['data'][$queryName][0] : $data;
+    }
+    public static function getItemWithGraphQl($queryName, $start,$end, $justone = true)
+    {
+        $guzzleClient = new \GuzzleHttp\Client([
+            'defaults' => [
+                'exceptions' => true
+            ]
+        ]);
+
+        $critere = "created_at_start:\"{$start}\",created_at_end:\"{$end}\"";
+        $queryAttr = Outil::$queries[$queryName];
+        $response = $guzzleClient->get("http://localhost/immo_back/public/graphql?query={{$queryName}({$critere}){{$queryAttr}}}");
+        $data = json_decode($response->getBody(), true);
+        dd($data);
         return ($justone) ? $data['data'][$queryName][0] : $data;
     }
     public static function getAPI()

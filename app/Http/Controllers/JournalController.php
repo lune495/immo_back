@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\{Compte,Locataire,DetailJournal,Outil,Journal};
 use Illuminate\Support\Facades\DB;
+use \PDF;
+
 class JournalController extends Controller
 {
     //
@@ -91,7 +93,7 @@ class JournalController extends Controller
         }
     }
 
-     public function genereallPDf($id)
+     public function genereallPDf($start,$end)
     {
         // $pdf = PDF::loadView('pdf.Approvisionnement', [
         //     'items'  => self::getDataForExport(),
@@ -105,17 +107,18 @@ class JournalController extends Controller
         // $measure = array(0,0,225.772,650.197);
         // return $pdf->setPaper($measure, 'orientation')->stream();
 
-        $appro = Journal::find($id);
-        if($appro!=null)
-        {
-         $data = Outil::getOneItemWithGraphQl($this->queryName, $id, true);
+        // $appro = Journal::find($id);
+        // if($appro!=null)
+        // {
+         $queryName = "detail_journals";
+         $data = Outil::getItemWithGraphQl($this->queryName, $start,$end, true);
          $pdf = PDF::loadView("pdf.approvisionnements", $data);
-        return $pdf->stream();
-        }
-        else
-        {
+         return $pdf->stream();
+        // }
+        // else
+        // {
          $data = Outil::getOneItemWithGraphQl($this->queryName, $id, false);
-            return view('notfound');
-        }
+         return view('notfound');
+        // }
     }
 }

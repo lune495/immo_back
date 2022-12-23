@@ -24,9 +24,11 @@ class DetailJournalQuery extends Query
     {
         return
         [
-            'id'                => ['type' => Type::int()],
-            'locataire_id'      => ['type' => Type::int()],
-            'journal_id'        => ['type' => Type::int()]
+            'id'                  => ['type' => Type::int()],
+            'locataire_id'        => ['type' => Type::int()],
+            'journal_id'          => ['type' => Type::int()],
+            'created_at_start'    => ['type' => Type::string()],
+            'created_at_end'      => ['type' => Type::string()],
         ];
     }
 
@@ -40,6 +42,19 @@ class DetailJournalQuery extends Query
         if (isset($args['locataire_id']))
         {
             $query->where('locataire_id', $args['locataire_id']);
+        }
+        if (isset($args['created_at_start']) && isset($args['created_at_end']))
+        {
+            $from = $args['created_at_start'];
+            $to   = $args['created_at_end'];
+
+            // Eventuellement la date fr
+            $from = (strpos($from, '/') !== false) ? Carbon::createFromFormat('d/m/Y', $from)->format('Y-m-d') : $from;
+            $to   = (strpos($to, '/') !== false) ? Carbon::createFromFormat('d/m/Y', $to)->format('Y-m-d') : $to;
+
+            $from = date($from.' 00:00:00');
+            $to   = date($to.' 23:59:59');
+            $query->whereBetween('created_at', array($from, $to));
         }
         if (isset($args['journal_id']))
         {
