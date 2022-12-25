@@ -148,14 +148,8 @@
             </div>
 
             <!--Footer page-->
-            <div class="footer">
-                {{-- <div class="text-left" style="font-size:8px;">
-                    <p> Dans le cas où le paiement intégral n'interviandrait pas à la date prévue par les parties, 
-                        <br>le vendeur se réserve le droit de reprendre la livraison et de dissoudre le contrat.
-                        <br> En cas de paiement anticipé application d'un escompte de 60%.
-                    </p>
-                </div> --}}
-                <div style="font-size:9px;font-weight: bold; border: 1px solid black; padding: 5px ">
+            {{-- <div class="footer">
+                <div style="font-size:12px;font-weight: bold; border: 1px solid black; padding: 5px ">
                     <p> 
                         <i> Toute marchandise commandée, livrée et non payée dans son intégralité reste propriété exclusive de FILIALE. Et FILIALE se donne le droit de récupérer sa marchandise si celle-ci n’est pas régularisé dans son intégralité sous 30 jours maximum à compter de la date d’achat de la facture. 
                         <br>
@@ -168,7 +162,7 @@
                     <p class="text-left" style="font-size:10px; margin-top:1.5em"> RC: SN DKR 2014 A 1270</p>
                     <p class="text-right" style="margin-top:1.5em;font-size:10px;"> NINEA: 4982965 1A1 - Dakar</p>
                 </div>
-            </div>
+            </div> --}}
            
         </body>
     </html>

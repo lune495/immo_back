@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class AddAgenceIdToCompte extends Migration
+class AddCodeToDetailJournal extends Migration
 {
     /**
      * Run the migrations.
@@ -13,10 +13,9 @@ class AddAgenceIdToCompte extends Migration
      */
     public function up()
     {
-        Schema::table('comptes', function (Blueprint $table) {
+        Schema::table('detail_journals', function (Blueprint $table) {
             //
-            $table->unsignedBigInteger('agence_id');
-            $table->foreign('agence_id')->references('id')->on('agences');
+            $table->string('code')->nullable();
         });
     }
 
@@ -27,8 +26,9 @@ class AddAgenceIdToCompte extends Migration
      */
     public function down()
     {
-        Schema::table('comptes', function (Blueprint $table) {
+        Schema::table('detail_journals', function (Blueprint $table) {
             //
+            $table->dropColumn['code'];
         });
     }
 }

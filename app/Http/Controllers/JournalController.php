@@ -48,10 +48,11 @@ class JournalController extends Controller
                     {
                         $errors = "veuillez préciser le type d'opération";
                     }
+                    $detail_journals->code = "JN0000"+ $item->id;
                     $detail_journals->libelle = $detail['libelle'];
                     $detail_journals->entree = empty($detail['entree']) ? 0 : $detail['entree'];
                     $detail_journals->sortie = empty($detail['sortie']) ? 0 : $detail['sortie'];
-                    $detail_journals->locataire_id = isset($detail['locataire_id']) ? $detail['locataire_id'] : 2;
+                    $detail_journals->locataire_id = isset($detail['locataire_id']) ? $detail['locataire_id'] : null;
                     $detail_journals->journal_id = $item->id;
                 if (!isset($errors)) 
                 { 
@@ -93,7 +94,7 @@ class JournalController extends Controller
         }
     }
 
-     public function genereallPDf($start,$end)
+     public function genereallPDf($start=false,$end=false)
     {
         // $pdf = PDF::loadView('pdf.Approvisionnement', [
         //     'items'  => self::getDataForExport(),
@@ -108,17 +109,16 @@ class JournalController extends Controller
         // return $pdf->setPaper($measure, 'orientation')->stream();
 
         // $appro = Journal::find($id);
-        // if($appro!=null)
-        // {
+        if($start!=false && $end!=false)
+        {
          $queryName = "detail_journals";
-         $data = Outil::getItemWithGraphQl($this->queryName, $start,$end, true);
+         $data = Outil::getItemWithGraphQl($queryName, $start,$end, true);
          $pdf = PDF::loadView("pdf.approvisionnements", $data);
          return $pdf->stream();
-        // }
-        // else
-        // {
-         $data = Outil::getOneItemWithGraphQl($this->queryName, $id, false);
+        }
+        else
+        {
          return view('notfound');
-        // }
+        }
     }
 }

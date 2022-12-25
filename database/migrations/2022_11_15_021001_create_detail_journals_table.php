@@ -18,9 +18,10 @@ class CreateDetailJournalsTable extends Migration
             $table->string('libelle');
             $table->integer('entree');
             $table->string('sortie');
-            $table->unsignedBigInteger('locataire_id');
-            $table->foreign('locataire_id')->nullable()->references('id')->on('locataires');
+            $table->foreignId('locataire_id')->nullable()->constrained()->references('id')->on('locataires');
             $table->unsignedBigInteger('journal_id');
+            $table->foreignId('proprietaire_id')->nullable()->constrained()->references('id')->on('proprietaires');
+            $table->unsignedBigInteger('proprietaire_id');
             $table->foreign('journal_id')->nullable()->references('id')->on('journals');
             $table->timestamps();
         });

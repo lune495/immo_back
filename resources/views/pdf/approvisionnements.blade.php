@@ -21,64 +21,31 @@
         </tr>
     </table>
 
-    <h2 style="margin:0">Grand Journal </h2>
-    <p style="text-align:left;line-height:15px">Test</p>
+    <h2 style="margin:0">Grand Journal du {{$start}} au {{$end}}</h2>
     <br>
-    <table>
+    <table>{{$solde = 0}}
         <tr>
-            <th>Produit</th>
-            <th>Qté</th>
-            <th>P U</th>
-            <th>Remise</th>
-            <th>Montant HT</th>
+            <th style="padding-bottom: 40px;padding-top: 10px;padding-left: 30px;padding-right: 20px;">Dates</th>
+            <th style="padding-bottom: 40px;padding-top: 10px;padding-left: 30px;padding-right: 20px;">Numeros</th>
+            <th style="padding-bottom: 40px;padding-top: 10px;padding-left: 30px;padding-right: 20px;">Code Locataire</th>
+            <th style="padding-bottom: 40px;padding-top: 10px;padding-left: 30px;padding-right: 20px;">Libellés</th>
+            <th style="padding-bottom: 40px;padding-top: 10px;padding-left: 30px;padding-right: 20px;">Recettes</th>
+            <th style="padding-bottom: 40px;padding-top: 10px;padding-left: 30px;padding-right: 20px;">Dépenses</th>
         </tr>
-    {{-- <tbody style="border:none">
-        @foreach($ligne_approvisionnements as $ligne_approvisionnement)
-            <tr style="padding:0px">
-                <td style="font-size:11px;padding: 2px"> {{$ligne_approvisionnement["produit"]["designation"]}}</td>
-                <td style="font-size:11px;padding: 2px"> {{$ligne_approvisionnement["quantity_received"]}}</td>
-                <td style="font-size:11px;padding: 2px"> {{$ligne_approvisionnement["produit"]["pa"]}}</td>
-                <td style="font-size:11px;padding: 2px"> {{0}}</td>
-                <td style="font-size:11px;padding: 2px">{{\App\Models\Outil::formatPrixToMonetaire($ligne_approvisionnement["quantity_received"]*$ligne_approvisionnement["produit"]["pa"], false, false)}}</td>
+    <tbody>
+        @foreach($detail_journals as $detail_journal)
+            <tr>{{$solde = $solde + ($detail_journal["entree"] - $detail_journal["sortie"])}}
+                <td style="font-size:11px;padding: 2px"> {{$detail_journal["created_at_fr"]}}</td>
+                <td style="font-size:11px;padding: 2px"> {{$detail_journal["code"]}}</td>
+                <td style="font-size:11px;padding: 2px"> {{isset($detail_journal["locataire"]) ? $detail_journal["locataire"]["code"] : " "}}</td>
+                <td style="font-size:11px;padding: 2px"> {{$detail_journal["libelle"]}}</td>
+                <td style="font-size:11px;padding: 2px"> {{$detail_journal["entree"]}}</td>
+                <td style="font-size:11px;padding: 2px"> {{$detail_journal["sortie"]}}</td>
             </tr>
-        @endforeach
-
-        <!--total-->
-        <tr>
-            <td colspan="1" style="border-left: 2px solid white;border-bottom: 2px solid white"></td>
-            <td>
-                <div>
-                    <p class="badge" style="line-height:15px;font-size:9px!important">Total TTC</p>
-                    <p style="line-height:5px">{{ \App\Models\Outil::formatPrixToMonetaire($montant, false, true)}}</p>
-                </div>
-            </td>
-            <td>
-                <div>
-                    <p class="badge" style="line-height:15px"> Remise</p>
-                    <p style="line-height:5px">0</p>
-                </div>
-            </td>
-            <td>
-                <div>
-                    <p class="badge" style="line-height:15px">tva</p>
-                    <p style="line-height:5px">0</p>
-                </div>
-            </td>
-            <td style="font-weight: bold;font-size: 14px"> 
-                <div>
-                    <p class="badge">Net a payer</p>
-                    <p style="line-height:5px">{{ $montant}}</p>
-                </div> 
-            </td>
-            <td style="font-weight: bold;font-size: 14px">  </td>
-        </tr>
-        <tr>
-            <td colspan="2"  style="padding-top : 10px;font-weight: bold;font-size: 11px">Conditions Reglement</td>
-            <td style="padding-top : 10px;font-weight: bold;font-size: 11px"> {{$created_at_fr}} </td>
-            <td style="padding-top : 10px;font-weight: bold;font-size: 11px"> ESP</td>
-            <td style="padding-top : 10px;font-weight: bold;font-size: 11px"> {{\App\Models\Outil::formatPrixToMonetaire($montant, false, true)}} </td>
-        </tr>
-        
-    </tbody> --}}
+        @endforeach 
+        <tr><td colspan="7"><b>Solde = {{\App\Models\Outil::formatPrixToMonetaire($solde, false, true)}}</b></td></tr>
+    </tbody>
 </table>
+<br><br><br><br>
+<pre>    <u>Caissier</u>                 <u>Chef d'Agence</u>                    <u>Comptable</u></pre>
 @endsection

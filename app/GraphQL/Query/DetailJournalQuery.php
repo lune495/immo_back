@@ -4,6 +4,7 @@ namespace App\GraphQL\Query;
 
 use App\Models\DetailJournal;
 use App\Models\Outil;
+use Carbon\Carbon;
 use GraphQL\Type\Definition\Type;
 use Rebing\GraphQL\Support\Query;
 use Rebing\GraphQL\Support\Facades\GraphQL;
@@ -55,6 +56,7 @@ class DetailJournalQuery extends Query
             $from = date($from.' 00:00:00');
             $to   = date($to.' 23:59:59');
             $query->whereBetween('created_at', array($from, $to));
+
         }
         if (isset($args['journal_id']))
         {
@@ -68,6 +70,7 @@ class DetailJournalQuery extends Query
             return
             [
                 'id'                                => $item->id,
+                'code'                              => $item->code,
                 'libelle'                           => $item->libelle,
                 'entree'                            => $item->entree,
                 'sortie'                            => $item->sortie,
@@ -75,6 +78,10 @@ class DetailJournalQuery extends Query
                 'locataire'                         => $item->locataire,
                 'journal_id'                        => $item->journal_id,
                 'journal'                           => $item->journal,   
+                'created_at_fr'                     => $item->created_at_fr,   
+                'updated_at_fr'                     => $item->updated_at_fr,   
+                'created_at'                        => $item->created_at->format(Outil::formatdate()),
+                'updated_at'                        => $item->updated_at->format(Outil::formatdate())
             ];
         });
     }

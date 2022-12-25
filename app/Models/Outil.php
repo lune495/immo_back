@@ -29,7 +29,7 @@ class Outil extends Model
         "taxes"                      => " id,nom,value",    
         "agences"                    => " id,nom_agence,adresse,num_fixe",
         "journals"                   => " id,solde,detail_journals{libelle,entree,sortie,locataire_id,locataire{id,code,nom,prenom,bien_immo{id,code,description,loyer,proprietaire_id,proprietaire{id,code,nom,prenom,telephone,agence_id,agence{id,nom_agence}}}}}",
-        "detail_journals"            => " id,libelle,entree,sortie,solde,locataire_id,journal_id,journal{id solde},locataire{id,code,nom,prenom,bien_immo{id,code,description,loyer,proprietaire_id,proprietaire{id,code,nom,prenom,telephone,agence_id,agence{id,nom_agence}}}}",
+        "detail_journals"            => " id,code,libelle,entree,sortie,created_at_fr,updated_at_fr,locataire_id,journal_id,journal{id solde},locataire{id,code,nom,prenom,bien_immo{id,code,description,loyer,proprietaire_id,proprietaire{id,code,nom,prenom,telephone,agence_id,agence{id,nom_agence}}}}",
         "type_bien_immos"            => " id,nom,bien_immos{id,code,adresse,description,loyer,locataires{id,code,nom,prenom,telephone,montant_loyer,montant_loyer_ttc,montant_loyer_ht,descriptif_loyer}}",
         // "proprio_bien_immos"      => " id,user_id,user{id,name,email,role{id,nom}},proprietaire_id,proprietaire{id,code,nom,prenom,telephone,agence_id,agence{id,nom_agence}},bien_immo_id,bien_immo{id,code,description,montant}",
 
@@ -91,13 +91,15 @@ class Outil extends Model
                 'exceptions' => true
             ]
         ]);
-
         $critere = "created_at_start:\"{$start}\",created_at_end:\"{$end}\"";
         $queryAttr = Outil::$queries[$queryName];
         $response = $guzzleClient->get("http://localhost/immo_back/public/graphql?query={{$queryName}({$critere}){{$queryAttr}}}");
         $data = json_decode($response->getBody(), true);
-        dd($data);
-        return ($justone) ? $data['data'][$queryName][0] : $data;
+        $start = date("d/m/y",strtotime($start));
+        $end = date("d/m/y",strtotime($end));
+        $data['data'] += ['start' => "{$start}"];
+        $data['data'] += ['end' => "{$end}"];
+        return $data['data'];
     }
     public static function getAPI()
     {
