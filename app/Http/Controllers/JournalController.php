@@ -48,11 +48,12 @@ class JournalController extends Controller
                     {
                         $errors = "veuillez préciser le type d'opération";
                     }
-                    $detail_journals->code = "JN0000"+ $item->id;
+                    $detail_journals->code = "JN0000{$item->id}";
                     $detail_journals->libelle = $detail['libelle'];
                     $detail_journals->entree = empty($detail['entree']) ? 0 : $detail['entree'];
                     $detail_journals->sortie = empty($detail['sortie']) ? 0 : $detail['sortie'];
                     $detail_journals->locataire_id = isset($detail['locataire_id']) ? $detail['locataire_id'] : null;
+                    $detail_journals->proprietaire_id = isset($detail['proprietaire_id']) ? $detail['proprietaire_id'] : null;
                     $detail_journals->journal_id = $item->id;
                 if (!isset($errors)) 
                 { 

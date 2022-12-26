@@ -28,7 +28,7 @@ class AddCodeToDetailJournal extends Migration
     {
         Schema::table('detail_journals', function (Blueprint $table) {
             //
-            $table->dropColumn['code'];
+            $table->dropColumn('code');
         });
     }
 }

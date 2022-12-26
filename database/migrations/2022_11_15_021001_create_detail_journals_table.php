@@ -19,10 +19,9 @@ class CreateDetailJournalsTable extends Migration
             $table->integer('entree');
             $table->string('sortie');
             $table->foreignId('locataire_id')->nullable()->constrained()->references('id')->on('locataires');
-            $table->unsignedBigInteger('journal_id');
             $table->foreignId('proprietaire_id')->nullable()->constrained()->references('id')->on('proprietaires');
-            $table->unsignedBigInteger('proprietaire_id');
-            $table->foreign('journal_id')->nullable()->references('id')->on('journals');
+            $table->unsignedBigInteger('journal_id');
+            $table->foreign('journal_id')->references('id')->on('journals');
             $table->timestamps();
         });
     }
