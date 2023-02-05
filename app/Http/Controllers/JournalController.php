@@ -40,10 +40,10 @@ class JournalController extends Controller
                             $errors = "Ce locataire n'existe pas";
                         }
                     }
-                    if (empty($detail['libelle']))
-                    {
-                        $errors = "Renseignez le libelle";
-                    }
+                    // if (empty($detail['libelle']))
+                    // {
+                    //     $errors = "Renseignez le libelle";
+                    // }
                     if (empty($detail['entree']) && empty($detail['sortie']))
                     {
                         $errors = "veuillez préciser le type d'opération";

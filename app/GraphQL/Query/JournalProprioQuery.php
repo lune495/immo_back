@@ -61,7 +61,8 @@ class JournalProprioQuery extends Query
                 'locataire'                         => $item->locataire,
                 'libelle'                           => $item->libelle,
                 'entree'                            => $item->entree,
-                'sortie'                            => $item->sortie
+                'sortie'                            => $item->sortie,
+                'date_location'                     => $item->date_location
             ];
         });
     }

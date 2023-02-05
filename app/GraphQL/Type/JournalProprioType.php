@@ -29,6 +29,7 @@ class JournalProprioType extends GraphQLType
             'entree'                            => [ 'type' => Type::int()],
             'sortie'                            => [ 'type' => Type::int()],
             'solde'                             => [ 'type' => Type::int()],
+            'date_location'                     => [ 'type' => Type::string()],
         ];
     }
 
