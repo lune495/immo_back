@@ -1,5 +1,5 @@
 @extends('pdf.layouts.layout-export2')
-@section('title', "PDF Facture commande")
+@section('title', "PDF Grand journal")
 @section('content')
     <table style="border: none; margin-top:50px;font-size: 11px">
         <tr  style="border: none">
@@ -7,7 +7,7 @@
                 <div style="" >
                     <p  style="text-align:left;line-height:5px"> Dakar, Senegal </p>
                     <p style="text-align:left;line-height:5px"> +221 33 889 88 06</p>
-                    <p style="text-align:left;line-height:5px"> +221 33 823 40 53</p>
+                    <p style="text-align:left;line-heightp:5px"> +221 33 823 40 53</p>
                 </div>
             </td>
 
@@ -26,8 +26,8 @@
     <table>{{$solde = 0}}
         <tr>
             <th style="padding-bottom: 40px;padding-top: 10px;padding-left: 30px;padding-right: 20px;">Dates</th>
-            <th style="padding-bottom: 40px;padding-top: 10px;padding-left: 30px;padding-right: 20px;">Numeros</th>
-            <th style="padding-bottom: 40px;padding-top: 10px;padding-left: 30px;padding-right: 20px;">Code Locataire</th>
+            <th style="padding-bottom: 40px;padding-top: 10px;padding-left: 30px;padding-right: 20px;">No pieces</th>
+            <th style="padding-bottom: 40px;padding-top: 10px;padding-left: 30px;padding-right: 20px;">Code Locataire/Proprietaire</th>
             <th style="padding-bottom: 40px;padding-top: 10px;padding-left: 30px;padding-right: 20px;">Libellés</th>
             <th style="padding-bottom: 40px;padding-top: 10px;padding-left: 30px;padding-right: 20px;">Recettes</th>
             <th style="padding-bottom: 40px;padding-top: 10px;padding-left: 30px;padding-right: 20px;">Dépenses</th>
@@ -37,7 +37,7 @@
             <tr>{{$solde = $solde + ($detail_journal["entree"] - $detail_journal["sortie"])}}
                 <td style="font-size:11px;padding: 2px"> {{$detail_journal["created_at_fr"]}}</td>
                 <td style="font-size:11px;padding: 2px"> {{$detail_journal["code"]}}</td>
-                <td style="font-size:11px;padding: 2px"> {{isset($detail_journal["locataire"]) ? $detail_journal["locataire"]["code"] : " "}}</td>
+                <td style="font-size:11px;padding: 2px"> {{isset($detail_journal["locataire"]) ? $detail_journal["locataire"]["code"] : $detail_journal["proprietaire"]["code"]}}</td>
                 <td style="font-size:11px;padding: 2px"> {{$detail_journal["libelle"]}}</td>
                 <td style="font-size:11px;padding: 2px"> {{$detail_journal["entree"]}}</td>
                 <td style="font-size:11px;padding: 2px"> {{$detail_journal["sortie"]}}</td>

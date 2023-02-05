@@ -48,7 +48,6 @@ class DetailJournalQuery extends Query
         {
             $from = $args['created_at_start'];
             $to   = $args['created_at_end'];
-
             // Eventuellement la date fr
             $from = (strpos($from, '/') !== false) ? Carbon::createFromFormat('d/m/Y', $from)->format('Y-m-d') : $from;
             $to   = (strpos($to, '/') !== false) ? Carbon::createFromFormat('d/m/Y', $to)->format('Y-m-d') : $to;
@@ -76,6 +75,8 @@ class DetailJournalQuery extends Query
                 'sortie'                            => $item->sortie,
                 'locataire_id'                      => $item->locataire_id,
                 'locataire'                         => $item->locataire,
+                'proprietaire_id'                   => $item->proprietaire_id,
+                'proprietaire'                      => $item->proprietaire,
                 'journal_id'                        => $item->journal_id,
                 'journal'                           => $item->journal,   
                 'created_at_fr'                     => $item->created_at_fr,   

@@ -12,6 +12,10 @@ class DetailJournal extends Model
     {
         return $this->belongsTo(Locataire::class);
     }
+    public  function proprietaire()
+    {
+        return $this->belongsTo(Proprietaire::class);
+    }
     public  function journal()
     {
         return $this->belongsTo(Journal::class);

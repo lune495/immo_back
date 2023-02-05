@@ -24,6 +24,7 @@ class JournalProprioQuery extends Query
         return
         [
             'proprio_id_entree'        => ['type' => Type::int()],
+            'locataire_id'             => ['type' => Type::int()],
             'proprio_id_sortie'        => ['type' => Type::int()],
             'created_at_start'         => ['type' => Type::string()],
             'created_at_end'           => ['type' => Type::string()],
@@ -40,18 +41,25 @@ class JournalProprioQuery extends Query
                            ->where('bien_immos.proprietaire_id',$args['proprio_id_entree'])
                            ->selectRaw('detail_journals.*');
         }
+        if (isset($args['locataire_id']))
+        {
+            $query = $query->join('locataires','locataires.id','=','detail_journals.locataire_id')
+                           ->where('locataires.id',$args['locataire_id'])
+                           ->selectRaw('detail_journals.*');
+        }
         if (isset($args['proprio_id_sortie']))
         {
             $query = $query->where('proprietaire_id',$args['proprio_id_sortie']);
         }
         $query->orderBy('id', 'desc');
         $query = $query->get();
-
         return $query->map(function (DetailJournal $item)
         {
             return
             [
                 'id'                                => $item->id,
+                'locataire'                         => $item->locataire,
+                'libelle'                           => $item->libelle,
                 'entree'                            => $item->entree,
                 'sortie'                            => $item->sortie
             ];

@@ -2,7 +2,7 @@
 
 namespace App\GraphQL\Type;
 
-use  App\Models\{BienImmo};
+use  App\Models\{BienImmo,Outil};
 use Carbon\Carbon;
 use GraphQL\Type\Definition\Type;
 use Rebing\GraphQL\Support\Type as GraphQLType;
@@ -85,6 +85,19 @@ class BienImmoType extends GraphQLType
             $date_at = $root['created_at'];
         }
         return Carbon::parse($date_at)->format('d/m/Y H:i:s');
+    }
+
+    protected function resolveLoyerField($root, $args)
+    {
+        if (!isset($root['loyer']))
+        {
+            $loyer = $root->loyer;
+        }
+        else
+        {
+            $loyer = $root['loyer'];
+        }
+        return Outil::formatPrixToMonetaire($loyer, false, false);
     }
     
 }

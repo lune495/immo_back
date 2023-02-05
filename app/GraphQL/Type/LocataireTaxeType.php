@@ -83,7 +83,7 @@ class LocataireTaxeType extends GraphQLType
 
     protected function resolveValeurTaxeField($root, $args)
     {
-        return $root->locataire->montant_loyer_ht * ($root->taxe->value/100);
+        return round($root->locataire->montant_loyer_ht * ($root->taxe->value/100));
     }
     
 }

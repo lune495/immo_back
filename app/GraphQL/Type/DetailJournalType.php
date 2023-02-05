@@ -30,6 +30,8 @@ class DetailJournalType extends GraphQLType
             'solde'                             => ['type' => Type::int()],
             'locataire_id'                      => ['type' => Type::int()],
             'locataire'                         => ['type' => GraphQL::type('Locataire')],
+            'proprietaire_id'                   => ['type' => Type::int()],
+            'proprietaire'                      => ['type' => GraphQL::type('Proprietaire')],
             'journal_id'                        => ['type' => Type::int()],
             'journal'                           => ['type' => GraphQL::type('Journal')],
             'created_at'                        => [ 'type' => Type::string(), 'description' => ''],
