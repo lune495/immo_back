@@ -49,7 +49,7 @@ class JournalController extends Controller
                         $errors = "veuillez préciser le type d'opération";
                     }
                     $detail_journals->code = "JN0000{$item->id}";
-                    $detail_journals->libelle = $detail['libelle'];
+                    // $detail_journals->libelle = empty($detail['libelle']) ? $detail['libelle'] : "";
                     $detail_journals->date_location = $detail['date_location'];
                     $detail_journals->entree = empty($detail['entree']) ? 0 : $detail['entree'];
                     $detail_journals->sortie = empty($detail['sortie']) ? 0 : $detail['sortie'];
