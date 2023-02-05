@@ -50,6 +50,7 @@ class JournalController extends Controller
                     }
                     $detail_journals->code = "JN0000{$item->id}";
                     $detail_journals->libelle = $detail['libelle'];
+                    $detail_journals->date_location = $detail['date_location'];
                     $detail_journals->entree = empty($detail['entree']) ? 0 : $detail['entree'];
                     $detail_journals->sortie = empty($detail['sortie']) ? 0 : $detail['sortie'];
                     $detail_journals->locataire_id = isset($detail['locataire_id']) ? $detail['locataire_id'] : null;
