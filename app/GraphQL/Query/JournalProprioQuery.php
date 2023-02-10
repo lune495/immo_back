@@ -53,7 +53,7 @@ class JournalProprioQuery extends Query
                 $toDate = Carbon::parse($args['date_location']);
                 $fromDate = Carbon::parse($date_location);
                 $months = $toDate->diffInMonths($fromDate);
-                $attente = round($attente * $months);
+                $attente = $toDate >= $fromDate ? round($attente * ($months + 1)) : 0;
             }
         }
         if (isset($args['locataire_id']))
