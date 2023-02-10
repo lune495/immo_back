@@ -2,8 +2,7 @@
 
 namespace App\GraphQL\Query;
 
-use App\Models\DetailJournal;
-use App\Models\Outil;
+use App\Models\{DetailJournal,Outil,Locataire};
 use Carbon\Carbon;
 use GraphQL\Type\Definition\Type;
 use Rebing\GraphQL\Support\Query;
@@ -39,10 +38,6 @@ class DetailJournalQuery extends Query
         if (isset($args['id']))
         {
             $query->where('id', $args['id']);
-        }
-        if (isset($args['locataire_id']))
-        {
-            $query->where('locataire_id', $args['locataire_id']);
         }
         if (isset($args['created_at_start']) && isset($args['created_at_end']))
         {

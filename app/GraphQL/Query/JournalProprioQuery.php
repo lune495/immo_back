@@ -2,7 +2,7 @@
 
 namespace App\GraphQL\Query;
 
-use  App\Models\{Journal,Outil,DetailJournal};
+use  App\Models\{Journal,Outil,DetailJournal,Locataire};
 use Carbon\Carbon;
 use GraphQL\Type\Definition\Type;
 use Rebing\GraphQL\Support\Query;
@@ -26,6 +26,7 @@ class JournalProprioQuery extends Query
             'proprio_id_entree'        => ['type' => Type::int()],
             'locataire_id'             => ['type' => Type::int()],
             'proprio_id_sortie'        => ['type' => Type::int()],
+            'date_location'            => ['type' => Type::string()],
             'created_at_start'         => ['type' => Type::string()],
             'created_at_end'           => ['type' => Type::string()],
         ];
@@ -34,12 +35,26 @@ class JournalProprioQuery extends Query
     public function resolve($root, $args)
     {
         $query = DetailJournal::query();
+        $attente = 0;
         if (isset($args['proprio_id_entree']))
         {
             $query = $query->join('locataires','locataires.id','=','detail_journals.locataire_id')
                            ->join('bien_immos','bien_immos.id','=', 'locataires.bien_immo_id')
                            ->where('bien_immos.proprietaire_id',$args['proprio_id_entree'])
                            ->selectRaw('detail_journals.*');
+        }
+        if (isset($args['locataire_id']) && isset($args['date_location']))
+        {
+            $locataire = Locataire::where('id','=',$args['locataire_id'])->first();
+            $date_location = $locataire ? $locataire->created_at : "";
+            $attente = $locataire->montant_loyer_ttc;
+            if($locataire)
+            {
+                $toDate = Carbon::parse($args['date_location']);
+                $fromDate = Carbon::parse($date_location);
+                $months = $toDate->diffInMonths($fromDate);
+                $attente = round($attente * $months);
+            }
         }
         if (isset($args['locataire_id']))
         {
@@ -53,7 +68,8 @@ class JournalProprioQuery extends Query
         }
         $query->orderBy('id', 'desc');
         $query = $query->get();
-        return $query->map(function (DetailJournal $item)
+        // dd($attente);
+        return $query->map(function (DetailJournal $item) use ($attente)
         {
             return
             [
@@ -62,7 +78,8 @@ class JournalProprioQuery extends Query
                 'libelle'                           => $item->libelle,
                 'entree'                            => $item->entree,
                 'sortie'                            => $item->sortie,
-                'date_location'                     => $item->date_location
+                'date_location'                     => $item->date_location,
+                'attente'                           => $attente,
             ];
         });
     }

@@ -17,7 +17,7 @@ class AlterTableDetailJournalsChangeLibelle extends Migration
             //
              $table->string('libelle')->nullable()->change();
         });
-    }
+    }   
 
     /**
      * Reverse the migrations.
