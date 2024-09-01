@@ -97,8 +97,10 @@ class JournalController extends Controller
                                             $compte_locataire->credit = $detail['entree'];
                                             $compte_locataire->statut_paye = true;
                                             $compte_locataire->save();
+                                            $locataire->solde += $compte_locataire->debit - $compte_locataire->credit;
+                                            $locataire->save();
                                     }else{
-                                        $errors = "Operation Impossible le compte de `{$locataire->prenom}`est suspendu";
+                                        $errors = "Opération Impossible le compte de `{$locataire->prenom}`est suspendu";
                                     }
                                 }
                             }

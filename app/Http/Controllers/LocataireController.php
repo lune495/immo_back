@@ -156,7 +156,8 @@ class LocataireController extends Controller
                         $compte_locataire->credit = 0;
                         $compte_locataire->statut_paye = false;
                         $compte_locataire->save();
-
+                        $item->solde = $compte_locataire->debit;
+                        $item->save();
                         $compte_caution_locataire = new CompteCautionLocataire();
                         $compte_caution_locataire->locataire_id = $id;    
                         $compte_caution_locataire->montant_compte = $caution;

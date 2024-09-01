@@ -3,7 +3,7 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
-use App\Models\CompteLocataire;
+use App\Models\{CompteLocataire,Locataire};
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
 use App\Services\TwilioService;
@@ -60,17 +60,19 @@ class UpdateCredits extends Command
                 // Convertir la dernière date de paiement en instance de Carbon
                 $dernierDate = \Carbon\Carbon::parse($dernierCompte->dernier_date_paiement);
                 if ($today->greaterThanOrEqualTo($dernierDate->addMonth()->startOfMonth()->addDays(2)) && $dernierCompte->locataire->resilier == false) {
-                    $new_compte = new CompteLocataire();
-                    $new_compte->locataire_id = $dernierCompte->locataire_id;
-                    $new_compte->libelle = "Loyer Dû";
-                    $new_compte->dernier_date_paiement = $today;
-                    $new_compte->debit = $dernierCompte->locataire->montant_loyer_ttc;
-                    $new_compte->credit = 0;
-                    $new_compte->statut_paye = false;
-                    $new_compte->save();
-
+                    $compte_locataire = new CompteLocataire();
+                    $compte_locataire->locataire_id = $dernierCompte->locataire_id;
+                    $compte_locataire->libelle = "Loyer Dû";
+                    $compte_locataire->dernier_date_paiement = $today;
+                    $compte_locataire->debit = $dernierCompte->locataire->montant_loyer_ttc;
+                    $compte_locataire->credit = 0;
+                    $compte_locataire->statut_paye = false;
+                    $compte_locataire->save();
+                    $locataire = Locataire::find($compte_locataire->locataire_id);
+                    $locataire->solde += $compte_locataire->debit - $compte_locataire->credit;
+                    $locataire->save();
                     // Envoyer un message WhatsApp
-                    $message = "Bonjour ".$dernierCompte->locataire->nom .", votre loyer de " . $new_compte->debit . " est dû. Veuillez effectuer le paiement dès que possible. Merci!";
+                    $message = "Bonjour ".$dernierCompte->locataire->nom .", votre loyer de " . $compte_locataire->debit . " est dû. Veuillez effectuer le paiement dès que possible. Merci!";
                     $this->twilioService->sendWhatsAppMessage($dernierCompte->locataire->telephone, $message);
                 }
             }
