@@ -189,7 +189,7 @@ class LocataireController extends Controller
 
    public function generatesituationparlocataire($locataireId = null,$start = false, $end = false)
     {
-        //event(new MyEvent('hello world'));
+        event(new MyEvent('hello world'));
     if ($locataireId !== null) {
         $data = [];
         // Initialiser la requête pour récupérer les transactions du locataire
@@ -281,8 +281,14 @@ public function uploadContract(Request $request)
 
     public function resilier($id)
     {
-            $locataire = Locataire::find($id);
-            $locataire->libererUnite();
+        $locataire = Locataire::find($id);
+        $locataire->libererUnite();
+    }
+
+    public function documentation()
+    {
+        $pdf = PDF::loadView("pdf.documentation");
+        return $pdf->stream();
     }
 
     public function generatequittancelocataire($id)

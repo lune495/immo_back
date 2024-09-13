@@ -77,7 +77,7 @@ class LocatairesQuery extends Query
                 'bien_immo'               => $item->bien_immo,
                 'resilier'                => $item->resilier,
                 'locataire_taxes'         => $item->locataire_taxes,
-                'en_regle'                => $item->en_regle,
+                'solde'                   => $item->solde,
             ];
         });
 

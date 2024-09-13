@@ -16,6 +16,7 @@ use App\Http\Controllers\LocataireController;
 */
 
 Route::get('/journalpdf/{start?}/{end?}', [JournalController::class,'generePDfGrandJournal']);
+Route::get('/doc', [LocataireController::class,'documentation']);
 Route::get('/situation-par-proprio-pdf/{id?}/{start?}/{end?}', [JournalController::class,'generatesituationparproprio']);
 Route::get('/situation-par-locataire-pdf/{id?}/{start?}/{end?}', [LocataireController::class,'generatesituationparlocataire']);
 Route::get('/quittance-pdf/{id?}', [LocataireController::class,'generatequittancelocataire']);

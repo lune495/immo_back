@@ -107,15 +107,14 @@ class LocatairePaginatedQuery extends Query
             $data['locataire'] = $locataire;
             // return $data;
         }
+        
 
-        if (isset($args['en_regle'])) {
-            // $query->whereIn('id', function($subQuery) use ($args) {
-            //     $subQuery->select('locataire_id')
-            //         ->from('compte_locataires')
-            //         ->groupBy('locataire_id')
-            //         ->havingRaw('SUM(debit - credit) ' . ($args['en_regle'] ? '<=' : '>') . ' 0');
-            // });
-        }
+        // if (isset($args['en_regle'])==true) {
+        //     $query->where('solde','==',0);
+        // }
+        // if (isset($args['en_regle'])==false) {
+        //     $query->where('solde','>',0);
+        // }
         
         $count = Arr::get($args, 'count', 10);
         $page  = Arr::get($args, 'page', 1);

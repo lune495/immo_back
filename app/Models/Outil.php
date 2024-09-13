@@ -23,18 +23,18 @@ class Outil extends Model
 
     public static $queries = array(
         "proprietaires"              =>  " id,code,nom,prenom,telephone,agence_id,agence{id,nom_agence},bien_immos{id,code,adresse,description},cgf,foncier_bati",
-        "locataires"                 =>  " id,code,caution,en_regle,url_qr_code,unite{numero,dispo,nature_local{id,nom},etage,superficie_en_m2,annee_achevement,nombre_piece_principale,nombre_salle_de_bain,type_localisation,balcon},cni,adresse_profession,profession,situation_matrimoniale,nom,prenom,telephone,montant_loyer_ttc,montant_loyer_ht,descriptif_loyer,bien_immo_id,bien_immo{id,code,description,proprietaire_id,proprietaire{id,code,cgf,nom,prenom,telephone,agence_id,agence{id,nom_agence}}},locataire_taxes{locataire{nom,en_regle,prenom,url_qr_code,cni,adresse_profession,situation_matrimoniale},taxe{nom,value}}",
+        "locataires"                 =>  " id,code,caution,solde,url_qr_code,unite{numero,dispo,nature_local{id,nom},etage,superficie_en_m2,annee_achevement,nombre_piece_principale,nombre_salle_de_bain,type_localisation,balcon},cni,adresse_profession,profession,situation_matrimoniale,nom,prenom,telephone,montant_loyer_ttc,montant_loyer_ht,descriptif_loyer,bien_immo_id,bien_immo{id,code,description,proprietaire_id,proprietaire{id,code,cgf,nom,prenom,telephone,agence_id,agence{id,nom_agence}}},locataire_taxes{locataire{nom,solde,prenom,url_qr_code,cni,adresse_profession,situation_matrimoniale},taxe{nom,value}}",
         "users"                      =>  " id,name,email,role{id,nom}",
-        "bien_immos"                 =>  " id,code,nom_immeuble,nbr_dispo,adresse,description,nbr_etage,nbr_total_appartement,nbr_magasin,proprietaire_id,proprietaire{id,cgf,code,nom,prenom,telephone,agence_id,agence{id,nom_agence}},locataires{id,code,en_regle,url_qr_code,nom,prenom,telephone},unites{numero,dispo,nature_local{id,nom},etage,locataires{nom,prenom,en_regle,resilier},superficie_en_m2,annee_achevement,nombre_piece_principale,nombre_salle_de_bain,type_localisation,balcon}",
-        "unite"                      =>  " id,numero,dispo,nature_local{id nom},locataires{nom,prenom,en_regle,resilier},type_localisation,etage,bien_immo{id,code,nom_immeuble,proprietaire{id,code,cgf,nom,prenom}},superficie_en_m2,annee_achevement,nombre_piece_principale,nombre_salle_de_bain,balcon",
+        "bien_immos"                 =>  " id,code,nom_immeuble,nbr_dispo,adresse,description,nbr_etage,nbr_total_appartement,nbr_magasin,proprietaire_id,proprietaire{id,cgf,code,nom,prenom,telephone,agence_id,agence{id,nom_agence}},locataires{id,code,solde,url_qr_code,nom,prenom,telephone},unites{numero,dispo,nature_local{id,nom},etage,locataires{nom,prenom,solde,resilier},superficie_en_m2,annee_achevement,nombre_piece_principale,nombre_salle_de_bain,type_localisation,balcon}",
+        "unite"                      =>  " id,numero,dispo,nature_local{id nom},locataires{nom,prenom,solde,resilier},type_localisation,etage,bien_immo{id,code,nom_immeuble,proprietaire{id,code,cgf,nom,prenom}},superficie_en_m2,annee_achevement,nombre_piece_principale,nombre_salle_de_bain,balcon",
         "taxes"                      =>  " id,nom,value",
         "nature_locations"           =>  " id,nom",
         "depense_proprios"           =>  " id,libelle",
         "agences"                    =>  " id,nom_agence,adresse,num_fixe",
-        "journals"                   =>  " id,solde,detail_journals{libelle,code,entree,sortie,proprietaire_id,proprietaire{id,code,nom,cgf},locataire_id,locataire{id,en_regle,code,url_qr_code,cni,adresse_profession,situation_matrimoniale,nom,prenom,bien_immo{id,code,description,proprietaire_id,proprietaire{id,code,cgf,nom,prenom,telephone,agence_id,agence{id,nom_agence}}}}}",
-        "detail_journals"            =>  " id,code,libelle,entree,sortie,created_at_fr,updated_at_fr,locataire_id,proprietaire_id,proprietaire{id,code,cgf},journal_id,journal{id solde},locataire{id,en_regle,url_qr_code,code,cni,adresse_profession,situation_matrimoniale,nom,prenom,bien_immo{id,code,description,proprietaire_id,proprietaire{id,code,cgf,nom,prenom,telephone,agence_id,agence{id,nom_agence}}}}",
-        "journal_proprios"           =>  " id,solde,libelle,entree,depense_proprio_id,depense_proprio{libelle},sortie,locataire_id,proprietaire_id,locataire{id,en_regle,url_qr_code,code,cni,adresse_profession,situation_matrimoniale,nom,prenom,bien_immo{id,code,description,proprietaire_id,proprietaire{id,code,cgf,nom,prenom,telephone,agence_id,agence{id,nom_agence}}}}",
-        "type_bien_immos"            =>  " id,nom,bien_immos{id,code,adresse,description,locataires{id,en_regle,url_qr_code,code,nom,prenom,telephone,montant_loyer_ttc,montant_loyer_ht,descriptif_loyer}}",
+        "journals"                   =>  " id,solde,detail_journals{libelle,code,entree,sortie,proprietaire_id,proprietaire{id,code,nom,cgf},locataire_id,locataire{id,solde,code,url_qr_code,cni,adresse_profession,situation_matrimoniale,nom,prenom,bien_immo{id,code,description,proprietaire_id,proprietaire{id,code,cgf,nom,prenom,telephone,agence_id,agence{id,nom_agence}}}}}",
+        "detail_journals"            =>  " id,code,libelle,entree,sortie,created_at_fr,updated_at_fr,locataire_id,proprietaire_id,proprietaire{id,code,cgf},journal_id,journal{id solde},locataire{id,solde,url_qr_code,code,cni,adresse_profession,situation_matrimoniale,nom,prenom,bien_immo{id,code,description,proprietaire_id,proprietaire{id,code,cgf,nom,prenom,telephone,agence_id,agence{id,nom_agence}}}}",
+        "journal_proprios"           =>  " id,solde,libelle,entree,depense_proprio_id,depense_proprio{libelle},sortie,locataire_id,proprietaire_id,locataire{id,solde,url_qr_code,code,cni,adresse_profession,situation_matrimoniale,nom,prenom,bien_immo{id,code,description,proprietaire_id,proprietaire{id,code,cgf,nom,prenom,telephone,agence_id,agence{id,nom_agence}}}}",
+        "type_bien_immos"            =>  " id,nom,bien_immos{id,code,adresse,description,locataires{id,solde,url_qr_code,code,nom,prenom,telephone,montant_loyer_ttc,montant_loyer_ht,descriptif_loyer}}",
         // "proprio_bien_immos"      =>  " id,user_id,user{id,name,email,role{id,nom}},proprietaire_id,proprietaire{id,code,nom,prenom,telephone,agence_id,agence{id,nom_agence}},bien_immo_id,bien_immo{id,code,description,montant}",
     );
 
@@ -141,6 +141,32 @@ class Outil extends Model
     public static function getAPI()
     {
         return config('env.APP_URL');
+    }
+    public static function getNbLocataireActif()
+    {
+        $locataire_actif = Locataire::where('resilier', false)->count();
+        return $locataire_actif;
+    }
+
+    public static function getNbLocataireRetard($proprietaireId=null)
+    {
+        $query = Locataire::where('solde', '>', 0);
+
+        if ($proprietaireId !== null) {
+            // Récupérer les IDs des biens immobiliers appartenant au propriétaire
+            $bien_immo_ids = BienImmo::where('proprietaire_id', $proprietaireId)
+                                     ->pluck('id')
+                                     ->toArray();
+            $query->whereIn('bien_immo_id', $bien_immo_ids);
+        }
+    
+        if ($month !== null && $year !== null) {
+            // Filtrer les locataires créés dans le mois et l'année spécifiés
+            $query->whereMonth('created_at', $month)
+                  ->whereYear('created_at', $year);
+        }
+    
+        return $query->count();
     }
     public static function formatdate()
     {
