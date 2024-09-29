@@ -85,27 +85,30 @@ class JournalController extends Controller
                                             $proprio_id = $locataire->bien_immo->proprietaire_id;
                                             $immo = $locataire->bien_immo; // Récupérer l'immeuble
                                             $commission_percentage = $immo->commission_agence ?? 0.07; // 7% par défaut si non spécifié
-                                            // Compte Proprietaire
+                                            // PAIEMENT COMPTE PROPRIETAIRE
                                             $compte_proprietaire = new Compte();
                                             $compte_proprietaire->libelle = "Paiement de `{$locataire->prenom}`";
+                                            $compte_proprietaire->locataire_id = $locataire->id;
                                             $compte_proprietaire->proprietaire_id = $proprio_id;
                                             $compte_proprietaire->montant_compte = $detail['entree'];
                                             $compte_proprietaire->save();
 
-                                                // Calculer la commission
-                                                $commission = $detail['entree'] * $commission_percentage;
-                                                // Créditer le compte de l'agence
-                                                $compte_agence = new CompteAgence();
-                                                $compte_agence->proprietaire_id = $detail['proprietaire_id'];
-                                                $compte_proprietaire->locataire_id = $locataire->id;
-                                                $compte_agence->nature = "Honoraire pour paiement locataire `{$locataire->prenom}`";
-                                                $compte_agence->commission = $commission;
-                                                $isSaved = $compte_agence->save();
+                                            // Calculer la commission
+                                            $commission = $detail['entree'] * $commission_percentage;
+                                            // Créditer le compte de l'agence
+                                            $compte_agence = new CompteAgence();
+                                            $compte_agence->proprietaire_id = $detail['proprietaire_id'];
+                                            $compte_proprietaire->locataire_id = $locataire->id;
+                                            $compte_agence->nature = "Honoraire pour paiement locataire `{$locataire->prenom}`";
+                                            $compte_agence->commission = $commission + ($commission * 0.18);
+                                            $isSaved = $compte_agence->save();
+
+                                            // DEPENSE HONORAIRE
                                             if ($ifSaved) {
                                                 $compte_proprietaire = new Compte();
                                                 $compte_proprietaire->libelle = "Dépense Honoraire du locataire `{$locataire->prenom}`";
                                                 $compte_proprietaire->proprietaire_id = $detail['proprietaire_id'];
-                                                $compte_proprietaire->montant_compte = -1 * $commission;
+                                                $compte_proprietaire->montant_compte = -1 * ($commission + ($commission * 0.18));
                                                 $compte_proprietaire->save();
                                             }
 
@@ -130,7 +133,7 @@ class JournalController extends Controller
                             if($detail['entree'] ==0 && $detail['sortie'] !=0){
                                 if(!empty($detail['proprietaire_id'])){
                                     $compte_proprietaire = new Compte();
-                                    $compte_proprietaire->libelle = $nature_depense;
+                                    $compte_proprietaire->libelle = $detail['nature_depense'];
                                     $compte_proprietaire->proprietaire_id = $detail['proprietaire_id'];
                                     $compte_proprietaire->montant_compte = -1 * $detail['sortie'];
                                     $compte_proprietaire->save();
@@ -205,6 +208,75 @@ class JournalController extends Controller
             return view('notfound'); // Si l'ID du propriétaire n'est pas fourni
         }
     }
+
+    public function closeCaisse(Request $request)
+    {
+        try {
+            // Initialisation
+            $errors = null;
+            $montant = 0;
+    
+            // Vérifiez s'il existe une fermeture précédente
+            $count = DB::table('cloture_caisses')->count();
+    
+            // Si aucune clôture précédente
+            if ($count === 0) {
+                // Calculer le montant total en prenant tous les journaux
+                $detailJournals = DB::table('detail_journals')
+                    ->select('libelle', DB::raw('SUM(entree) AS total_entree'))
+                    ->groupBy('libelle')
+                    ->orderBy('libelle')
+                    ->get();
+            } else {
+                // Prendre les transactions après la dernière fermeture de caisse
+                $detailJournals = DB::table('detail_journals')
+                    ->select('libelle', DB::raw('SUM(entree) AS total_entree'))
+                    ->where(function ($query) {
+                        $query->where('created_at', '>=', function ($subQuery) {
+                            $subQuery->select('date_fermeture')
+                                ->from('cloture_caisses')
+                                ->orderByDesc('date_fermeture')
+                                ->limit(1);
+                        });
+                    })
+                    ->where('created_at', '<=', now())
+                    ->groupBy('libelle')
+                    ->orderBy('libelle')
+                    ->get();
+            }
+    
+            // Calcul du montant total
+            foreach ($detailJournals as $journal) {
+                $montant += $journal->total_entree;
+            }
+    
+            // Vérification si la caisse est vide
+            if ($montant == 0) {
+                $errors = "Vous ne pouvez pas clôturer une caisse vide.";
+            }
+    
+            // Authentification de l'utilisateur
+            $user = Auth::user();
+    
+            // Gestion des erreurs
+            if (isset($errors)) {
+                throw new \Exception('{"data": null, "errors": "'. $errors .'" }');
+            }
+    
+            // Enregistrer la clôture de caisse
+            $caisseCloture = new ClotureCaisse();
+            $caisseCloture->date_fermeture = now(); // Utilisation de la date/heure actuelle
+            $caisseCloture->montant_total = $montant;
+            $caisseCloture->user_id = $user->id;
+            $caisseCloture->save();
+            dd($caisseCloture);
+            return response()->json(['message' => 'Caisse fermée avec succès.']);
+        } catch (\Throwable $e) {
+            return $e->getMessage();
+            // return response()->json(['error' => 'Une erreur est survenue lors de la clôture de la caisse.']);
+        }
+    }
+    
 
 
     public function situationgeneralparproprio($id)

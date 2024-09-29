@@ -62,6 +62,7 @@ class BienImmoController extends Controller
                 $item->nbr_etage = $request->nbr_etage;
                 $item->nbr_total_appartement = $request->nbr_total_appartement;
                 $item->nbr_magasin = $request->nbr_magasin;
+                $item->commission_agence = $request->commission_agence;
 
                 if (!isset($errors)) 
                 {

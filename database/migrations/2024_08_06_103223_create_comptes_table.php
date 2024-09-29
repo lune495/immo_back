@@ -17,6 +17,8 @@ class CreateComptesTable extends Migration
             $table->id();
             $table->unsignedBigInteger('proprietaire_id');
             $table->foreign('proprietaire_id')->references('id')->on('proprietaires');
+            $table->unsignedBigInteger('locataire_id')->nullable();
+            $table->foreign('locataire_id')->references('id')->on('locataires');
             $table->string('libelle')->nullable();
             $table->integer('montant_compte')->default(0);
             $table->timestamps();

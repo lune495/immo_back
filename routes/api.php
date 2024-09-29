@@ -43,6 +43,7 @@ Route::group(['middleware' => ['auth:sanctum']],function()
     // Route::delete('/proprietaires/{id}',[ProprietaireController::class,'delete']);
     Route::post('/agence',[AgenceController::class, 'save']);
     Route::post('/typebien',[TypeBienImmoController::class, 'save']);
+    Route::post('/cloture_caisse',[JournalController::class,'closeCaisse']);
     Route::post('/proprietaire',[ProprietaireController::class,'save']);
     Route::post('/unite',[UniteController::class,'save']);
     Route::post('/taxe',[TaxeController::class,'save']);
