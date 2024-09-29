@@ -244,7 +244,8 @@ class JournalController extends Controller
                     ->orderBy('libelle')
                     ->get();
             }
-    
+            
+            dd($detailJournals);
             // Calcul du montant total
             foreach ($detailJournals as $journal) {
                 $montant += $journal->total_entree;
@@ -269,7 +270,6 @@ class JournalController extends Controller
             $caisseCloture->montant_total = $montant;
             $caisseCloture->user_id = $user->id;
             $caisseCloture->save();
-            dd($caisseCloture);
             return response()->json(['message' => 'Caisse fermée avec succès.']);
         } catch (\Throwable $e) {
             return $e->getMessage();

@@ -86,6 +86,8 @@ return [
                 \App\GraphQL\Query\TaxeQuery::class,
                 \App\GraphQL\Query\DepenseProprioQuery::class,
                 \App\GraphQL\Query\AgencePaginatedQuery::class,
+                \App\GraphQL\Query\UserQuery::class,
+                \App\GraphQL\Query\RoleQuery::class,
                 \App\GraphQL\Query\UnitePaginatedQuery::class,
                 \App\GraphQL\Query\ProprietairesQuery::class,
                 \App\GraphQL\Query\ProprietairePaginatedQuery::class,
@@ -160,6 +162,8 @@ return [
         \App\GraphQL\Type\TypeBienImmoType::class,
         \App\GraphQL\Type\BienImmoPaginatedType::class,
         \App\GraphQL\Type\Metadata::class,
+        \App\GraphQL\Type\RoleType::class,
+        \App\GraphQL\Type\UserType::class,
     ],
 
     // The types will be loaded on demand. Default is to load all types on each request
