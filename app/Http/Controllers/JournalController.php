@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\{Compte,Locataire,DetailJournal,Outil,Journal,DepenseProprio,Proprietaire,CompteLocataire};
+use App\Models\{Compte,Locataire,DetailJournal,Outil,Journal,ClotureCaisse,DepenseProprio,Proprietaire,CompteLocataire};
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
