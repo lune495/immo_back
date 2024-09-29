@@ -11,6 +11,8 @@ use \PDF;
 use App\Events\MyEvent;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\QuittanceLoyerMail;
+use Illuminate\Support\Facades\Auth;
+
 
 class LocataireController extends Controller
 {
@@ -24,6 +26,7 @@ class LocataireController extends Controller
             {
                 $errors =null;
                 $item = new Locataire();
+                $user = Auth::user();
                 $array = [];
                 $avec_taxe = false;
                 if (!empty($request->id))
@@ -42,26 +45,26 @@ class LocataireController extends Controller
                 {
                     $errors = "Renseignez le statut de la location";
                 }
-                if (empty($request->cni))
-                {
-                    $errors = "Renseignez le CNI";
-                }
+                // if (empty($request->cni))
+                // {
+                //     $errors = "Renseignez le CNI";
+                // }
                 if (empty($request->telephone))
                 {
                     $errors = "Renseignez le numero de telephone";
                 }
-                if (empty($request->adresse_profession))
-                {
-                    $errors = "Renseignez l'adresse profession";
-                }
-                if (empty($request->profession))
-                {
-                    $errors = "Renseignez la profession";
-                }
-                if (empty($request->descriptif_loyer))
-                {
-                    $errors = "Renseignez la description du loyer ";
-                }
+                // if (empty($request->adresse_profession))
+                // {
+                //     $errors = "Renseignez l'adresse profession";
+                // }
+                // if (empty($request->profession))
+                // {
+                //     $errors = "Renseignez la profession";
+                // }
+                // if (empty($request->descriptif_loyer))
+                // {
+                //     $errors = "Renseignez la description du loyer ";
+                // }
                 if (empty($request->bien_immo_id))
                 {
                     $errors = "Renseignez le Bien immobilier";
@@ -121,6 +124,7 @@ class LocataireController extends Controller
                         $item->nom = $request->nom;
                         $item->code = "000001";
                         $item->prenom = $request->prenom;
+                        $item->user_id = $user->id;
                         $item->CNI = $request->cni;
                         $item->adresse_profession = $request->adresse_profession;
                         $item->situation_matrimoniale = $request->situation_matrimoniale;

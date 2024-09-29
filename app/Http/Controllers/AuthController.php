@@ -14,12 +14,13 @@ class AuthController extends Controller
     public function register(Request $request ) {
         $fields = $request->validate([
             'name' => 'required|string',
+            'email' => 'required|string',
             'password' => 'required|string|confirmed', 
             'role_id' => 'required|integer',
         ]);
         $user =  User::create([
             'name' => $fields['name'],
-            'email' => "admin@gmail.com",
+            'email' => $fields['email'],
             'password' => bcrypt($fields['password']),
             'role_id' => $fields['role_id'],
              
@@ -27,27 +28,28 @@ class AuthController extends Controller
         $id = $user->id;
         $token = $user->createToken('myapptoken')->plainTextToken;
         $response = [
-            'user' =>  Outil::redirectgraphql($this->queryName, "id:{$id}", Outil::$queries[$this->queryName]),
+            'user' => $user,
             'token' => $token
         ];
 
-        return Outil::redirectgraphql($this->queryName, "id:{$id}", Outil::$queries[$this->queryName]);
+        // return Outil::redirectgraphql($this->queryName, "id:{$id}", Outil::$queries[$this->queryName]);
+        return $response;
     }
 
-     public function login(Request $request ) {
+    public function login(Request $request ) {
         $fields = $request->validate([
+            'email' => 'required|string',
             'password' => 'required|string'
         ]);
         // Check email
-        $user = User::with('role')->where('email',"admin@gmail.com")->first();
-        // dd($user);
-        // Check email
-        if (!Hash::check($fields['password'],$user->password)) {
-            return response([
-                'message' => 'Mot de passe Incorrect'
-            ],401);
-            # code...
-        }
+        $user = User::with('role')->where('email',$fields['email'])->first();
+        //Check email
+            if (!$user || !Hash::check($fields['password'],$user->password)) {
+                return response([
+                    'message' => 'Mot de passe Incorrect'
+                ],401);
+                # code...
+            }
         $token = $user->createToken('myapptoken')->plainTextToken;
 
         $response = [
@@ -62,7 +64,7 @@ class AuthController extends Controller
     {
         auth()->user()->tokens()->delete();
         return [
-            'message' => 'Deconnecte'
+            'message' => 'Déconnecté !'
         ];
     }
 }

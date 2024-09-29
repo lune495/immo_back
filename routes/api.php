@@ -29,29 +29,28 @@ use App\Http\Controllers\DepenseProprioController;
 */
 // Public Routes
 //Route::resource('produits', ProduitController::class);
-Route::post('/agence',[AgenceController::class, 'save']);
-Route::post('/typebien',[TypeBienImmoController::class, 'save']);
-Route::post('/register',[AuthController::class,'register']);
-Route::post('/login',[AuthController::class,'login']);
-Route::post('/proprietaire',[ProprietaireController::class,'save']);
-Route::post('/unite',[UniteController::class,'save']);
-Route::post('/taxe',[TaxeController::class,'save']);
-Route::post('/nature_location',[NatureLocationController::class,'save']);
-Route::post('/depense_proprio',[DepenseProprioController::class,'save']);
-Route::post('/locataire',[LocataireController::class,'save']);
-Route::post('/bienimmo',[BienImmoController::class,'save']);
-Route::put('/bienimmo_update/{id}', [BienImmoController::class, 'update']);
-Route::post('/journal',[JournalController::class,'save']);
-Route::post('/resilier_contrat/{id}',[LocataireController::class,'resilier']);
 Route::post('/upload_contract', [LocataireController::class, 'uploadContract']);
 Route::get('/upload/{id?}', function () {
     return view('pdf.upload');
 });
 // Route::post('/affectationbien',[AffectationBienController::class,'save']);
-
+Route::post('/register',[AuthController::class,'register']);
+Route::post('/login',[AuthController::class,'login']);
 // Protected Routes
 Route::group(['middleware' => ['auth:sanctum']],function()
 {
     // Route::post('/agences',[AgenceController::class,'save']);
     // Route::delete('/proprietaires/{id}',[ProprietaireController::class,'delete']);
+    Route::post('/agence',[AgenceController::class, 'save']);
+    Route::post('/typebien',[TypeBienImmoController::class, 'save']);
+    Route::post('/proprietaire',[ProprietaireController::class,'save']);
+    Route::post('/unite',[UniteController::class,'save']);
+    Route::post('/taxe',[TaxeController::class,'save']);
+    Route::post('/nature_location',[NatureLocationController::class,'save']);
+    Route::post('/depense_proprio',[DepenseProprioController::class,'save']);
+    Route::post('/locataire',[LocataireController::class,'save']);
+    Route::post('/bienimmo',[BienImmoController::class,'save']);
+    Route::put('/bienimmo_update/{id}', [BienImmoController::class, 'update']);
+    Route::post('/journal',[JournalController::class,'save']);
+    Route::post('/resilier_contrat/{id}',[LocataireController::class,'resilier']);
 });

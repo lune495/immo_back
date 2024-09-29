@@ -1,4 +1,4 @@
-<?php
+env<?php
 
 namespace App\Http\Controllers;
 
@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use App\Models\{Compte,Locataire,DetailJournal,Outil,Journal,DepenseProprio,Proprietaire,CompteLocataire};
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
+
 
 use \PDF;
 
@@ -24,6 +26,7 @@ class JournalController extends Controller
                 $str_json = json_encode($request->detail_journals);
                 $detail_journals = json_decode($str_json, true);
                 $item = new Journal();
+                $user = Auth::user();
                 if (!empty($request->id))
                 {
                     $item = Journal::find($request->id);
@@ -68,6 +71,7 @@ class JournalController extends Controller
                         $detail_journals->locataire_id = isset($detail['locataire_id']) ? $detail['locataire_id'] : null;
                         $detail_journals->proprietaire_id = isset($detail['proprietaire_id']) ? $detail['proprietaire_id'] : null;
                         $detail_journals->journal_id = $item->id;
+                        $detail_journals->user_id = $user->id;
                         $detail_journals->save();
                         $saved = $detail_journals->save();
                         if($saved)
@@ -79,12 +83,31 @@ class JournalController extends Controller
                                         $locataire = Locataire::find($locataire_id);
                                         if(!$locataire->resilier){
                                             $proprio_id = $locataire->bien_immo->proprietaire_id;
+                                            $immo = $locataire->bien_immo; // Récupérer l'immeuble
+                                            $commission_percentage = $immo->commission_agence ?? 0.07; // 7% par défaut si non spécifié
                                             // Compte Proprietaire
                                             $compte_proprietaire = new Compte();
                                             $compte_proprietaire->libelle = "Paiement de `{$locataire->prenom}`";
                                             $compte_proprietaire->proprietaire_id = $proprio_id;
                                             $compte_proprietaire->montant_compte = $detail['entree'];
                                             $compte_proprietaire->save();
+
+                                                // Calculer la commission
+                                                $commission = $detail['entree'] * $commission_percentage;
+                                                // Créditer le compte de l'agence
+                                                $compte_agence = new CompteAgence();
+                                                $compte_agence->proprietaire_id = $detail['proprietaire_id'];
+                                                $compte_proprietaire->locataire_id = $locataire->id;
+                                                $compte_agence->nature = "Honoraire pour paiement locataire `{$locataire->prenom}`";
+                                                $compte_agence->commission = $commission;
+                                                $isSaved = $compte_agence->save();
+                                                if ($ifSaved) {
+                                                $compte_proprietaire = new Compte();
+                                                $compte_proprietaire->libelle = "Dépense Honoraire du locataire `{$locataire->prenom}`";
+                                                $compte_proprietaire->proprietaire_id = $detail['proprietaire_id'];
+                                                $compte_proprietaire->montant_compte = -1 * $commission;
+                                                $compte_proprietaire->save();
+                                            }
 
                                             // Compte Locataire
                                             $compte_locataire = new CompteLocataire();

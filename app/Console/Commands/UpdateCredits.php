@@ -71,7 +71,7 @@ class UpdateCredits extends Command
                     $locataire = Locataire::find($compte_locataire->locataire_id);
                     $locataire->solde += $compte_locataire->debit - $compte_locataire->credit;
                     $locataire->save();
-                    // // Envoyer un message WhatsApp
+                    // Envoyer un message WhatsApp
                     // $message = "Bonjour ".$dernierCompte->locataire->nom .", votre loyer de " . $compte_locataire->debit . " est dû. Veuillez effectuer le paiement dès que possible. Merci!";
                     // $this->twilioService->sendWhatsAppMessage($dernierCompte->locataire->telephone, $message);
                 }
