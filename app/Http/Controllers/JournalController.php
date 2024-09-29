@@ -244,8 +244,6 @@ class JournalController extends Controller
                     ->orderBy('libelle')
                     ->get();
             }
-            
-            dd($detailJournals);
             // Calcul du montant total
             foreach ($detailJournals as $journal) {
                 $montant += $journal->total_entree;
