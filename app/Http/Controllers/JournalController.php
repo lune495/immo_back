@@ -101,7 +101,7 @@ class JournalController extends Controller
                                                 $compte_agence->nature = "Honoraire pour paiement locataire `{$locataire->prenom}`";
                                                 $compte_agence->commission = $commission;
                                                 $isSaved = $compte_agence->save();
-                                                if ($ifSaved) {
+                                            if ($ifSaved) {
                                                 $compte_proprietaire = new Compte();
                                                 $compte_proprietaire->libelle = "Dépense Honoraire du locataire `{$locataire->prenom}`";
                                                 $compte_proprietaire->proprietaire_id = $detail['proprietaire_id'];
