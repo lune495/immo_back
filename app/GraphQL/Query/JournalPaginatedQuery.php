@@ -6,7 +6,7 @@ use GraphQL\Type\Definition\Type;
 use Rebing\GraphQL\Support\Query;
 use Rebing\GraphQL\Support\Facades\GraphQL;
 use Illuminate\Support\Arr;
-use \App\Models\{Journal,Outil};
+use \App\Models\{Journal,Outil,ClotureCaisse};
 
 class JournalPaginatedQuery extends Query
 {
@@ -44,6 +44,10 @@ class JournalPaginatedQuery extends Query
         // {
         //     $query = $query->where('code',Outil::getOperateurLikeDB(),'%'.$args['code'].'%');
         // }
+        $latestClosureDate = ClotureCaisse::orderBy('date_fermeture', 'desc')->value('date_fermeture');
+        if (isset($latestClosureDate)) {
+            $query = $query->whereBetween('created_at', [$latestClosureDate, now()]);
+        }
         $count = Arr::get($args, 'count', 10);
         $page  = Arr::get($args, 'page', 1);
 

@@ -98,8 +98,10 @@ class LocataireController extends Controller
                 }
                 if ($cc != false) {
                     $cc2 = Taxe::where('nom','CC')->first();
-                    array_push($array, ['id' => $cc2->id, 'value' => $cc]);
-                    $avec_taxe = true;
+                    if($cc2){
+                        array_push($array, ['id' => $cc2->id, 'value' => $cc]);
+                        $avec_taxe = true;
+                    }
                 }
                 }else{
                     $errors = "Renseignez le type de location";
@@ -125,6 +127,7 @@ class LocataireController extends Controller
                         $item->code = "000001";
                         $item->prenom = $request->prenom;
                         $item->user_id = $user->id;
+                        // $item->user_id = 1;
                         $item->CNI = $request->cni;
                         $item->adresse_profession = $request->adresse_profession;
                         $item->situation_matrimoniale = $request->situation_matrimoniale;
@@ -193,7 +196,6 @@ class LocataireController extends Controller
 
    public function generatesituationparlocataire($locataireId = null,$start = false, $end = false)
     {
-        event(new MyEvent('hello world'));
     if ($locataireId !== null) {
         $data = [];
         // Initialiser la requête pour récupérer les transactions du locataire
@@ -302,8 +304,6 @@ public function uploadContract(Request $request)
             $quittance_locataire = CompteLocataire::where('id',$id)->where('credit','>',0)->first();
             $transactions = CompteLocataire::where('locataire_id',$quittance_locataire->locataire_id)->get();
             $locataire = Locataire::find($quittance_locataire->locataire_id);
-            $agenceId = $locataire->bien_immo->proprietaire->agence->id;
-            $agence = Agence::find($agenceId);
 
             // Initialisation des variables des taxes
             $tom = 0;
@@ -334,12 +334,13 @@ public function uploadContract(Request $request)
             $data['quittance'] = $quittance_locataire;
             $data['transactions'] = $transactions;
             $data['locataire'] = $locataire;
-            $data['agence'] = $agence;
             $data['tom'] = isset($tom->value) ? $tom->value : 0;
             $data['cc'] = $cc;
             $data['tva'] = isset($tva->value) ? $tva->value : 0;
             $data['montant_ttc'] = $montant_loyer_ttc;
-         $pdf = PDF::loadView("pdf.quittancelocataire", $data);
+        //  $pdf = PDF::loadView("pdf.quittancelocataire2", $data);
+            $pdf = PDF::loadView("pdf.quittancelocataire2", $data);
+            $measure = array(0,0,825.772,570.197);
          return $pdf->stream();
         }else {
             return view('notfound'); // Si l'ID du locataire n'est pas fourni

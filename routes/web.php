@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\JournalController;
 use App\Http\Controllers\LocataireController;
+use Illuminate\Support\Facades\Auth;
 
 /*
 |--------------------------------------------------------------------------
@@ -15,7 +16,7 @@ use App\Http\Controllers\LocataireController;
 |
 */
 
-Route::get('/journalpdf/{start?}/{end?}', [JournalController::class,'generePDfGrandJournal']);
+Route::get('/journalpdf/{start?}/{end?}', [JournalController::class,'generePDfGrandJournal'])->middleware('auth:sanctum');
 Route::get('/doc', [LocataireController::class,'documentation']);
 Route::get('/situation-par-proprio-pdf/{id?}/{start?}/{end?}', [JournalController::class,'generatesituationparproprio']);
 Route::get('/situation-par-locataire-pdf/{id?}/{start?}/{end?}', [LocataireController::class,'generatesituationparlocataire']);
@@ -23,4 +24,8 @@ Route::get('/quittance-pdf/{id?}', [LocataireController::class,'generatequittanc
 Route::get('/situation-generale-par-proprio-pdf/{id}', [JournalController::class,'situationgeneralparproprio']);
 Route::get('/', function () {
     return view('welcome');
-});
+})->name('login');
+
+Route::get('/test-auth', function () {
+    return Auth::user() ? Auth::user() : 'User is not authenticated';
+})->middleware('auth:sanctum');

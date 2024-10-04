@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\{Compte,Locataire,DetailJournal,Outil,Journal,ClotureCaisse,DepenseProprio,Proprietaire,CompteLocataire};
+use App\Models\{Compte,Locataire,DetailJournal,Outil,Journal,ClotureCaisse,DepenseProprio,CompteAgence,Proprietaire,CompteLocataire};
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
@@ -33,6 +33,7 @@ class JournalController extends Controller
                 }
                 
                 $item->solde = $request->solde;
+                $item->user_id = $user->id;
                 $item->save();
                 foreach ($detail_journals as $detail) 
                 {
@@ -58,25 +59,25 @@ class JournalController extends Controller
                         $errors = "veuillez renseigner la date de location";
                     }
                     
-                    if (!isset($errors)) 
+                    if (!isset($errors))
                     {
-                        $depense = isset($detail['depense_proprio_id']) ? DepenseProprio::find($detail['depense_proprio_id']) : null;
-                        $nature_depense = isset($depense) ? $depense->libelle : "No Ref";
+                        // $depense = isset($detail['depense_proprio_id']) ? DepenseProprio::find($detail['depense_proprio_id']) : null;
                         $detail_journals->code = "JN0000{$item->id}";
-                        $detail_journals->libelle = empty($detail['locataire_id']) ? $nature_depense : "Paiement Loyer du {$detail['date_location']}";
+                        $detail_journals->libelle = empty($detail['locataire_id']) ? $detail['libelle'] : "Paiement Loyer du {$detail['date_location']}";
                         $detail_journals->date_location = isset($detail['locataire_id']) ? $detail['date_location'] : null;
                         $detail_journals->entree = empty($detail['entree']) ? 0 : $detail['entree'];
                         $detail_journals->sortie = empty($detail['sortie']) ? 0 : $detail['sortie'];
-                        $detail_journals->depense_proprio_id = empty($detail['depense_proprio_id']) ? null : $detail['depense_proprio_id'];
                         $detail_journals->locataire_id = isset($detail['locataire_id']) ? $detail['locataire_id'] : null;
                         $detail_journals->proprietaire_id = isset($detail['proprietaire_id']) ? $detail['proprietaire_id'] : null;
                         $detail_journals->journal_id = $item->id;
-                        $detail_journals->user_id = $user->id;
+                        // $detail_journals->user_id = $user->id;
+                        $detail_journals->user_id = 1;
                         $detail_journals->save();
                         $saved = $detail_journals->save();
                         if($saved)
                         {
                             $id = $item->id; 
+                            // ENTREE
                             if($detail['entree']!=0 && $detail['sortie'] ==0){
                                 if(!empty($detail['locataire_id'])){
                                         $locataire_id = $detail['locataire_id'];
@@ -85,6 +86,7 @@ class JournalController extends Controller
                                             $proprio_id = $locataire->bien_immo->proprietaire_id;
                                             $immo = $locataire->bien_immo; // Récupérer l'immeuble
                                             $commission_percentage = $immo->commission_agence ?? 0.07; // 7% par défaut si non spécifié
+                                            $montant = $detail['entree'];
                                             // PAIEMENT COMPTE PROPRIETAIRE
                                             $compte_proprietaire = new Compte();
                                             $compte_proprietaire->libelle = "Paiement de `{$locataire->prenom}`";
@@ -92,23 +94,21 @@ class JournalController extends Controller
                                             $compte_proprietaire->proprietaire_id = $proprio_id;
                                             $compte_proprietaire->montant_compte = $detail['entree'];
                                             $compte_proprietaire->save();
-
                                             // Calculer la commission
-                                            $commission = $detail['entree'] * $commission_percentage;
+                                            $commission = $detail['entree'] * ($commission_percentage/100);
                                             // Créditer le compte de l'agence
                                             $compte_agence = new CompteAgence();
-                                            $compte_agence->proprietaire_id = $detail['proprietaire_id'];
-                                            $compte_proprietaire->locataire_id = $locataire->id;
+                                            $compte_agence->proprietaire_id = $locataire->bien_immo->proprietaire_id;
+                                            $compte_agence->locataire_id = $locataire->id;
                                             $compte_agence->nature = "Honoraire pour paiement locataire `{$locataire->prenom}`";
-                                            $compte_agence->commission = $commission + ($commission * 0.18);
+                                            $compte_agence->commission = $commission * 0.18;
                                             $isSaved = $compte_agence->save();
-
                                             // DEPENSE HONORAIRE
-                                            if ($ifSaved) {
+                                            if ($isSaved) {
                                                 $compte_proprietaire = new Compte();
-                                                $compte_proprietaire->libelle = "Dépense Honoraire du locataire `{$locataire->prenom}`";
-                                                $compte_proprietaire->proprietaire_id = $detail['proprietaire_id'];
-                                                $compte_proprietaire->montant_compte = -1 * ($commission + ($commission * 0.18));
+                                                $compte_proprietaire->libelle = "Honoraire d'agence ($commission_percentage % de $montant)";
+                                                $compte_proprietaire->proprietaire_id = $locataire->bien_immo->proprietaire_id;
+                                                $compte_proprietaire->montant_compte = $commission;
                                                 $compte_proprietaire->save();
                                             }
 
@@ -130,10 +130,11 @@ class JournalController extends Controller
                                     }
                                 }
                             }
+                            // SORTIE
                             if($detail['entree'] ==0 && $detail['sortie'] !=0){
                                 if(!empty($detail['proprietaire_id'])){
                                     $compte_proprietaire = new Compte();
-                                    $compte_proprietaire->libelle = $detail['nature_depense'];
+                                    $compte_proprietaire->libelle = $detail['libelle'];
                                     $compte_proprietaire->proprietaire_id = $detail['proprietaire_id'];
                                     $compte_proprietaire->montant_compte = -1 * $detail['sortie'];
                                     $compte_proprietaire->save();
@@ -155,59 +156,146 @@ class JournalController extends Controller
         }
     }
 
-     public function generePDfGrandJournal($start=false,$end=false)
-     {
-        // $appro = Journal::find($id);
-        if($start!=false && $end!=false)
-        {
-         $queryName = "detail_journals";
-         $data = Outil::getItemWithGraphQl($queryName, $start,$end, true);
-         $pdf = PDF::loadView("pdf.grandjournalpdf", $data);
-         return $pdf->stream();
+    public function generePDfGrandJournal($start = false, $end = false)
+    {
+        $user = Auth::user(); // Récupérer l'utilisateur connecté
+
+        // Initialiser la requête avec les relations nécessaires
+        $query = DetailJournal::with('journal', 'proprietaire', 'locataire');
+
+        // Si les dates de début, de fin, et l'utilisateur sont fournis
+        if ($start && $end && $user && $user->structure_id) {
+            // Filtrer par la structure de l'utilisateur
+            $query->where(function ($q) use ($user) {
+                // Vérifier si le locataire, propriétaire ou journal est lié à la structure de l'utilisateur
+                $q->whereHas('locataire.user', function ($q) use ($user) {
+                    $q->where('structure_id', $user->structure_id);
+                })
+                ->orWhereHas('proprietaire.user', function ($q) use ($user) {
+                    $q->where('structure_id', $user->structure_id);
+                })
+                ->orWhereHas('journal.user', function ($q) use ($user) {
+                    $q->where('structure_id', $user->structure_id);
+                });
+            });
         }
-        else
-        {
-         return view('notfound');
+        // Filtrer les journaux entre les dates spécifiées
+        if ($start && $end) {
+            $query->whereBetween('created_at', [$start, $end]);
         }
+
+        // Exécuter la requête et récupérer les résultats
+        $detailJournals = $query->get();
+
+        // Préparer les données pour la vue PDF
+        $data = [
+            'detail_journals' => $detailJournals,
+            'start' => date('d/m/y', strtotime($start)),
+            'end' => date('d/m/y', strtotime($end)),
+        ];
+        // Générer le PDF en utilisant la vue `pdf.grandjournalpdf`
+        $pdf = PDF::loadView("pdf.grandjournalpdf", $data);
+
+        // Retourner le PDF généré en mode stream (ou afficher directement dans le navigateur)
+        return $pdf->stream();
     }
 
-    public function generatesituationparproprio($proprioId = null,$start = false, $end = false)
+
+    public function generatesituationparproprio($proprioId = null, $param1 = false, $param2 = false, $param3 = false)
     {
         if ($proprioId !== null) {
             $data = [];
+            $proprietaire = Proprietaire::find($proprioId);
+            $nom = "$proprietaire->prenom $proprietaire->nom";
 
-            if ($start !== false && $end !== false) {
-                $from = (strpos($start, '/') !== false) ? Carbon::createFromFormat('d/m/Y', $start)->format('Y-m-d') : $start;
-                $to   = (strpos($end, '/') !== false) ? Carbon::createFromFormat('d/m/Y', $end)->format('Y-m-d') : $end;
+            // Requête pour obtenir les locataires, total crédit, total débit et solde
+            $locataires = CompteLocataire::select(
+                'locataires.id as locataire_id',
+                DB::raw("CONCAT(locataires.prenom, ' ', locataires.nom) as nom_complet"),
+                DB::raw('SUM(compte_locataires.debit) as total_debit'),
+                DB::raw('SUM(compte_locataires.credit) as total_credit'),
+                DB::raw('SUM(compte_locataires.credit - compte_locataires.debit) as solde')
+            )
+            ->join('locataires', 'compte_locataires.locataire_id', '=', 'locataires.id')
+            ->join('bien_immos', 'locataires.bien_immo_id', '=', 'bien_immos.id')
+            // ->where('bien_immos.proprietaire_id', $proprioId) // Filtrer par propriétaire
+            ->groupBy('locataires.id', 'locataires.prenom', 'locataires.nom');;
+            
+            
+            $startDate = null;
+            $endDate = null;
+            $month = false;
 
-                $from = date($from.' 00:00:00');
-                $to   = date($to.' 23:59:59');
-            } else {
-                $from = null;
-                $to = null;
+            // Vérifier si le dernier paramètre est un mois (YYYY-MM)
+            if ($param3 && preg_match('/^\d{4}-\d{2}$/', $param3)) {
+                // Traiter comme un mois
+                $month = $param3;
+            } elseif ($param1 && preg_match('/^\d{4}-\d{2}$/', $param1)) {
+                // Si le premier paramètre est un mois
+                $month = $param1;
+            }
+            // Si un mois est fourni, le convertir en début et fin de mois
+            if ($month !== false) {
+                $startDate = Carbon::createFromFormat('Y-m', $month)->startOfMonth()->format('Y-m-d H:i:s');
+                $endDate = Carbon::createFromFormat('Y-m', $month)->endOfMonth()->format('Y-m-d H:i:s');
+                // Formater le mois en lettres (ex: SEPTEMBRE 2024)
+                $data['mois'] = strtoupper(Carbon::createFromFormat('Y-m', $month)->locale('fr')->isoFormat('MMMM YYYY'));
             }
 
-            $queryName = "journal_proprios";
-            $entrees = Outil::getItemSituationProprioWithGraphQl($queryName, $from, $to, $proprioId, true);
-
-            $depenses = DetailJournal::where('proprietaire_id', $proprioId);
-            if ($from && $to) {
-                $depenses->whereBetween('created_at', [$from, $to]);
+            // Si $param1 et $param2 sont des dates, on les traite comme une plage de dates
+            if ($param1 && !$month && !$param3) {
+                $startDate = (strpos($param1, '/') !== false) ? Carbon::createFromFormat('d/m/Y', $param1)->format('Y-m-d H:i:s') : $param1 . ' 00:00:00';
             }
-            $depenses = $depenses->pluck('sortie');
 
-            $data['entrees'] = $entrees;
+            if ($param2 && !$month) {
+                $endDate = (strpos($param2, '/') !== false) ? Carbon::createFromFormat('d/m/Y', $param2)->format('Y-m-d H:i:s') : $param2 . ' 23:59:59';
+            }
+
+            // Requêtes pour les entrées et dépenses avec filtre de date
+            $entreesQuery = Compte::where('proprietaire_id', $proprioId)
+                ->where('locataire_id', '!=', null);
+
+            $depensesQuery = Compte::where('proprietaire_id', $proprioId)
+                ->where('locataire_id', '=', null)->where('montant_compte','!=',0)->where('montant_compte','<',0);
+
+            $depense_honoraires = Compte::where('proprietaire_id', $proprioId)
+            ->where('locataire_id', '=', null)->where('montant_compte','!=',0)->where('montant_compte','>',0);
+
+            // Appliquer le filtre de date si startDate et endDate sont définis
+            if ($startDate && $endDate) {
+                $entreesQuery->whereBetween('created_at', [$startDate, $endDate]);
+                $depensesQuery->whereBetween('created_at', [$startDate, $endDate]);
+                $depense_honoraires->whereBetween('created_at', [$startDate, $endDate]);
+                $locataires->where('bien_immos.proprietaire_id', $proprioId)->whereBetween('compte_locataires.created_at', [$startDate, $endDate]);
+            }
+            // Exécuter les requêtes
+            $entrees = $entreesQuery->get();
+            $depenses = $depensesQuery->get();
+            $depense_honoraires = $depense_honoraires->get();
+            $locataires = $locataires->get();
+            $honoraire = 0;
+            foreach ($depense_honoraires as $depense_honoraire) {
+                $honoraire += $depense_honoraire->montant_compte;
+            }
+            // Préparer les données pour le PDF
+            $data['nom_proprio'] = $nom;
+            $data['locataires'] = $locataires;
             $data['sorties'] = $depenses;
+            $data['honoraire'] = $honoraire;
+            // $data['start'] = $startDate ? date("d/m/y", strtotime($startDate)) : null;
+            // $data['end'] = $endDate ? date("d/m/y", strtotime($endDate)) : null;
 
-            $data['start'] = $from ? date("d/m/y", strtotime($from)) : null;
-            $data['end']   = $to ? date("d/m/y", strtotime($to)) : null;
-
-            $pdf = PDF::loadView("pdf.situationproprio", $data);
+            // Générer le PDF
+            $pdf = PDF::loadView("pdf.situationproprio2", $data);
             return $pdf->stream();
         } else {
             return view('notfound'); // Si l'ID du propriétaire n'est pas fourni
         }
     }
+
+
+
+
 
     public function closeCaisse(Request $request)
     {
@@ -247,8 +335,7 @@ class JournalController extends Controller
             // Calcul du montant total
             foreach ($detailJournals as $journal) {
                 $montant += $journal->total_entree;
-            }
-    
+        }
             // Vérification si la caisse est vide
             if ($montant == 0) {
                 $errors = "Vous ne pouvez pas clôturer une caisse vide.";
@@ -256,7 +343,6 @@ class JournalController extends Controller
     
             // Authentification de l'utilisateur
             $user = Auth::user();
-    
             // Gestion des erreurs
             if (isset($errors)) {
                 throw new \Exception('{"data": null, "errors": "'. $errors .'" }');
@@ -266,7 +352,8 @@ class JournalController extends Controller
             $caisseCloture = new ClotureCaisse();
             $caisseCloture->date_fermeture = now(); // Utilisation de la date/heure actuelle
             $caisseCloture->montant_total = $montant;
-            $caisseCloture->user_id = $user->id;
+            $caisseCloture->user_id = 1;
+            // $caisseCloture->user_id = $user->id;
             $caisseCloture->save();
             return response()->json(['message' => 'Caisse fermée avec succès.']);
         } catch (\Throwable $e) {

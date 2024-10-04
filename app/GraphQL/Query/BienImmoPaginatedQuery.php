@@ -7,6 +7,7 @@ use Rebing\GraphQL\Support\Query;
 use Rebing\GraphQL\Support\Facades\GraphQL;
 use Illuminate\Support\Arr;
 use \App\Models\{BienImmo,Outil};
+use Illuminate\Support\Facades\Auth;
 
 class BienImmoPaginatedQuery extends Query
 {
@@ -36,7 +37,15 @@ class BienImmoPaginatedQuery extends Query
 
     public function resolve($root, $args)
     {
+        $user = Auth::user();
         $query = BienImmo::query();
+
+         // Filtrer les propriétaires dont la structure_id de l'utilisateur associé correspond à celui de l'utilisateur connecté
+         if ($user && $user->structure_id) {
+            $query->whereHas('user', function ($q) use ($user) {
+                $q->where('structure_id', $user->structure_id);
+            });
+        }
         if (isset($args['id']))
         {
             $query->where('id', $args['id']);

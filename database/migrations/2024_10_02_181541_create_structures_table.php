@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateDepensePropriosTable extends Migration
+class CreateStructuresTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,9 +13,11 @@ class CreateDepensePropriosTable extends Migration
      */
     public function up()
     {
-        Schema::create('depense_proprios', function (Blueprint $table) {
+        Schema::create('structures', function (Blueprint $table) {
             $table->id();
-            $table->string('libelle')->nullable;
+            $table->string("nom_structure");
+            $table->string("telephone")->nullable();
+            $table->string("adresse")->nullable();
             $table->timestamps();
         });
     }
@@ -27,6 +29,6 @@ class CreateDepensePropriosTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('depense_proprios');
+        Schema::dropIfExists('structures');
     }
 }

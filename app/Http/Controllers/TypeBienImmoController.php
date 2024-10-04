@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\{TypeBienImmo,Outil};
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 
 class TypeBienImmoController extends Controller
 {
@@ -18,6 +19,7 @@ class TypeBienImmoController extends Controller
                 DB::beginTransaction();
                 $errors =null;
                 $item = new TypeBienImmo();
+                $user = Auth::user();
                 if (!empty($request->id))
                 {
                     $item = TypeBienImmo::find($request->id);
@@ -27,6 +29,7 @@ class TypeBienImmoController extends Controller
                     $errors = "Renseignez le nom du type de bien immobilier ";
                 }
                     $item->nom = $request->nom;
+                    $item->user_id = $user->id;
                 if (!isset($errors)) 
                 {
                     $item->save();

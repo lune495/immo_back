@@ -21,8 +21,8 @@ class CreateProprietairesTable extends Migration
             $table->string('telephone');
             $table->float('nbr_part')->nullable();
             $table->float('nbr_enfant')->nullable();
-            $table->unsignedBigInteger('agence_id');
-            $table->foreign('agence_id')->references('id')->on('agences');
+            $table->unsignedBigInteger('user_id');
+            $table->foreign('user_id')->references('id')->on('users');
             $table->timestamps();
         });
     }   

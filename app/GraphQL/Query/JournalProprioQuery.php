@@ -7,6 +7,7 @@ use Carbon\Carbon;
 use GraphQL\Type\Definition\Type;
 use Rebing\GraphQL\Support\Query;
 use Rebing\GraphQL\Support\Facades\GraphQL;
+use Illuminate\Support\Facades\Auth;
 
 class JournalProprioQuery extends Query
 {
@@ -34,7 +35,20 @@ class JournalProprioQuery extends Query
 
     public function resolve($root, $args)
     {
-        $query = DetailJournal::query();
+        // $user = Auth::user();
+        $query = DetailJournal::with('journal','proprietaire','locataire');
+
+        // if ($user && $user->structure_id) {
+        //     $query->whereHas('locataire.user', function ($q) use ($user) {
+        //         $q->where('structure_id', $user->structure_id);
+        //     })
+        //     ->orWhereHas('proprietaire.user', function ($q) use ($user) {
+        //         $q->where('structure_id', $user->structure_id);
+        //     })
+        //     ->orWhereHas('journal.user', function ($q) use ($user) {
+        //         $q->where('structure_id', $user->structure_id);
+        //     });
+        // }
         $attente = 0;
         if (isset($args['proprio_id_entree']))
         {

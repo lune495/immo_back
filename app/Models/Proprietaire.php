@@ -11,9 +11,10 @@ class Proprietaire extends Model
     use HasFactory;
     protected $guarded = [];
 
-    public  function agence()
+    
+    public  function user()
     {
-        return $this->belongsTo(Agence::class);
+        return $this->belongsTo(User::class);
     }
     public  function assujetissement()
     {

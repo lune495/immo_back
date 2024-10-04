@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 
 use App\Models\{NatureLocal,Outil};
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 
 class NatureLocationController extends Controller
 {
@@ -19,6 +20,7 @@ class NatureLocationController extends Controller
                 DB::beginTransaction();
                 $errors =null;
                 $item = new NatureLocal();
+                $user = Auth::user();
                 if (!empty($request->id))
                 {
                     $item = NatureLocal::find($request->id);
@@ -28,6 +30,7 @@ class NatureLocationController extends Controller
                     $errors = "Renseignez la nature";
                 }
                 $item->nom = $request->nom;
+                $item->user_id = $user->id;
                 if (!isset($errors)) 
                 {
                     $item->save();

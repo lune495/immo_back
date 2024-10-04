@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\{Proprietaire,Compte,Agence,Outil};
+use App\Models\{Proprietaire,Compte,Outil};
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 
@@ -37,10 +37,6 @@ class ProprietaireController extends Controller
                 {
                     $errors = "Renseignez le numero de téléphone du proprietaire";
                 }
-                if (empty($request->agence_id))
-                {
-                    $errors = "Renseignez l'agence";
-                }
                 $item->nom = $request->nom;
                 if (empty($request->id))
                 {
@@ -50,8 +46,8 @@ class ProprietaireController extends Controller
                 {
                     $item->prenom = $request->prenom;
                     $item->telephone = $request->telephone;
-                    $item->agence_id = $request->agence_id;
                     $item->user_id = $user->id;
+                    // $item->user_id = 1;
                     $item->save();
                     $id = $item->id;
                     if (empty($request->id))

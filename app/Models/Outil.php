@@ -22,18 +22,16 @@ class Outil extends Model
 {
 
     public static $queries = array(
-        "proprietaires"              =>  " id,code,nom,prenom,telephone,agence_id,agence{id,nom_agence},user{id,name},bien_immos{id,code,adresse,description},cgf,foncier_bati",
-        "locataires"                 =>  " id,code,caution,solde,url_qr_code,user{id,name},unite{numero,dispo,nature_local{id,nom},etage,superficie_en_m2,annee_achevement,nombre_piece_principale,nombre_salle_de_bain,type_localisation,balcon},cni,adresse_profession,profession,situation_matrimoniale,nom,prenom,telephone,montant_loyer_ttc,montant_loyer_ht,descriptif_loyer,bien_immo_id,bien_immo{id,code,description,proprietaire_id,proprietaire{id,code,cgf,nom,prenom,telephone,agence_id,agence{id,nom_agence}}},locataire_taxes{locataire{nom,solde,prenom,url_qr_code,cni,adresse_profession,situation_matrimoniale},taxe{nom,value}}",
+        "proprietaires"              =>  " id,code,nom,prenom,telephone,agence_id,user{id,name},bien_immos{id,code,adresse,description},cgf,foncier_bati",
+        "locataires"                 =>  " id,code,caution,solde,url_qr_code,unite{numero,dispo,nature_local{id,nom},etage,superficie_en_m2,annee_achevement,nombre_piece_principale,nombre_salle_de_bain,type_localisation,balcon},cni,adresse_profession,profession,situation_matrimoniale,nom,prenom,telephone,montant_loyer_ttc,montant_loyer_ht,descriptif_loyer,bien_immo_id,bien_immo{id,code,description,proprietaire_id,proprietaire{id,code,cgf,nom,prenom,telephone}},locataire_taxes{locataire{nom,solde,prenom,url_qr_code,cni,adresse_profession,situation_matrimoniale},taxe{nom,value}}",
         "users"                      =>  " id,name,email,role{id,nom}",
-        "bien_immos"                 =>  " id,code,nom_immeuble,nbr_dispo,adresse,description,nbr_etage,nbr_total_appartement,nbr_magasin,proprietaire_id,proprietaire{id,cgf,code,nom,prenom,telephone,agence_id,agence{id,nom_agence}},locataires{id,code,solde,url_qr_code,nom,prenom,telephone},unites{numero,dispo,nature_local{id,nom},etage,locataires{nom,prenom,solde,resilier},superficie_en_m2,annee_achevement,nombre_piece_principale,nombre_salle_de_bain,type_localisation,balcon}",
+        "bien_immos"                 =>  " id,code,nom_immeuble,nbr_dispo,adresse,description,nbr_etage,nbr_total_appartement,nbr_magasin,proprietaire_id,proprietaire{id,cgf,code,nom,prenom,telephone},locataires{id,code,solde,url_qr_code,nom,prenom,telephone},unites{numero,dispo,nature_local{id,nom},etage,locataires{nom,prenom,solde,resilier},superficie_en_m2,annee_achevement,nombre_piece_principale,nombre_salle_de_bain,type_localisation,balcon}",
         "unite"                      =>  " id,numero,dispo,nature_local{id nom},locataires{nom,prenom,solde,resilier},type_localisation,etage,bien_immo{id,code,nom_immeuble,proprietaire{id,code,cgf,nom,prenom}},superficie_en_m2,annee_achevement,nombre_piece_principale,nombre_salle_de_bain,balcon",
         "taxes"                      =>  " id,nom,value",
         "nature_locations"           =>  " id,nom",
-        "depense_proprios"           =>  " id,libelle",
-        "agences"                    =>  " id,nom_agence,adresse,num_fixe",
-        "journals"                   =>  " id,solde,detail_journals{libelle,code,entree,sortie,proprietaire_id,proprietaire{id,code,nom,cgf},locataire_id,locataire{id,solde,code,url_qr_code,cni,adresse_profession,situation_matrimoniale,nom,prenom,bien_immo{id,code,description,proprietaire_id,proprietaire{id,code,cgf,nom,prenom,telephone,agence_id,agence{id,nom_agence}}}}}",
-        "detail_journals"            =>  " id,code,libelle,user{id,name},entree,sortie,created_at_fr,updated_at_fr,locataire_id,proprietaire_id,proprietaire{id,code,cgf},journal_id,journal{id solde},locataire{id,solde,url_qr_code,code,cni,adresse_profession,situation_matrimoniale,nom,prenom,bien_immo{id,code,description,proprietaire_id,proprietaire{id,code,cgf,nom,prenom,telephone,agence_id,agence{id,nom_agence}}}}",
-        "journal_proprios"           =>  " id,solde,libelle,entree,depense_proprio_id,depense_proprio{libelle},sortie,locataire_id,proprietaire_id,locataire{id,solde,url_qr_code,code,cni,adresse_profession,situation_matrimoniale,nom,prenom,bien_immo{id,code,description,proprietaire_id,proprietaire{id,code,cgf,nom,prenom,telephone,agence_id,agence{id,nom_agence}}}}",
+        "journals"                   =>  " id,solde,detail_journals{libelle,code,entree,sortie,proprietaire_id,proprietaire{id,code,nom,cgf},locataire_id,locataire{id,solde,code,url_qr_code,cni,adresse_profession,situation_matrimoniale,nom,prenom,bien_immo{id,code,description,proprietaire_id,proprietaire{id,code,cgf,nom,prenom,telephone}}}}",
+        "detail_journals"            =>  " id,code,libelle,user{id,name},entree,sortie,created_at_fr,updated_at_fr,locataire_id,proprietaire_id,proprietaire{id,code,cgf},journal_id,journal{id solde},locataire{id,solde,url_qr_code,code,cni,adresse_profession,situation_matrimoniale,nom,prenom,bien_immo{id,code,description,proprietaire_id,proprietaire{id,code,cgf,nom,prenom,telephone}}}",
+        "journal_proprios"           =>  " id,solde,libelle,entree,sortie,locataire_id,proprietaire_id,locataire{id,solde,url_qr_code,code,cni,adresse_profession,situation_matrimoniale,nom,prenom,bien_immo{id,code,description,proprietaire_id,proprietaire{id,code,cgf,nom,prenom,telephone}}}",
         "type_bien_immos"            =>  " id,nom,bien_immos{id,code,adresse,description,locataires{id,solde,url_qr_code,code,nom,prenom,telephone,montant_loyer_ttc,montant_loyer_ht,descriptif_loyer}}",
         // "proprio_bien_immos"      =>  " id,user_id,user{id,name,email,role{id,nom}},proprietaire_id,proprietaire{id,code,nom,prenom,telephone,agence_id,agence{id,nom_agence}},bien_immo_id,bien_immo{id,code,description,montant}",
     );
@@ -104,7 +102,13 @@ class Outil extends Model
         $critere = "created_at_start:\"{$start}\",created_at_end:\"{$end}\"";
         $queryAttr = Outil::$queries[$queryName];
         $apiUrl = self::getAPI(); // Utilisation de l'URL dynamique
-        $response = $guzzleClient->get("{$apiUrl}/graphql?query={{$queryName}({$critere}){{$queryAttr}}}");
+        $response = $guzzleClient->get("{$apiUrl}/graphql?query={{$queryName}({$critere}){{$queryAttr}}}",[
+                'headers' => [
+                'Authorization' => "Bearer {$token}",
+                'Accept'        => 'application/json',
+            ]
+        ]);
+        //dd("{$apiUrl}/graphql?query={{$queryName}({$critere}){{$queryAttr}}}");
         $data = json_decode($response->getBody(), true);
         $start = date("d/m/y",strtotime($start));
         $end = date("d/m/y",strtotime($end));

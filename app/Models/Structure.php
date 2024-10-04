@@ -5,13 +5,12 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class CompteLocataire extends Model
+class Structure extends Model
 {
     use HasFactory;
 
-    public  function locataire()
+    public  function users()
     {
-        return $this->belongsTo(Locataire::class);
+        return $this->hasMany(User::class);
     }
-    
 }

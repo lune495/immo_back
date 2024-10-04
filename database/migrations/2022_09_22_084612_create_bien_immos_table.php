@@ -24,6 +24,8 @@ class CreateBienImmosTable extends Migration
             $table->integer('nbr_etage')->nullable();
             $table->integer('nbr_total_appartement')->default(0);
             $table->integer('nbr_magasin')->nullable();
+            $table->unsignedBigInteger('user_id');
+            $table->foreign('user_id')->references('id')->on('users');
             $table->timestamps();   
         });
     }

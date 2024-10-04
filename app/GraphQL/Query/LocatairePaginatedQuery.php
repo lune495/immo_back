@@ -7,6 +7,7 @@ use Rebing\GraphQL\Support\Query;
 use Rebing\GraphQL\Support\Facades\GraphQL;
 use Illuminate\Support\Arr;
 use \App\Models\{Locataire,Outil,CompteLocataire};
+use Illuminate\Support\Facades\Auth;
 
 class LocatairePaginatedQuery extends Query
 {
@@ -39,7 +40,14 @@ class LocatairePaginatedQuery extends Query
 
     public function resolve($root, $args)
     {
+        $user = Auth::user();
         $query = Locataire::with('compte_locataires');
+        // Filtrer les propriétaires dont la structure_id de l'utilisateur associé correspond à celui de l'utilisateur connecté
+        if ($user && $user->structure_id) {
+            $query->whereHas('user', function ($q) use ($user) {
+                $q->where('structure_id', $user->structure_id);
+            });
+        }
         if (isset($args['id']))
         {
             $query->where('id', $args['id']);

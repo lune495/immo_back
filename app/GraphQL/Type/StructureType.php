@@ -1,15 +1,15 @@
 <?php
 namespace App\GraphQL\Type;
 
-use App\Models\User;
+use App\Models\Structure;
 use GraphQL\Type\Definition\Type;
 use Rebing\GraphQL\Support\Facades\GraphQL;
 use Rebing\GraphQL\Support\Type as GraphQLType;
 
-class UserType extends GraphQLType
+class StructureType extends GraphQLType
 {
     protected $attributes = [
-        'name'          => 'User',
+        'name'          => 'Structure',
         'description'   => ''
     ];
 
@@ -18,12 +18,7 @@ class UserType extends GraphQLType
        return
             [
                 'id'                        => ['type' => Type::id(), 'description' => ''],
-                'name'                      => ['type' => Type::string()],
-                'email'                     => ['type' => Type::string()],
-                'role_id'                   => ['type' => Type::int()],
-                'role'                      => ['type' => GraphQL::type('Role')],
-                'structure_id'              => ['type' => Type::int()],
-                'structure'                 => ['type' => GraphQL::type('Structure')],
+                'nom_structure'             => ['type' => Type::string()],
             ];
     }
 

@@ -2,7 +2,7 @@
 
 namespace App\GraphQL\Query;
 
-use  App\Models\{Journal,Outil};
+use  App\Models\{Journal,Outil,ClotureCaisse};
 use Carbon\Carbon;
 use GraphQL\Type\Definition\Type;
 use Rebing\GraphQL\Support\Query;
@@ -48,6 +48,10 @@ class JournalQuery extends Query
             $from = date($from.' 00:00:00');
             $to   = date($to.' 23:59:59');
             $query->whereBetween('created_at', array($from, $to));
+        }
+        $latestClosureDate = ClotureCaisse::orderBy('date_fermeture', 'desc')->value('date_fermeture');
+        if (isset($latestClosureDate)) {
+            $query = $query->whereBetween('created_at', [$latestClosureDate, now()]);
         }
 
         $query = $query->get();

@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 
 use App\Models\{BienImmo,Unite,Outil,Proprietaire};
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 
 
 class BienImmoController extends Controller
@@ -20,6 +21,7 @@ class BienImmoController extends Controller
                 DB::beginTransaction();
                 $errors =null;
                 $item = new BienImmo();
+                $user = Auth::user();
                 if (!empty($request->id))
                 {
                     $item = BienImmo::find($request->id);
@@ -63,7 +65,7 @@ class BienImmoController extends Controller
                 $item->nbr_total_appartement = $request->nbr_total_appartement;
                 $item->nbr_magasin = $request->nbr_magasin;
                 $item->commission_agence = $request->commission_agence;
-
+                $item->user_id = $user->id;
                 if (!isset($errors)) 
                 {
                     $item->save();

@@ -6,6 +6,8 @@ use GraphQL\Type\Definition\Type;
 use Rebing\GraphQL\Support\Query;
 use Rebing\GraphQL\Support\Facades\GraphQL;
 use App\Models\{Proprietaire,Outil};
+use Illuminate\Support\Facades\Auth;
+
 class ProprietairesQuery extends Query
 {
     protected $attributes = [
@@ -31,7 +33,14 @@ class ProprietairesQuery extends Query
 
     public function resolve($root, $args)
     {
+        $user = Auth::user();
         $query = Proprietaire::query();
+        // Filtrer les propriétaires dont la structure_id de l'utilisateur associé correspond à celui de l'utilisateur connecté
+        if ($user && $user->structure_id) {
+            $query->whereHas('user', function ($q) use ($user) {
+                $q->where('structure_id', $user->structure_id);
+            });
+        }
         if (isset($args['id']))
         {
             $query = $query->where('id', $args['id']);
@@ -53,8 +62,7 @@ class ProprietairesQuery extends Query
                 'nom'                     => $item->nom,
                 'prenom'                  => $item->prenom,
                 'telephone'               => $item->telephone,
-                'agence_id'               => $item->agence_id,
-                'agence'                  => $item->agence,
+                'user'                    => $item->user,
                 'bien_immos'              => $item->bien_immos,
                 'nbr_bien'                => $item->nbr_bien,
                 'assujetissement_id'      => $item->assujetissement_id,

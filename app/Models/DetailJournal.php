@@ -21,8 +21,8 @@ class DetailJournal extends Model
         return $this->belongsTo(Journal::class);
     }
 
-    public  function depense_proprio()
+    public  function user()
     {
-        return $this->belongsTo(DepenseProprio::class);
+        return $this->belongsTo(User::class);
     }
 }

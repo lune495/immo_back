@@ -30,6 +30,8 @@ class DetailJournalType extends GraphQLType
             'solde'                             => ['type' => Type::int()],
             'locataire_id'                      => ['type' => Type::int()],
             'locataire'                         => ['type' => GraphQL::type('Locataire')],
+            'user_id'                           => ['type' => Type::int()],
+            'user'                              => ['type' => GraphQL::type('User')],
             'proprietaire_id'                   => ['type' => Type::int()],
             'proprietaire'                      => ['type' => GraphQL::type('Proprietaire')],
             'journal_id'                        => ['type' => Type::int()],
@@ -38,8 +40,6 @@ class DetailJournalType extends GraphQLType
             'created_at_fr'                     => [ 'type' => Type::string(), 'description' => ''],
             'updated_at'                        => [ 'type' => Type::string(), 'description' => ''],
             'updated_at_fr'                     => [ 'type' => Type::string(), 'description' => ''],
-            'depense_proprio'                   => ['type' => GraphQL::type('DepenseProprio')],
-            'depense_proprio_id'                => ['type' => Type::int()],
         ];
     }
 

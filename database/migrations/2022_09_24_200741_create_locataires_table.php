@@ -31,6 +31,8 @@ class CreateLocatairesTable extends Migration
             $table->string("situation_matrimoniale")->nullable();
             $table->integer('restant_caution')->default(0);
             $table->integer('multipli')->nullable();
+            $table->unsignedBigInteger('user_id');
+            $table->foreign('user_id')->references('id')->on('users');
             $table->timestamps();
         });
     }

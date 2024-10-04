@@ -12,4 +12,8 @@ class Journal extends Model
     {
         return $this->hasMany(DetailJournal::class);
     }
+    public  function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 }

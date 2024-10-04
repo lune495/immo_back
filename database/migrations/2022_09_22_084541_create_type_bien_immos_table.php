@@ -16,6 +16,8 @@ class CreateTypeBienImmosTable extends Migration
         Schema::create('type_bien_immos', function (Blueprint $table) {
             $table->id();
             $table->string('nom');
+            $table->unsignedBigInteger('user_id');
+            $table->foreign('user_id')->references('id')->on('users');
             $table->timestamps();
         });
     }

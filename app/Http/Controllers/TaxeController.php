@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 
 use App\Models\{Taxe,Outil};
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 
 class TaxeController extends Controller
 {
@@ -20,6 +21,7 @@ class TaxeController extends Controller
                 DB::beginTransaction();
                 $errors =null;
                 $item = new Taxe();
+                $user = Auth::user();
                 if (!empty($request->id))
                 {
                     $item = Taxe::find($request->id);
@@ -34,6 +36,8 @@ class TaxeController extends Controller
                 }
                 $item->nom = $request->nom;
                 $item->value = $request->value;
+                $item->user_id = $user->id;
+
                 if (!isset($errors)) 
                 {
                     $item->save();

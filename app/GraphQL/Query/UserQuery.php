@@ -6,7 +6,7 @@ use GraphQL\Type\Definition\Type;
 use Rebing\GraphQL\Support\Query;
 use Rebing\GraphQL\Support\Facades\GraphQL;
 use App\Models\User;
-    
+use Illuminate\Support\Facades\Auth;
 class UserQuery extends Query
 {
     protected $attributes = [
@@ -30,7 +30,11 @@ class UserQuery extends Query
 
     public function resolve($root, $args)
     {
-        $query = User::query();  
+        $user = Auth::user();
+        $query = User::query();
+        if ($user && $user->structure_id) {
+            $query->where('structure_id', $user->structure_id);
+        }
         if (isset($args['id']))
         {
             $query = $query->where('id', $args['id']);
@@ -49,6 +53,7 @@ class UserQuery extends Query
                 'email'                   => $item->email,
                 'role_id'                 => $item->role_id,
                 'role'                    => $item->role,
+                'structure'               => $item->structure,
             ];
         });
 

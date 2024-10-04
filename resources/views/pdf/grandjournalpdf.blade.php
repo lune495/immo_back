@@ -21,7 +21,7 @@
         </tr>
     </table>
 
-    <h2 style="margin:0; text-align:center; color:#2E8B57;">Grand Journal du {{$start}} au {{$end}}</h2>
+    <h2 style="margin:0; text-align:center; color:#2E8B57;">Caisse du {{$start}} au {{$end}}</h2>
     <br>
     <table style="width: 100%; border-collapse: collapse;">
         {{$solde = 0}}

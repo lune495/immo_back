@@ -37,7 +37,7 @@ class DetailJournalPaginatedQuery extends Query
 
     public function resolve($root, $args)
     {
-    $query = DetailJournal::with('journal','depense_proprio');
+    $query = DetailJournal::with('journal');
 
     if (isset($args['id']))
     {

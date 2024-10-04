@@ -16,6 +16,8 @@ class CreateNatureLocalsTable extends Migration
         Schema::create('nature_locals', function (Blueprint $table) {
             $table->id();
             $table->string('nom');
+            $table->unsignedBigInteger('user_id');
+            $table->foreign('user_id')->references('id')->on('users');
             $table->timestamps();
         });
     }

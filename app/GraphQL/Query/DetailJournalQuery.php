@@ -2,11 +2,12 @@
 
 namespace App\GraphQL\Query;
 
-use App\Models\{DetailJournal,Outil,Locataire};
+use App\Models\{DetailJournal,Outil,Locataire,ClotureCaisse};
 use Carbon\Carbon;
 use GraphQL\Type\Definition\Type;
 use Rebing\GraphQL\Support\Query;
 use Rebing\GraphQL\Support\Facades\GraphQL;
+use Illuminate\Support\Facades\Auth;
 
 class DetailJournalQuery extends Query
 {
@@ -34,7 +35,23 @@ class DetailJournalQuery extends Query
 
     public function resolve($root, $args)
     {
-        $query = DetailJournal::with('journal','depense_proprio');
+        $user = Auth::user();
+        $query = DetailJournal::with('journal','proprietaire','locataire');
+
+        if ($user && $user->structure_id) {
+            $query->where(function ($q) use ($user) {
+                $q->whereHas('locataire.user', function ($q) use ($user) {
+                    $q->where('structure_id', $user->structure_id);
+                })
+                ->orWhereHas('proprietaire.user', function ($q) use ($user) {
+                    $q->where('structure_id', $user->structure_id);
+                })
+                ->orWhereHas('journal.user', function ($q) use ($user) {
+                    $q->where('structure_id', $user->structure_id);
+                });
+            });
+        }
+        
         if (isset($args['id']))
         {
             $query->where('id', $args['id']);
@@ -56,6 +73,11 @@ class DetailJournalQuery extends Query
         {
             $query->where('journal_id', $args['journal_id']);
         }
+        $latestClosureDate = ClotureCaisse::orderBy('date_fermeture', 'desc')->value('date_fermeture');
+        // Si la date de fermeture est définie, on filtre les entrées créées après cette date
+        if ($latestClosureDate && Carbon::parse($latestClosureDate) <= now()) {
+            $query->where('created_at', '>=', $latestClosureDate);
+        }
         $query->orderBy('id', 'desc');
         $query = $query->get();
 
@@ -73,8 +95,7 @@ class DetailJournalQuery extends Query
                 'proprietaire_id'                   => $item->proprietaire_id,
                 'proprietaire'                      => $item->proprietaire,
                 'journal_id'                        => $item->journal_id,
-                'journal'                           => $item->journal,   
-                'depense_proprio'                   => $item->depense_proprio, 
+                'journal'                           => $item->journal, 
                 'journal'                           => $item->journal,   
                 'created_at_fr'                     => $item->created_at_fr,   
                 'updated_at_fr'                     => $item->updated_at_fr,   
