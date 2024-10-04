@@ -157,47 +157,47 @@ class JournalController extends Controller
     }
 
     public function generePDfGrandJournal($start = false, $end = false)
-{
-    $user = Auth::user();
-    $query = DetailJournal::with('journal', 'proprietaire', 'locataire');
-
-    // Vérifier si des dates de début et de fin sont fournies
-    if ($start && $end && $user && $user->structure_id) {
-        // Ajouter la condition pour filtrer par structure_id
-        $query->where(function ($q) use ($user) {
-            $q->whereHas('locataire.user', function ($q) use ($user) {
-                $q->where('structure_id', $user->structure_id);
-            })
-            ->orWhereHas('proprietaire.user', function ($q) use ($user) {
-                $q->where('structure_id', $user->structure_id);
-            })
-            ->orWhereHas('journal.user', function ($q) use ($user) {
-                $q->where('structure_id', $user->structure_id);
+    {
+        $user = Auth::user();
+        $query = DetailJournal::with('journal', 'proprietaire', 'locataire');
+        
+        // Vérifier si des dates de début et de fin sont fournies
+        if ($start && $end && $user && $user->structure_id) {
+            // Ajouter la condition pour filtrer par structure_id
+            $query->where(function ($q) use ($user) {
+                $q->whereHas('locataire.user', function ($q) use ($user) {
+                    $q->where('structure_id', $user->structure_id);
+                })
+                ->orWhereHas('proprietaire.user', function ($q) use ($user) {
+                    $q->where('structure_id', $user->structure_id);
+                })
+                ->orWhereHas('journal.user', function ($q) use ($user) {
+                    $q->where('structure_id', $user->structure_id);
+                });
             });
-        });
 
-        // Convertir les dates pour inclure toute la journée
-        $start = Carbon::parse($start)->startOfDay(); // 00:00:00
-        $end = Carbon::parse($end)->endOfDay();       // 23:59:59
+            // Convertir les dates pour inclure toute la journée
+            $start = Carbon::parse($start)->startOfDay(); // 00:00:00
+            $end = Carbon::parse($end)->endOfDay();       // 23:59:59
 
-        // Appliquer le filtre entre les deux dates
-        $query->whereBetween('created_at', [$start, $end]);
+            // Appliquer le filtre entre les deux dates
+            $query->whereBetween('created_at', [$start, $end]);
+        }
+
+        // Récupérer les journaux filtrés
+        $detailJournals = $query->get();
+
+        // Préparer les données pour le PDF
+        $data = [
+            'detail_journals' => $detailJournals,
+            'start' => date('d/m/y', strtotime($start)),
+            'end' => date('d/m/y', strtotime($end)),
+        ];
+
+        // Générer le PDF
+        $pdf = PDF::loadView("pdf.grandjournalpdf", $data);
+        return $pdf->stream();
     }
-
-    // Récupérer les journaux filtrés
-    $detailJournals = $query->get();
-
-    // Préparer les données pour le PDF
-    $data = [
-        'detail_journals' => $detailJournals,
-        'start' => date('d/m/y', strtotime($start)),
-        'end' => date('d/m/y', strtotime($end)),
-    ];
-
-    // Générer le PDF
-    $pdf = PDF::loadView("pdf.grandjournalpdf", $data);
-    return $pdf->stream();
-}
 
 
 
