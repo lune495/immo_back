@@ -24,7 +24,7 @@ Route::get('/quittance-pdf/{id?}', [LocataireController::class,'generatequittanc
 Route::get('/situation-generale-par-proprio-pdf/{id}', [JournalController::class,'situationgeneralparproprio']);
 Route::get('/', function () {
     return view('welcome');
-})->name('login');
+});
 
 Route::get('/test-auth', function () {
     return Auth::user() ? Auth::user() : 'User is not authenticated';
