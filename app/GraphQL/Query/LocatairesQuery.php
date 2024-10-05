@@ -34,13 +34,8 @@ class LocatairesQuery extends Query
     public function resolve($root, $args)
     {
         $user = Auth::user();
-        $query = Locataire::query();
+        $query = Locataire::with('user');
         // Filtrer les propriétaires dont la structure_id de l'utilisateur associé correspond à celui de l'utilisateur connecté
-        if ($user && $user->structure_id) {
-            $query->whereHas('user', function ($q) use ($user) {
-                $q->where('structure_id', $user->structure_id);
-            });
-        }
         if (isset($args['id']))
         {
             $query = $query->where('id', $args['id']);
@@ -58,6 +53,11 @@ class LocatairesQuery extends Query
         if (isset($args['prenom']))
         {
             $query = $query->where('prenom',Outil::getOperateurLikeDB(),'%'.$args['prenom'].'%');
+        }
+        if ($user && $user->structure_id) {
+            $query->whereHas('user', function ($q) use ($user) {
+                $q->where('structure_id', $user->structure_id);
+            });
         }
         $query->orderBy('id', 'desc');
         $query = $query->get();

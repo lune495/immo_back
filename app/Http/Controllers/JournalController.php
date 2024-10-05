@@ -7,7 +7,7 @@ use App\Models\{Compte,Locataire,DetailJournal,Outil,Journal,ClotureCaisse,Depen
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
-
+use Laravel\Sanctum\PersonalAccessToken;
 
 use \PDF;
 
@@ -156,26 +156,36 @@ class JournalController extends Controller
         }
     }
 
-    public function generePDfGrandJournal($start = false, $end = false)
+    public function generePDfGrandJournal($start = false, $end = false, $token)
     {
-        $user = Auth::user();
-        $query = DetailJournal::with('journal', 'proprietaire', 'locataire');
-        
-        // Vérifier si des dates de début et de fin sont fournies
-        if ($start && $end && $user && $user->structure_id) {
+        // Chercher le token dans la base de données pour récupérer l'utilisateur correspondant
+        $accessToken = PersonalAccessToken::findToken($token);
+        // Vérifier si le token est valide
+        if (!$accessToken || !$accessToken->tokenable) {
+            return response()->json(['message' => 'Token invalide'], 401);
+        }
+        // Récupérer l'utilisateur associé au token
+        $user = $accessToken->tokenable;
+        // Initialiser la requête
+        $query = DetailJournal::with('proprietaire', 'locataire');
+
+        // Vérifier si des dates de début et de fin sont fournies et si l'utilisateur est authentifié
+        if ($start && $end && $user->structure_id) {
             // Ajouter la condition pour filtrer par structure_id
             $query->where(function ($q) use ($user) {
-                $q->whereHas('locataire.user', function ($q) use ($user) {
-                    $q->where('structure_id', $user->structure_id);
+                 // Filtrer par locataire associé à l'utilisateur
+                $q->whereHas('locataire', function ($q) use ($user) {
+                    $q->whereHas('user', function ($q) use ($user) {
+                        $q->where('structure_id', $user->structure_id);
+                    });
                 })
-                ->orWhereHas('proprietaire.user', function ($q) use ($user) {
-                    $q->where('structure_id', $user->structure_id);
-                })
-                ->orWhereHas('journal.user', function ($q) use ($user) {
-                    $q->where('structure_id', $user->structure_id);
+                // Filtrer par propriétaire associé à l'utilisateur
+                ->orWhereHas('proprietaire', function ($q) use ($user) {
+                    $q->whereHas('user', function ($q) use ($user) {
+                        $q->where('structure_id', $user->structure_id);
+                    });
                 });
             });
-
             // Convertir les dates pour inclure toute la journée
             $start = Carbon::parse($start)->startOfDay(); // 00:00:00
             $end = Carbon::parse($end)->endOfDay();       // 23:59:59
@@ -198,6 +208,7 @@ class JournalController extends Controller
         $pdf = PDF::loadView("pdf.grandjournalpdf", $data);
         return $pdf->stream();
     }
+    
 
 
 
