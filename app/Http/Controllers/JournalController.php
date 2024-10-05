@@ -202,6 +202,7 @@ class JournalController extends Controller
             'detail_journals' => $detailJournals,
             'start' => date('d/m/y', strtotime($start)),
             'end' => date('d/m/y', strtotime($end)),
+            'user' => $user,
         ];
 
         // Générer le PDF
