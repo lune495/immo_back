@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class AddTagLogoToUsers extends Migration
+class AddTagLogoToStructures extends Migration
 {
     /**
      * Run the migrations.
@@ -13,7 +13,7 @@ class AddTagLogoToUsers extends Migration
      */
     public function up()
     {
-        Schema::table('users', function (Blueprint $table) {
+        Schema::table('structures', function (Blueprint $table) {
             //
             $table->string('tag_logo')->nullable();
         });
@@ -26,7 +26,7 @@ class AddTagLogoToUsers extends Migration
      */
     public function down()
     {
-        Schema::table('users', function (Blueprint $table) {
+        Schema::table('structures', function (Blueprint $table) {
             //
             $table->$table->dropColumn('tag_logo');
         });
