@@ -102,7 +102,7 @@
                 }
                 /** Define now the real margins of every page in the PDF **/
                 body {
-                    margin-top: 1.3cm;
+                    margin-top: 0.3cm;
                     font-weight: 400;
                     background:  #fff;
                     color: black;
@@ -130,9 +130,9 @@
                     font-size:11px !important;
                 }
                 .mb-4{
-                    margin-bottom: 5em;                }
+                    margin-bottom: 0.3em;                }
                 .mt-4{
-                    margin-top: 2em;                }
+                    margin-top: 0.5em;                }
                     .banner {
                         width: 100%;
                         height: 210px; /* Ajustez la hauteur selon vos besoins */
@@ -144,9 +144,9 @@
         </head>
         <body>
             <!-- Bannière en haut du PDF -->
-        <div style="width: 100%; text-align: center; margin-bottom: 10px;">
+        <!-- <div style="width: 100%; text-align: center; margin-bottom: 10px;">
             <img src="{{ asset('app-assets/assets/images/immo2.jpg') }}" alt="Bannière" class="banner">
-        </div>
+        </div> -->
              <!-- <img src="{{ asset('app-assets/assets/images/immo.PNG') }}" alt=""> -->
             <div class="mt-4">
                 @yield('content')

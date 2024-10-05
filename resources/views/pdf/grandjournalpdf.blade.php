@@ -2,7 +2,10 @@
 @section('title', "PDF Grand journal")
 
 @section('content')
-    <table style="border: none; margin-top:50px;font-size: 11px; width: 100%;">
+    <div style="width: 100%; text-align: center; margin-bottom: 1px;">
+            <img src="{{ asset('app-assets/assets/images/' . $user->tag_logo) }}" alt="Bannière" class="banner">
+    </div>
+    <table style="border: none; margin-top:1px;font-size: 11px; width: 100%;">
         <tr style="border: none;">
             <td style="border: none;">
                 <div>
