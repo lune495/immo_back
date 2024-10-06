@@ -92,7 +92,7 @@
     <!-- En-tête avec les informations principales -->
     <div class="header">
         <div class="left">
-            <p><strong>Compagnie Immobilière du Sénégal (C.I.S.)</strong></p>
+            <p><strong>{{$user->structure->nom_structure}}</strong></p>
             <p>Location - Gestion - Achat - Construction - Rénovation</p>
             <p><strong>Adresse :</strong> {{$user->structure->adresse_structure ? $user->structure->adresse_structure : ''}}</p>
             <p><strong>Téléphone :</strong> {{$user->structure->numero_tel1_structure ? $user->structure->numero_tel1_structure : ''}}</p>

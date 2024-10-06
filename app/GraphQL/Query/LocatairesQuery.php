@@ -35,36 +35,43 @@ class LocatairesQuery extends Query
     {
         $user = Auth::user();
         $query = Locataire::with('user');
+        
         // Filtrer les propriétaires dont la structure_id de l'utilisateur associé correspond à celui de l'utilisateur connecté
-        if (isset($args['id']))
-        {
-            $query = $query->where('id', $args['id']);
-        }
-        if (isset($args['search']))
-        {
-            $query = $query->where('code',Outil::getOperateurLikeDB(),'%'.$args['search'].'%')
-            ->orWhere('nom', Outil::getOperateurLikeDB(),'%'. $args['search'] . '%')
-            ->orWhere('prenom', Outil::getOperateurLikeDB(),'%'. $args['search'] . '%');
-        }
-        if (isset($args['nom']))
-        {
-            $query = $query->where('nom',Outil::getOperateurLikeDB(),'%'.$args['nom'].'%');
-        }
-        if (isset($args['prenom']))
-        {
-            $query = $query->where('prenom',Outil::getOperateurLikeDB(),'%'.$args['prenom'].'%');
-        }
         if ($user && $user->structure_id) {
             $query->whereHas('user', function ($q) use ($user) {
                 $q->where('structure_id', $user->structure_id);
             });
         }
+    
+        // Ajout des filtres selon les arguments
+        if (isset($args['id'])) {
+            $query->where('id', $args['id']);
+        }
+    
+        if (isset($args['search'])) {
+            $query->where(function ($subQuery) use ($args) {
+                $subQuery->where('code', Outil::getOperateurLikeDB(), '%' . $args['search'] . '%')
+                         ->orWhere('nom', Outil::getOperateurLikeDB(), '%' . $args['search'] . '%')
+                         ->orWhere('prenom', Outil::getOperateurLikeDB(), '%' . $args['search'] . '%');
+            });
+        }
+    
+        if (isset($args['nom'])) {
+            $query->where('nom', Outil::getOperateurLikeDB(), '%' . $args['nom'] . '%');
+        }
+    
+        if (isset($args['prenom'])) {
+            $query->where('prenom', Outil::getOperateurLikeDB(), '%' . $args['prenom'] . '%');
+        }
+        
+        // Trier les résultats
         $query->orderBy('id', 'desc');
-        $query = $query->get();
-        return $query->map(function (Locataire $item)
-        {
-            return
-            [
+    
+        // Récupérer les résultats
+        $locataires = $query->get();
+    
+        return $locataires->map(function (Locataire $item) {
+            return [
                 'id'                      => $item->id,
                 'code'                    => $item->code,
                 'nom'                     => $item->nom,
@@ -89,6 +96,6 @@ class LocatairesQuery extends Query
                 'solde'                   => $item->solde,
             ];
         });
-
     }
+    
 }

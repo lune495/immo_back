@@ -31,31 +31,31 @@ class BienImmoController extends Controller
                     $errors = "Renseignez le nom du Bien Immobilier";
                 }
 
-                if (empty($request->adresse))
-                {
-                    $errors = "Renseignez l'adresse du Bien immobiler";
-                }
+                // if (empty($request->adresse))
+                // {
+                //     $errors = "Renseignez l'adresse du Bien immobiler";
+                // }
 
                 if (empty($request->proprietaire_id))
                 {
                     $errors = "Renseignez le proprietaire du Bien immobiler";
                 }
-                if (empty($request->nbr_etage))
-                {
-                    $errors = "Renseignez le nombre d'etage du Bien immobiler";
-                }
-                if (empty($request->nbr_total_appartement))
-                {
-                    $errors = "Renseignez le nombre total d'appartement";
-                }
-                if (empty($request->nbr_magasin))
-                {
-                    $errors = "Renseignez le nombre de nbr_magasin";
-                }
-                if (empty($request->description))
-                {
-                    $errors = "Renseignez la description du Bien Immobilier";
-                }
+                // if (empty($request->nbr_etage))
+                // {
+                //     $errors = "Renseignez le nombre d'etage du Bien immobiler";
+                // }
+                // if (empty($request->nbr_total_appartement))
+                // {
+                //     $errors = "Renseignez le nombre total d'appartement";
+                // }
+                // if (empty($request->nbr_magasin))
+                // {
+                //     $errors = "Renseignez le nombre de nbr_magasin";
+                // }
+                // if (empty($request->description))
+                // {
+                //     $errors = "Renseignez la description du Bien Immobilier";
+                // }
                 $item->code = "000001";
                 $item->description = $request->description;
                 $item->nom_immeuble = $request->nom_immeuble;

@@ -1,9 +1,8 @@
 <?php
-
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
-use App\Models\{CompteLocataire,Locataire};
+use App\Models\{CompteLocataire, Locataire};
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
 use App\Services\TwilioService;
@@ -29,7 +28,6 @@ class UpdateCredits extends Command
      *
      * @return int
      */
-
     protected $twilioService;
 
     public function __construct(TwilioService $twilioService)
@@ -43,40 +41,71 @@ class UpdateCredits extends Command
         // Obtenir la date actuelle
         Log::info('La commande update:credits a été déclenchée à ' . now());
         $today = Carbon::today();
-        // $today = "2024-08-06 00:00:00";
-        $today = \Carbon\Carbon::parse($today);
         $dayOfMonth = $today->day;
-        // Exécuter la mise à jour seulement si on est le 03 du mois
-        if ($dayOfMonth == 5) {
-            // Récupérer tous les comptes de locataires
-            $comptes = CompteLocataire::distinct('locataire_id')->pluck('locataire_id');
 
-            foreach ($comptes as $compte) {
-                // $dernierCompte = CompteLocataire::where('locataire_id', 2)
-                $dernierCompte = CompteLocataire::where('locataire_id', $compte )
-                                        ->where('debit',0)
-                                        ->orderBy('dernier_date_paiement', 'desc')
-                                        ->first();
-                // Convertir la dernière date de paiement en instance de Carbon
-                $dernierDate = \Carbon\Carbon::parse($dernierCompte->dernier_date_paiement);
-                if ($today->greaterThanOrEqualTo($dernierDate->addMonth()->startOfMonth()->addDays(2)) && $dernierCompte->locataire->resilier == false) {
+        // Récupérer tous les comptes de locataires
+        $comptes = CompteLocataire::distinct('locataire_id')->pluck('locataire_id');
+
+        foreach ($comptes as $compteId) {
+            $dernierCompte = CompteLocataire::where('locataire_id', $compteId)
+                ->orderBy('dernier_date_paiement', 'desc')
+                ->first();
+
+            // Convertir la dernière date de paiement en instance de Carbon
+            $dernierDate = Carbon::parse($dernierCompte->dernier_date_paiement);
+            $locataire = Locataire::find($compteId);
+
+            // Vérifier si le locataire appartient à la structure_id = 2
+            if ($locataire->user->structure->id == 2) {
+                // Vérifier si on dépasse un mois et 2 jours depuis le dernier paiement
+                if ($today->greaterThanOrEqualTo($dernierDate->addMonth()->addDays(2)) && $dayOfMonth > 10 && $locataire->resilier == false) {
+                    // Calculer le nombre de jours de retard depuis le 10 du mois
+                    $daysLate = $dayOfMonth - 10; 
+                    
+                    // Appliquer la pénalité de 2500 XOF pour chaque jour de retard
+                    if ($daysLate > 0) {
+                        $compte_locataire = new CompteLocataire();
+                        $compte_locataire->locataire_id = $locataire->id;
+                        $compte_locataire->libelle = "Pénalité pour retard - Jour " . $dayOfMonth;
+                        $compte_locataire->dernier_date_paiement = $today;
+                        $compte_locataire->debit = 2500; // Pénalité fixe de 2500 XOF
+                        $compte_locataire->credit = 0;
+                        $compte_locataire->statut_paye = false;
+                        $compte_locataire->save();
+
+                        // Mettre à jour le solde du locataire
+                        $locataire->solde += 2500;
+                        $locataire->save();
+                        
+                        // Log pour la pénalité appliquée
+                        Log::info("Une pénalité de retard de 2500 XOF a été appliquée pour le locataire {$locataire->id} pour le jour {$dayOfMonth}.");
+                    }
+                }
+            } 
+            // Pour les locataires de la structure 1
+            else if ($locataire->user->structure->id == 1) {
+                // Si la date est supérieure ou égale à la dernière date de paiement plus 1 mois et 2 jours, appliquer le loyer dû
+                if ($today->greaterThanOrEqualTo($dernierDate->addMonth()->addDays(2)) && $locataire->resilier == false) {
                     $compte_locataire = new CompteLocataire();
-                    $compte_locataire->locataire_id = $dernierCompte->locataire_id;
+                    $compte_locataire->locataire_id = $locataire->id;
                     $compte_locataire->libelle = "Loyer Dû";
                     $compte_locataire->dernier_date_paiement = $today;
-                    $compte_locataire->debit = $dernierCompte->locataire->montant_loyer_ttc;
+                    $compte_locataire->debit = $locataire->montant_loyer_ttc;
                     $compte_locataire->credit = 0;
                     $compte_locataire->statut_paye = false;
                     $compte_locataire->save();
-                    $locataire = Locataire::find($compte_locataire->locataire_id);
+
+                    // Mettre à jour le solde du locataire
                     $locataire->solde += $compte_locataire->debit - $compte_locataire->credit;
                     $locataire->save();
-                    // Envoyer un message WhatsApp
-                    // $message = "Bonjour ".$dernierCompte->locataire->nom .", votre loyer de " . $compte_locataire->debit . " est dû. Veuillez effectuer le paiement dès que possible. Merci!";
-                    // $this->twilioService->sendWhatsAppMessage($dernierCompte->locataire->telephone, $message);
+
+                    // Envoyer un message WhatsApp si nécessaire
+                    // $message = "Bonjour " . $locataire->nom . ", votre loyer de " . $compte_locataire->debit . " est dû. Veuillez effectuer le paiement dès que possible. Merci!";
+                    // $this->twilioService->sendWhatsAppMessage($locataire->telephone, $message);
                 }
             }
-         }
+        }
+
         return Command::SUCCESS;
     }
 }
