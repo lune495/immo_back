@@ -117,12 +117,16 @@ class LocatairePaginatedQuery extends Query
         }
         
 
-        // if (isset($args['en_regle'])==true) {
-        //     $query->where('solde','==',0);
-        // }
-        // if (isset($args['en_regle'])==false) {
-        //     $query->where('solde','>',0);
-        // }
+        if (isset($args['en_regle'])) {
+            if ($args['en_regle']) {
+                // Locataires en règle (solde égal à 0)
+                $query->where('solde', 0);
+            } else {
+                // Locataires non en règle (solde supérieur à 0)
+                $query->where('solde', '>', 0);
+            }
+        }
+        
         
         $count = Arr::get($args, 'count', 10);
         $page  = Arr::get($args, 'page', 1);
