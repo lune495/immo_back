@@ -166,6 +166,7 @@ class JournalController extends Controller
         }
         // Récupérer l'utilisateur associé au token
         $user = $accessToken->tokenable;
+
         // Initialiser la requête
         $query = DetailJournal::with('proprietaire', 'locataire');
 
@@ -213,9 +214,18 @@ class JournalController extends Controller
 
 
 
-    public function generatesituationparproprio($proprioId = null, $param1 = false, $param2 = false, $param3 = false)
+    public function generatesituationparproprio($proprioId = null, $param3 = false, $token = null)
     {
-        if ($proprioId !== null) {
+         // Chercher le token dans la base de données pour récupérer l'utilisateur correspondant
+         $accessToken = PersonalAccessToken::findToken($token);
+         // Vérifier si le token est valide
+         if (!$accessToken || !$accessToken->tokenable) {
+             return response()->json(['message' => 'Token invalide'], 401);
+         }
+         // Récupérer l'utilisateur associé au token
+         $user = $accessToken->tokenable;
+
+        if ($proprioId !== null && $user->structure_id) {
             $data = [];
             $proprietaire = Proprietaire::find($proprioId);
             $nom = "$proprietaire->prenom $proprietaire->nom";
@@ -227,40 +237,31 @@ class JournalController extends Controller
                 DB::raw('SUM(compte_locataires.debit) as total_debit'),
                 DB::raw('SUM(compte_locataires.credit) as total_credit'),
                 DB::raw('SUM(compte_locataires.credit - compte_locataires.debit) as solde')
-            )
-            ->join('locataires', 'compte_locataires.locataire_id', '=', 'locataires.id')
+            )->join('locataires', 'compte_locataires.locataire_id', '=', 'locataires.id')
             ->join('bien_immos', 'locataires.bien_immo_id', '=', 'bien_immos.id')
-            // ->where('bien_immos.proprietaire_id', $proprioId) // Filtrer par propriétaire
-            ->groupBy('locataires.id', 'locataires.prenom', 'locataires.nom');;
-            
+            ->groupBy('locataires.id', 'locataires.prenom', 'locataires.nom');
             
             $startDate = null;
             $endDate = null;
             $month = false;
 
-            // Vérifier si le dernier paramètre est un mois (YYYY-MM)
+            // Vérifier si le paramètre est un mois (YYYY-MM)
             if ($param3 && preg_match('/^\d{4}-\d{2}$/', $param3)) {
                 // Traiter comme un mois
                 $month = $param3;
-            } elseif ($param1 && preg_match('/^\d{4}-\d{2}$/', $param1)) {
-                // Si le premier paramètre est un mois
-                $month = $param1;
             }
+
             // Si un mois est fourni, le convertir en début et fin de mois
             if ($month !== false) {
                 $startDate = Carbon::createFromFormat('Y-m', $month)->startOfMonth()->format('Y-m-d H:i:s');
                 $endDate = Carbon::createFromFormat('Y-m', $month)->endOfMonth()->format('Y-m-d H:i:s');
                 // Formater le mois en lettres (ex: SEPTEMBRE 2024)
                 $data['mois'] = strtoupper(Carbon::createFromFormat('Y-m', $month)->locale('fr')->isoFormat('MMMM YYYY'));
-            }
-
-            // Si $param1 et $param2 sont des dates, on les traite comme une plage de dates
-            if ($param1 && !$month && !$param3) {
-                $startDate = (strpos($param1, '/') !== false) ? Carbon::createFromFormat('d/m/Y', $param1)->format('Y-m-d H:i:s') : $param1 . ' 00:00:00';
-            }
-
-            if ($param2 && !$month) {
-                $endDate = (strpos($param2, '/') !== false) ? Carbon::createFromFormat('d/m/Y', $param2)->format('Y-m-d H:i:s') : $param2 . ' 23:59:59';
+            } else {
+                // Utiliser le mois courant si aucun mois n'est fourni
+                $startDate = Carbon::now()->startOfMonth()->format('Y-m-d H:i:s');
+                $endDate = Carbon::now()->endOfMonth()->format('Y-m-d H:i:s');
+                $data['mois'] = strtoupper(Carbon::now()->locale('fr')->isoFormat('MMMM YYYY'));
             }
 
             // Requêtes pour les entrées et dépenses avec filtre de date
@@ -268,34 +269,36 @@ class JournalController extends Controller
                 ->where('locataire_id', '!=', null);
 
             $depensesQuery = Compte::where('proprietaire_id', $proprioId)
-                ->where('locataire_id', '=', null)->where('montant_compte','!=',0)->where('montant_compte','<',0);
+                ->where('locataire_id', '=', null)->where('montant_compte', '!=', 0)->where('montant_compte', '<', 0);
 
             $depense_honoraires = Compte::where('proprietaire_id', $proprioId)
-            ->where('locataire_id', '=', null)->where('montant_compte','!=',0)->where('montant_compte','>',0);
+                ->where('locataire_id', '=', null)->where('montant_compte', '!=', 0)->where('montant_compte', '>', 0);
 
-            // Appliquer le filtre de date si startDate et endDate sont définis
-            if ($startDate && $endDate) {
-                $entreesQuery->whereBetween('created_at', [$startDate, $endDate]);
-                $depensesQuery->whereBetween('created_at', [$startDate, $endDate]);
-                $depense_honoraires->whereBetween('created_at', [$startDate, $endDate]);
-                $locataires->where('bien_immos.proprietaire_id', $proprioId)->whereBetween('compte_locataires.created_at', [$startDate, $endDate]);
-            }
+            // Appliquer le filtre de date
+            $entreesQuery->whereBetween('created_at', [$startDate, $endDate]);
+            $depensesQuery->whereBetween('created_at', [$startDate, $endDate]);
+            $depense_honoraires->whereBetween('created_at', [$startDate, $endDate]);
+            $locataires->where('bien_immos.proprietaire_id', $proprioId)->whereBetween('compte_locataires.created_at', [$startDate, $endDate]);
+
             // Exécuter les requêtes
             $entrees = $entreesQuery->get();
             $depenses = $depensesQuery->get();
             $depense_honoraires = $depense_honoraires->get();
             $locataires = $locataires->get();
             $honoraire = 0;
+
             foreach ($depense_honoraires as $depense_honoraire) {
                 $honoraire += $depense_honoraire->montant_compte;
             }
+
             // Préparer les données pour le PDF
             $data['nom_proprio'] = $nom;
             $data['locataires'] = $locataires;
             $data['sorties'] = $depenses;
             $data['honoraire'] = $honoraire;
-            // $data['start'] = $startDate ? date("d/m/y", strtotime($startDate)) : null;
-            // $data['end'] = $endDate ? date("d/m/y", strtotime($endDate)) : null;
+
+            // Ajout du token dans les données pour validation ou suivi si nécessaire
+            $data['user'] = $user;
 
             // Générer le PDF
             $pdf = PDF::loadView("pdf.situationproprio2", $data);
@@ -304,6 +307,7 @@ class JournalController extends Controller
             return view('notfound'); // Si l'ID du propriétaire n'est pas fourni
         }
     }
+
 
 
 
@@ -378,36 +382,49 @@ class JournalController extends Controller
 
     public function situationgeneralparproprio($id)
     {
-        $data = [];
-        $proprietaire = Proprietaire::findOrFail($id);
+        // // Chercher le token dans la base de données pour récupérer l'utilisateur correspondant
+        // $accessToken = PersonalAccessToken::findToken($token);
+        // // Vérifier si le token est valide
+        // if (!$accessToken || !$accessToken->tokenable) {
+        //     return response()->json(['message' => 'Token invalide'], 401);
+        // }
+        // // Récupérer l'utilisateur associé au token
+        // $user = $accessToken->tokenable;
 
-        // Récupérer les données des locataires avec la somme des crédits
-        $locataires = DB::table('compte_locataires')
-            ->join('locataires', 'compte_locataires.locataire_id', '=', 'locataires.id')
-            ->join('bien_immos', 'locataires.bien_immo_id', '=', 'bien_immos.id')
-            ->where('bien_immos.proprietaire_id', $proprietaire->id)
-            ->select(
-                'locataires.nom',
-                'locataires.prenom',
-                DB::raw('SUM(compte_locataires.debit) as total_debit'),
-                DB::raw('SUM(compte_locataires.credit) as total_credit')
-            )
-            ->groupBy('locataires.id', 'locataires.nom', 'locataires.prenom')
-            ->get();
+        if ($id !== null) {
+            $data = [];
+            $proprietaire = Proprietaire::findOrFail($id);
 
-        // Calculer le total des crédits pour ce propriétaire
-        $totalCredits = $locataires->sum('total_credit');
-        $totalDebits = $locataires->sum('total_debit');
+            // Récupérer les données des locataires avec la somme des crédits
+            $locataires = DB::table('compte_locataires')
+                ->join('locataires', 'compte_locataires.locataire_id', '=', 'locataires.id')
+                ->join('bien_immos', 'locataires.bien_immo_id', '=', 'bien_immos.id')
+                ->where('bien_immos.proprietaire_id', $proprietaire->id)
+                ->select(
+                    'locataires.nom',
+                    'locataires.prenom',
+                    DB::raw('SUM(compte_locataires.debit) as total_debit'),
+                    DB::raw('SUM(compte_locataires.credit) as total_credit')
+                )
+                ->groupBy('locataires.id', 'locataires.nom', 'locataires.prenom')
+                ->get();
 
-        // Préparer les données pour la vue
-        $data = [
-            'nomProprietaire' => $proprietaire->nom,
-            'prenomProprietaire' => $proprietaire->prenom,
-            'totalCredits' => $totalCredits,
-            'totalDebits' => $totalDebits,
-            'locataires' => $locataires
-        ];
-        $pdf = PDF::loadView("pdf.situationgeneralproprio",$data);
-        return $pdf->stream();
+            // Calculer le total des crédits pour ce propriétaire
+            $totalCredits = $locataires->sum('total_credit');
+            $totalDebits = $locataires->sum('total_debit');
+
+            // Préparer les données pour la vue
+            $data = [
+                'nomProprietaire' => $proprietaire->nom,
+                'prenomProprietaire' => $proprietaire->prenom,
+                'totalCredits' => $totalCredits,
+                'totalDebits' => $totalDebits,
+                'locataires' => $locataires
+            ];
+            $pdf = PDF::loadView("pdf.situationgeneralproprio",$data);
+            return $pdf->stream();
+        }else {
+            return view('notfound'); // Si l'ID du locataire n'est pas fourni
+        }
     }
 }

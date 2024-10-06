@@ -12,6 +12,7 @@ use App\Events\MyEvent;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\QuittanceLoyerMail;
 use Illuminate\Support\Facades\Auth;
+use Laravel\Sanctum\PersonalAccessToken;
 
 
 class LocataireController extends Controller
@@ -194,78 +195,108 @@ class LocataireController extends Controller
         }
     }
 
-   public function generatesituationparlocataire($locataireId = null,$start = false, $end = false)
+    public function generatesituationparlocataire($locataireId, $startDateOrToken = null, $endDateOrNull = null, $tokenOrNull = null)
     {
-    if ($locataireId !== null) {
-        $data = [];
-        // Initialiser la requête pour récupérer les transactions du locataire
-        $query = CompteLocataire::where('locataire_id', $locataireId);
+        $user = null;
         
-        // Appliquer le filtre par dates si les dates sont fournies
-        if ($start !== false && $end !== false) {
-            // Convertir les dates en format DateTime pour les comparaisons
-            $startDate = new \DateTime($start);
-            $endDate = new \DateTime($end);
-            $query->whereBetween('dernier_date_paiement', [$startDate->format('Y-m-d'), $endDate->format('Y-m-d')]);
+        // Vérification de l'argument du token en fonction des valeurs fournies
+        if ($endDateOrNull === null && $tokenOrNull === null) {
+            // Si aucun endDate ou token n'est fourni, vérifier si startDateOrToken est un token
+            $token = PersonalAccessToken::findToken($startDateOrToken);
+            if (!$token || !$token->tokenable) {
+                return response()->json(['message' => 'Token invalide'], 401);
+            }
+            $user = $token->tokenable;
+        } else {
+            // Si un token est fourni dans endDateOrNull
+            $token = PersonalAccessToken::findToken($tokenOrNull);
+            if (!$token || !$token->tokenable) {
+                return response()->json(['message' => 'Token invalide'], 401);
+            }
+            $user = $token->tokenable;
         }
-
-        // Exécuter la requête pour récupérer les transactions
-        $transactions = $query->get();
-        
-        // Initialisation des variables
-        $totalCredits = 0;
-        $totalDebits = 0;
-        $balance = 0;
-        $records = [];
-        
-        // récupérer les informations du locataire
-        $locataire =  Locataire::with('bien_immo')->where('id', $locataireId)->first();
-        if (!$locataire) {
-            return view('notfound'); // Si le locataire n'existe pas
+    
+        // Vérifier si l'ID du locataire est fourni
+        if ($locataireId !== null) {
+            $data = [];
+            $locataire = Locataire::with('bien_immo')->find($locataireId);
+            
+            // Si le locataire n'est pas trouvé, retourner une erreur
+            if (!$locataire) {
+                return response()->json(['message' => 'Locataire non trouvé'], 404);
+            }
+    
+            // Définir les dates de début et de fin
+            if ($startDateOrToken === null || $endDateOrNull === null) {
+                // Si aucune date n'est fournie, utiliser le mois courant
+                $startDate = Carbon::now()->startOfMonth()->format('Y-m-d H:i:s');
+                $endDate = Carbon::now()->endOfMonth()->format('Y-m-d H:i:s');
+            } else {
+                // Valider et formater les dates fournies
+                try {
+                    $startDate = Carbon::createFromFormat('Y-m-d', $startDateOrToken)->startOfDay()->format('Y-m-d H:i:s');
+                    $endDate = Carbon::createFromFormat('Y-m-d', $endDateOrNull)->endOfDay()->format('Y-m-d H:i:s');
+                } catch (\Exception $e) {
+                    return response()->json(['message' => 'Dates invalides'], 400);
+                }
+            }
+    
+            // Requête pour obtenir les transactions du locataire
+            $transactions = CompteLocataire::where('locataire_id', $locataireId)
+                ->whereBetween('created_at', [$startDate, $endDate])
+                ->get();
+    
+            // Initialisation des variables
+            $totalCredits = 0;
+            $totalDebits = 0;
+            $balance = 0;
+            $records = [];
+    
+            // Processer les transactions
+            foreach ($transactions as $transaction) {
+                $date = \Carbon\Carbon::parse($transaction->created_at)->format('d/m/Y');
+                $balance += ($transaction->debit - $transaction->credit);
+                $totalCredits += $transaction->credit;
+                $totalDebits += $transaction->debit;
+    
+                // Ajouter les données au tableau des enregistrements
+                $records[] = [
+                    'date' => $date,
+                    'libelle' => $transaction->debit > 0 
+                                 ? "Paiement dû" 
+                                 : ($transaction->credit > 0 
+                                    ? "Paiement du '{$date}'" 
+                                    : "Aucune Opération"),
+                    'debit' => $transaction->debit,
+                    'credit' => $transaction->credit,
+                    'balance' => $balance,
+                ];
+            }
+    
+            // Préparer les données pour la vue PDF avec le même format que generatesituationparlocataire2
+            $data['records'] = $records;
+            $data['totalCredits'] = $totalCredits;
+            $data['totalDebits'] = $totalDebits;
+            $data['balance'] = $balance;
+            $data['start'] = $startDate ? date("d/m/Y", strtotime($startDate)) : 'N/A';
+            $data['end'] = $endDate ? date("d/m/Y", strtotime($endDate)) : 'N/A';
+            $data['locataire'] = $locataire;
+            $data['user'] = $user;
+            // Générer le PDF
+            $pdf = PDF::loadView("pdf.situationlocataire", $data);
+            return $pdf->stream();
+        } else {
+            return response()->json(['message' => 'Locataire non trouvé'], 404);
         }
-        
-        // Processer les transactions
-        foreach ($transactions as $transaction) {
-            $date = \Carbon\Carbon::parse($transaction->dernier_date_paiement)->format('d/m/Y');
-            $balance = $balance + ($transaction->debit - $transaction->credit);
-            $totalCredits += $transaction->credit;
-            $totalDebits += $transaction->debit;
-
-            // Ajouter les données au tableau des enregistrements
-            $records[] = [
-                'date' => $date,
-                'libelle' => $transaction->debit > 0 
-                             ? "Paiement dû" 
-                             : ($transaction->credit > 0 
-                                ? "Paiement du '{$date}'" 
-                                : "Aucune Opération"),
-                'debit' => $transaction->debit,
-                'credit' => $transaction->credit,
-                'balance' => $balance,
-            ];
-        }
-
-        // Trier les enregistrements par date
-        // usort($records, function ($a, $b) {
-        //     return strtotime($a['date']) - strtotime($b['date']);
-        // });
-
-        // Préparer les données pour la vue
-        $data['records'] = $records;
-        $data['totalCredits'] = $totalCredits;
-        $data['totalDebits'] = $totalDebits;
-        $data['balance'] = $balance;
-        $data['start'] = $start ? date("d/m/Y", strtotime($start)) : 'N/A';
-        $data['end'] = $end ? date("d/m/Y", strtotime($end)) : 'N/A';
-        $data['locataire'] = $locataire;
-        
-        // Charger la vue PDF avec les données
-        $pdf = PDF::loadView("pdf.situationlocataire", $data);
-        return $pdf->stream();
-    } else {
-        return view('notfound'); // Si l'ID du locataire n'est pas fourni
     }
-}
+    
+    
+
+
+
+
+
+    
 public function uploadContract(Request $request)
 {
     $request->validate([
@@ -297,9 +328,17 @@ public function uploadContract(Request $request)
         return $pdf->stream();
     }
 
-    public function generatequittancelocataire($id)
+    public function generatequittancelocataire($id,$token)
     {
-        if ($id !== null) {
+        // Chercher le token dans la base de données pour récupérer l'utilisateur correspondant
+        $accessToken = PersonalAccessToken::findToken($token);
+        // Vérifier si le token est valide
+        if (!$accessToken || !$accessToken->tokenable) {
+            return response()->json(['message' => 'Token invalide'], 401);
+        }
+        // Récupérer l'utilisateur associé au token
+        $user = $accessToken->tokenable;
+        if ($id !== null && $user !== null) {
             $data = [];
             $quittance_locataire = CompteLocataire::where('id',$id)->where('credit','>',0)->first();
             $transactions = CompteLocataire::where('locataire_id',$quittance_locataire->locataire_id)->get();
@@ -338,6 +377,7 @@ public function uploadContract(Request $request)
             $data['cc'] = $cc;
             $data['tva'] = isset($tva->value) ? $tva->value : 0;
             $data['montant_ttc'] = $montant_loyer_ttc;
+            $data['user'] = $user;
         //  $pdf = PDF::loadView("pdf.quittancelocataire2", $data);
             $pdf = PDF::loadView("pdf.quittancelocataire2", $data);
             $measure = array(0,0,825.772,570.197);

@@ -3,22 +3,22 @@
 
 @section('content')
     <div style="width: 100%; text-align: center; margin-bottom: 1px;">
-            <img src="{{ asset('app-assets/assets/images/' . $user->tag_logo) }}" alt="Bannière" class="banner">
+            <img src="{{ asset('app-assets/assets/images/' . $user->structure->tag_logo) }}" alt="Bannière" class="banner">
     </div>
     <table style="border: none; margin-top:1px;font-size: 11px; width: 100%;">
         <tr style="border: none;">
             <td style="border: none;">
                 <div>
-                    <p style="text-align:left;line-height:5px"> Dakar, Senegal </p>
-                    <p style="text-align:left;line-height:5px"> +221 33 889 88 06</p>
-                    <p style="text-align:left;line-height:5px"> +221 33 823 40 53</p>
+                    <p style="text-align:left;line-height:5px">Adresse : {{$user->structure->adresse_structure ? $user->structure->adresse_structure : ''}}</p>
+                    <p style="text-align:left;line-height:5px">Téléphone : {{$user->structure->numero_tel1_structure ? $user->structure->numero_tel1_structure : ''}}</p>
+                    <!-- <p style="text-align:left;line-height:5px"> +221 33 823 40 53</p> -->
                 </div>
             </td>
             <td style="border:none;">
                 <div style="border-left: 3px solid black;">
-                    <p style="text-align:left ; margin-left:15px;line-height:5px ">www.imalga@orange.sn</p>
-                    <p style="text-align:left ; margin-left:15px;line-height:5px ">Instagram:  @imalga</p>
-                    <p style="text-align:left ; margin-left:15px;line-height:5px ">Facebook:  imalga Sénégal</p>
+                    <p style="text-align:left ; margin-left:15px;line-height:5px ">Site : {{$user->structure->site_structure}}</p>
+                    <p style="text-align:left ; margin-left:15px;line-height:5px ">Instagram: {{$user->structure->instagram_structure}}</p>
+                    <p style="text-align:left ; margin-left:15px;line-height:5px ">Facebook:  {{$user->structure->facebook_structure}}</p>
                 </div>
             </td>
         </tr>

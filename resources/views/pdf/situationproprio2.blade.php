@@ -70,12 +70,15 @@
 <body>
 
 <div class="container">
+    <div style=" text-align: center; margin-bottom: 1px;">
+        <img src="{{ asset('app-assets/assets/images/' . $user->structure->tag_logo) }}" alt="Bannière" class="banner" style="width: 500px; max-width: 100%; height: auto;">
+    </div>
     <div class="header">
-        <h1>COMPAGNIE IMMOBILIÈRE DU SENEGAL</h1>
+        <h1>{{$user->structure->nom_structure}}</h1>
         <div class="contact-info">
             <p>L'IMMOBILIER GARANTI</p>
-            <p>Ouest Foire TALLY Wally, Tel: 33 867 16 86 / 77 523 61 78 / 75 100 42 45</p>
-            <p>Email: contact@cis-imobiliere.sn</p>
+            <p>{{$user->structure->adresse_structure}}, Tel: {{$user->structure->numero_tel1_structure}} </p>
+            <p>Email: {{$user->structure->email_structure}}</p>
         </div>
     </div>
     <center><p><u>SITUATION LOYER DU MOIS DE {{$mois}}</u></p></center>

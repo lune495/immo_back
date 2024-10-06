@@ -16,12 +16,12 @@ use Illuminate\Support\Facades\Auth;
 |
 */
 
-Route::get('/journalpdf/{start?}/{end?}/{token}', [JournalController::class,'generePDfGrandJournal']);
+Route::get('/journalpdf/{start?}/{end?}/{token?}', [JournalController::class,'generePDfGrandJournal']);
 Route::get('/doc', [LocataireController::class,'documentation']);
-Route::get('/situation-par-proprio-pdf/{id?}/{start?}/{end?}', [JournalController::class,'generatesituationparproprio']);
-Route::get('/situation-par-locataire-pdf/{id?}/{start?}/{end?}', [LocataireController::class,'generatesituationparlocataire']);
-Route::get('/quittance-pdf/{id?}', [LocataireController::class,'generatequittancelocataire']);
-Route::get('/situation-generale-par-proprio-pdf/{id}', [JournalController::class,'situationgeneralparproprio']);
+Route::get('/situation-par-proprio-pdf/{id?}/{mois?}/{token?}', [JournalController::class,'generatesituationparproprio']);
+Route::get('/situation-par-locataire-pdf/{id?}/{start?}/{end?}/{token?}', [LocataireController::class,'generatesituationparlocataire']);
+Route::get('/quittance-pdf/{id?}/{token?}', [LocataireController::class,'generatequittancelocataire']);
+Route::get('/situation-generale-par-proprio-pdf/{id}/{token?}', [JournalController::class,'situationgeneralparproprio']);
 Route::get('/', function () {
     return view('welcome');
 });

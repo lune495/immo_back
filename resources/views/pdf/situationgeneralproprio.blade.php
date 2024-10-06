@@ -3,6 +3,9 @@
 @section('title', 'Situation Générale du Propriétaire')
 
 @section('content')
+    <div style=" text-align: center; margin-bottom: 1px;">
+        <img src="{{ asset('app-assets/assets/images/' . $user->structure->tag_logo) }}" alt="Bannière" class="banner" style="width: 500px; max-width: 100%; height: auto;">
+    </div>
     <table style="width: 100%; border: none; margin-top:50px; font-size: 11px;">
         <tr>
             <td style="border: none; width: 70%;">
@@ -13,9 +16,9 @@
 
             </td>
             <td style="border: none; width: 30%; text-align: right;">
-                <p style="text-align: right;">Dakar, Sénégal</p>
-                <p style="text-align: right;">+221 33 889 88 06</p>
-                <p style="text-align: right;">+221 33 823 40 53</p>
+                <p style="text-align: right;">{{$user->structure->adresse_structure ? $user->structure->adresse_structure : ''}}</p>
+                <p style="text-align: right;">{{$user->structure->numero_tel1_structure ? $user->structure->numero_tel1_structure : ''}}</p>
+                <p style="text-align: right;">{{$user->structure->numero_tel2_structure ? $user->structure->numero_tel2_structure : ''}}</p>
             </td>
         </tr>
     </table>

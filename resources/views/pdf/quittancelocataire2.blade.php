@@ -26,7 +26,7 @@
             border-bottom: 1px solid #000;
         }
         .header .left {
-            width: 60%;
+            width: 140%;
         }
         .header .left p {
             margin: 2px 0;
@@ -86,16 +86,16 @@
 <body>
 
 <div class="container">
-<div style="width: 100%; text-align: center; margin-bottom: 10px;">
-            <img src="http://localhost/immo_back/public/app-assets/assets/images/logo.jpeg" alt="Bannière" class="banner">
-        </div>
+    <div style=" text-align: center; margin-bottom: 1px;">
+        <img src="{{ asset('app-assets/assets/images/' . $user->structure->tag_logo) }}" alt="Bannière" class="banner" style="width: 500px; max-width: 100%; height: auto;">
+    </div>
     <!-- En-tête avec les informations principales -->
     <div class="header">
         <div class="left">
             <p><strong>Compagnie Immobilière du Sénégal (C.I.S.)</strong></p>
             <p>Location - Gestion - Achat - Construction - Rénovation</p>
-            <p><strong>Adresse :</strong> Ouest Foire TALLY Wally</p>
-            <p><strong>Téléphone :</strong> +221 33 867 16 86</p>
+            <p><strong>Adresse :</strong> {{$user->structure->adresse_structure ? $user->structure->adresse_structure : ''}}</p>
+            <p><strong>Téléphone :</strong> {{$user->structure->numero_tel1_structure ? $user->structure->numero_tel1_structure : ''}}</p>
         </div>
         <div class="right">
             <p><strong>Quittance N° :</strong> {{ $quittance->id }}</p>
