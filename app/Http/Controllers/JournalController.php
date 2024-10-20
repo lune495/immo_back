@@ -70,8 +70,7 @@ class JournalController extends Controller
                         $detail_journals->locataire_id = isset($detail['locataire_id']) ? $detail['locataire_id'] : null;
                         $detail_journals->proprietaire_id = isset($detail['proprietaire_id']) ? $detail['proprietaire_id'] : null;
                         $detail_journals->journal_id = $item->id;
-                        // $detail_journals->user_id = $user->id;
-                        $detail_journals->user_id = 1;
+                        $detail_journals->user_id = $user->id;
                         $detail_journals->save();
                         $saved = $detail_journals->save();
                         if($saved)

@@ -2,7 +2,7 @@
 
 namespace App\GraphQL\Type;
 
-use  App\Models\{BienImmo,Outil};
+use  App\Models\{BienImmo,Outil,Unite};
 use Carbon\Carbon;
 use GraphQL\Type\Definition\Type;
 use Rebing\GraphQL\Support\Type as GraphQLType;
@@ -66,7 +66,15 @@ class BienImmoType extends GraphQLType
 
     public function resolveNbrDispoField($root, $args)
     {
-        return $root->unites->where('dispo', false)->count();
+        // return $root->unites->where('dispo', false)->count();
+        // Vérifiez que $root est un objet BienImmo ou qu'il a un ID valide
+        if (isset($root->id)) {
+            // Parcourir toutes les unités et compter celles qui sont disponibles
+            $nbr_dispo = Unite::where('bien_immo_id', $root->id)->where('dispo', false)->count();
+            return $nbr_dispo;
+        }
+
+        return 0;
     }
 
     protected function resolveUpdatedAtField($root, $args)

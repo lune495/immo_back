@@ -47,9 +47,10 @@
         }
         .total-row td {
             font-weight: bold;
+            text-align: center;
         }
         .total-row td:last-child {
-            text-align: right;
+            text-align: center;
         }
         .footer {
             margin-top: 40px;
@@ -70,9 +71,12 @@
 <body>
 
 <div class="container">
-    <div style=" text-align: center; margin-bottom: 1px;">
-        <img src="{{ asset('app-assets/assets/images/' . $user->structure->tag_logo) }}" alt="Bannière" class="banner" style="width: 500px; max-width: 100%; height: auto;">
-    </div>
+    @if($user->structure->tag_logo)
+        <div style=" text-align: center; margin-bottom: 1px;">
+            <img src="{{ asset('app-assets/assets/images/' . $user->structure->tag_logo) }}" alt="Bannière" class="banner" style="width: 500px; max-width: 100%; height: auto;">
+        </div>
+    @endif
+
     <div class="header">
         <h1>{{$user->structure->nom_structure}}</h1>
         <div class="contact-info">
@@ -105,8 +109,8 @@
         </tr>
         @endforeach
         <tr class="total-row">
-            <td colspan="2">Reçu Total loyer</td>
-            <td>{{ number_format($totalRecettes, 0, ',', ' ') }} </td>
+            <td>Reçu Total loyer</td>
+            <td colspan="2">{{ number_format($totalRecettes, 0, ',', ' ') }} </td>
         </tr>
     </table>
 
@@ -120,25 +124,34 @@
             <td style="padding: 10px; border: 1px solid #ddd;">{{ number_format(-1 * $sortie->montant_compte, 0, ',', ' ') }} </td>
         </tr>
         @endforeach
+        @if($user->structure_id == 2)
+            @php $totalDepenses  = $totalDepenses + $honoraire; @endphp
+        @endif
+
+        @if($user->structure_id == 1)
+            @php $totalDepenses  = $totalDepenses + $honoraire + ($honoraire * 0.18); @endphp
+        @endif
         <tr>
-            <td style="padding: 10px; border: 1px solid #ddd;">Honoraire d'agence ( x% de {{$totalRecettes}} )</td>
+            <td style="padding: 10px; border: 1px solid #ddd;">Honoraire d'agence ( 10% de {{$totalRecettes}} )</td>
             <td style="padding: 10px; border: 1px solid #ddd;">{{ number_format($honoraire, 0, ',', ' ') }} </td>
         </tr>
         <tr>
+            @if($user->structure_id == 1)
             <td style="padding: 10px; border: 1px solid #ddd;">TVA 18% de ({{$honoraire}})</td>
             <td style="padding: 10px; border: 1px solid #ddd;">{{ number_format($honoraire * 0.18, 0, ',', ' ') }} </td>
+            @endif
         </tr>
         <tr class="total-row">
             <td>Total Dépense</td>
-            <td>{{ number_format($totalDepenses + $honoraire + ($honoraire * 0.18) , 0, ',', ' ') }} </td>
+            <td>{{ number_format($totalDepenses , 0, ',', ' ') }} </td>
         </tr>
     </table>
 
     <h3>À verser :</h3>
-    <p>{{ number_format($totalRecettes, 0, ',', ' ') }}   -  {{ number_format(($totalDepenses + $honoraire + ($honoraire * 0.18)), 0, ',', ' ') }} F = {{ number_format($totalRecettes - ($totalDepenses + $honoraire + ($honoraire * 0.18)), 0, ',', ' ') }} </p>
-
-    <p>Le bailleur nous doit : {{ number_format($totalRecettes - ($totalDepenses + $honoraire + ($honoraire * 0.18)), 0, ',', ' ') }} F CFA</p>
-
+    <p>{{ number_format($totalRecettes, 0, ',', ' ') }}   -  {{ number_format($totalDepenses, 0, ',', ' ') }} F = {{ number_format($totalRecettes - $totalDepenses, 0, ',', ' ') }} </p>
+    @if(($totalRecettes - $totalDepenses) < 0)
+    <p>Le bailleur nous doit : {{ number_format($totalRecettes - $totalDepenses, 0, ',', ' ') }} F CFA</p>
+    @endif
     <div class="signatures">
         <div>
             <p>Dakar le {{ \Carbon\Carbon::now()->format('d/m/Y') }}</p>

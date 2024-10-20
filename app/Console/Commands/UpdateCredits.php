@@ -42,23 +42,26 @@ class UpdateCredits extends Command
         Log::info('La commande update:credits a été déclenchée à ' . now());
         $today = Carbon::today();
         $dayOfMonth = $today->day;
-
+        // dd($today);
         // Récupérer tous les comptes de locataires
         $comptes = CompteLocataire::distinct('locataire_id')->pluck('locataire_id');
 
         foreach ($comptes as $compteId) {
-            $dernierCompte = CompteLocataire::where('locataire_id', $compteId)
+            $dernierCompte = CompteLocataire::where('locataire_id', 2)
+                // ->where('credit','>','0')
                 ->orderBy('dernier_date_paiement', 'desc')
                 ->first();
-
             // Convertir la dernière date de paiement en instance de Carbon
             $dernierDate = Carbon::parse($dernierCompte->dernier_date_paiement);
             $locataire = Locataire::find($compteId);
-
-            // Vérifier si le locataire appartient à la structure_id = 2
+            // $today = "2024-11-12 00:00:00";
+            $today = Carbon::parse($today);
+            dd($dernierDate);
+            // Vérifier si le locataire appartient à la structure_id = 2 c-a-d AdajImmo
             if ($locataire->user->structure->id == 2) {
+                // dd($dernierCompte);
                 // Vérifier si on dépasse un mois et 2 jours depuis le dernier paiement
-                if ($today->greaterThanOrEqualTo($dernierDate->addMonth()->addDays(2)) && $dayOfMonth > 10 && $locataire->resilier == false) {
+                if ($today->greaterThanOrEqualTo($dernierDate->addMonth()) && $dayOfMonth > 10 && $locataire->resilier == false) {
                     // Calculer le nombre de jours de retard depuis le 10 du mois
                     $daysLate = $dayOfMonth - 10; 
                     
@@ -83,13 +86,13 @@ class UpdateCredits extends Command
                 }
             } 
             // Pour les locataires de la structure 1
-            else if ($locataire->user->structure->id == 1) {
+            else if ($locataire->user->structure->id != 2) {
                 // Si la date est supérieure ou égale à la dernière date de paiement plus 1 mois et 2 jours, appliquer le loyer dû
-                if ($today->greaterThanOrEqualTo($dernierDate->addMonth()->addDays(2)) && $locataire->resilier == false) {
+                if ($today->greaterThanOrEqualTo($dernierDate->addMonth()) && $locataire->resilier == false) {
                     $compte_locataire = new CompteLocataire();
                     $compte_locataire->locataire_id = $locataire->id;
                     $compte_locataire->libelle = "Loyer Dû";
-                    $compte_locataire->dernier_date_paiement = $today;
+                    $compte_locataire->dernier_date_paiement = Carbon::now();
                     $compte_locataire->debit = $locataire->montant_loyer_ttc;
                     $compte_locataire->credit = 0;
                     $compte_locataire->statut_paye = false;

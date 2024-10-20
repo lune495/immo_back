@@ -90,6 +90,7 @@
         <img src="{{ asset('app-assets/assets/images/' . $user->structure->tag_logo) }}" alt="Bannière" class="banner" style="width: 500px; max-width: 100%; height: auto;">
     </div>
     <!-- En-tête avec les informations principales -->
+     <br><br>
     <div class="header">
         <div class="left">
             <p><strong>{{$user->structure->nom_structure}}</strong></p>

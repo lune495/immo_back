@@ -50,10 +50,10 @@ class LocataireController extends Controller
                 // {
                 //     $errors = "Renseignez le CNI";
                 // }
-                if (empty($request->telephone))
-                {
-                    $errors = "Renseignez le numero de telephone";
-                }
+                // if (empty($request->telephone))
+                // {
+                //     $errors = "Renseignez le numero de telephone";
+                // }
                 // if (empty($request->adresse_profession))
                 // {
                 //     $errors = "Renseignez l'adresse profession";
@@ -133,7 +133,7 @@ class LocataireController extends Controller
                         $item->adresse_profession = $request->adresse_profession;
                         $item->situation_matrimoniale = $request->situation_matrimoniale;
                         $item->profession = $request->profession;
-                        $item->telephone = $request->telephone;
+                        $item->telephone = $request->telephone == null ? '000000000' : $request->telephone;
                         $item->multipli = $request->multipli;
                         $item->unite_id = $request->unite_id;
                         $item->bien_immo_id = $request->bien_immo_id;

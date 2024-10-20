@@ -31,7 +31,7 @@ class LocatairePaginatedQuery extends Query
             'code'                          => ['type' => Type::string()],
             'loc'                           => ['type' => Type::boolean()],
             'en_regle'                      => ['type' => Type::boolean()],
-        
+            'bien_immo_id'                  => ['type' => Type::int()],
             'page'                          => ['name' => 'page', 'description' => 'The page', 'type' => Type::int() ],
             'count'                         => ['name' => 'count',  'description' => 'The count', 'type' => Type::int() ]
         ];
@@ -51,6 +51,11 @@ class LocatairePaginatedQuery extends Query
         if (isset($args['id']))
         {
             $query->where('id', $args['id']);
+        }
+
+        if (isset($args['bien_immo_id'])) 
+        {
+            $query->where('bien_immo_id', $args['bien_immo_id']);
         }
         if (isset($args['code']))
         {
@@ -117,15 +122,15 @@ class LocatairePaginatedQuery extends Query
         }
         
 
-        if (isset($args['en_regle'])) {
-            if ($args['en_regle']) {
-                // Locataires en règle (solde égal à 0)
-                $query->where('solde', 0);
-            } else {
-                // Locataires non en règle (solde supérieur à 0)
-                $query->where('solde', '>', 0);
-            }
-        }
+        // if (isset($args['en_regle'])) {
+        //     if ($args['en_regle']) {
+        //         // Locataires en règle (solde égal à 0)
+        //         $query->where('solde', 0);
+        //     } else {
+        //         // Locataires non en règle (solde supérieur à 0)
+        //         $query->where('solde', '>', 0);
+        //     }
+        // }
         
         
         $count = Arr::get($args, 'count', 10);
