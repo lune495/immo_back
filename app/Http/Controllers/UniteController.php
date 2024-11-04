@@ -25,7 +25,8 @@ class UniteController extends Controller
                     {
                         $item = new Unite();
                         $item->bien_immo_id = $request->bien_immo_id;
-                        $item->numero = $detail['numero'];
+                        // $item->numero = $detail['numero'];
+                         $item->numero = 0;
                         $item->nature_local_id = $detail['nature_local_id'];
                         $item->etage  = isset($detail['etage']) ? $detail['etage'] : 0;
                         $item->montant_loyer = isset($detail['montant_loyer']) ? $detail['montant_loyer'] : null;
