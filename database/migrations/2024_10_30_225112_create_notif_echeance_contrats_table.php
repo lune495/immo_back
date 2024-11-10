@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateJournalsTable extends Migration
+class CreateNotifEcheanceContratsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,10 +13,13 @@ class CreateJournalsTable extends Migration
      */
     public function up()
     {
-        Schema::create('journals', function (Blueprint $table) {
+        Schema::create('notif_echeance_contrats', function (Blueprint $table) {
             $table->id();
-            $table->integer('solde')->default('0');
-            $table->unsignedBigInteger('user_id')->nullable();
+            $table->unsignedBigInteger('locataire_id');
+            $table->foreign('locataire_id')->references('id')->on('locataires');
+            $table->date('date_echeance_contrat')->nullable();
+            $table->boolean('lu')->default(0);
+            $table->unsignedBigInteger('user_id');
             $table->foreign('user_id')->references('id')->on('users');
             $table->timestamps();
         });
@@ -29,6 +32,6 @@ class CreateJournalsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('journals');
+        Schema::dropIfExists('notif_echeance_contrats');
     }
 }

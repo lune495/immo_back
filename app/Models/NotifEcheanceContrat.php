@@ -5,18 +5,18 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class CompteLocataire extends Model
+class NotifEcheanceContrat extends Model
 {
+
     use HasFactory;
 
-    public  function locataire()
+    public function locataire()
     {
         return $this->belongsTo(Locataire::class);
     }
 
-    public  function detail_journal()
+    public function user()
     {
-        return $this->belongsTo(DetailJournal::class);
+        return $this->belongsTo(User::class);
     }
-    
 }

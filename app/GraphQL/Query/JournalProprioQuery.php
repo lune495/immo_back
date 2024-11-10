@@ -86,6 +86,11 @@ class JournalProprioQuery extends Query
                 Carbon::parse($args['created_at_end'])->endOfDay()
             ]);
         }
+        $query->where(function ($q) {
+            $q->where('entree', '!=', 0)
+              ->orWhere('sortie', '!=', 0);
+        });
+        $query->where('annule', false);
         $query->orderBy('id', 'asc');
         $query = $query->get();
         // dd($attente);

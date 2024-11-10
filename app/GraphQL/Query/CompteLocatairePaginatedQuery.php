@@ -3,6 +3,7 @@
 namespace App\GraphQL\Query;
 
 use GraphQL\Type\Definition\Type;
+use Illuminate\Support\Facades\DB;
 use Rebing\GraphQL\Support\Query;
 use Rebing\GraphQL\Support\Facades\GraphQL;
 use Illuminate\Support\Arr;
@@ -29,7 +30,7 @@ class CompteLocatairePaginatedQuery extends Query
             'locataire_id'                  => ['type' => Type::int()],
             'locataire_id'                  => ['type' => Type::int()],
             'quittance'                     => ['type' => Type::boolean()],
-            'nom'                           => ['type' => Type::string()],
+            'search'                        => ['type' => Type::string()],
         
             'page'                          => ['name' => 'page', 'description' => 'The page', 'type' => Type::int() ],
             'count'                         => ['name' => 'count',  'description' => 'The count', 'type' => Type::int() ]
@@ -60,11 +61,17 @@ class CompteLocatairePaginatedQuery extends Query
         {
             $query = $query->where('locataire_id', $args['locataire_id']);
         }
-        if (isset($args['nom'])) {
-            $query->whereHas('locataire', function($q) use ($args) {
-                $q->where('nom', 'like', '%' . $args['nom'] . '%');
+        if (isset($args['search'])) {
+            $searchTerm = strtolower($args['search']); // Convertir le terme de recherche en minuscules
+            $query->whereHas('locataire', function($q) use ($searchTerm) {
+                $q->where(DB::raw('LOWER(code)'), 'like', '%' . $searchTerm . '%')
+                ->orWhere(DB::raw('LOWER(nom)'), 'like', '%' . $searchTerm . '%')
+                ->orWhere(DB::raw('LOWER(prenom)'), 'like', '%' . $searchTerm . '%');
             });
         }
+        $query->whereHas('detail_journal', function ($q) {
+            $q->where('annule', false);
+        });
         $count = Arr::get($args, 'count', 10);
         $page  = Arr::get($args, 'page', 1);
 

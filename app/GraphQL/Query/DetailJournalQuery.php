@@ -78,6 +78,10 @@ class DetailJournalQuery extends Query
         if ($latestClosureDate && Carbon::parse($latestClosureDate) <= now()) {
             $query->where('created_at', '>=', $latestClosureDate);
         }
+        $query->where(function ($q) {
+            $q->where('entree', '!=', 0)
+              ->orWhere('sortie', '!=', 0);
+        });
         $query->orderBy('id', 'desc');
         $query = $query->get();
 
@@ -95,8 +99,9 @@ class DetailJournalQuery extends Query
                 'proprietaire_id'                   => $item->proprietaire_id,
                 'proprietaire'                      => $item->proprietaire,
                 'journal_id'                        => $item->journal_id,
-                'journal'                           => $item->journal, 
+                'journal'                           => $item->journal,
                 'journal'                           => $item->journal,   
+                'annule'                            => $item->annule,   
                 'created_at_fr'                     => $item->created_at_fr,   
                 'updated_at_fr'                     => $item->updated_at_fr,   
                 'created_at'                        => $item->created_at->format(Outil::formatdate()),

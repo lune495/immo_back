@@ -3,9 +3,11 @@
 @section('title', 'Situation Générale du Propriétaire')
 
 @section('content')
-    <div style=" text-align: center; margin-bottom: 1px;">
-        <img src="{{ asset('app-assets/assets/images/' . $user->structure->tag_logo) }}" alt="Bannière" class="banner" style="width: 500px; max-width: 100%; height: auto;">
-    </div>
+    @if($user->structure->tag_logo)
+        <div style=" text-align: center; margin-bottom: 1px;">
+            <img src="{{ asset('app-assets/assets/images/' . $user->structure->tag_logo) }}" alt="Bannière" class="banner" style="width: 500px; max-width: 100%; height: auto;">
+        </div>
+    @endif
     <table style="width: 100%; border: none; margin-top:50px; font-size: 11px;">
         <tr>
             <td style="border: none; width: 70%;">

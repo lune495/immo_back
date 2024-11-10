@@ -86,9 +86,11 @@
 <body>
 
 <div class="container">
+    @if($user->structure->tag_logo)
     <div style=" text-align: center; margin-bottom: 1px;">
         <img src="{{ asset('app-assets/assets/images/' . $user->structure->tag_logo) }}" alt="Bannière" class="banner" style="width: 500px; max-width: 100%; height: auto;">
     </div>
+    @endif
     <!-- En-tête avec les informations principales -->
      <br><br>
     <div class="header">

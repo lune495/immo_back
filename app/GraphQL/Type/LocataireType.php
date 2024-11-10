@@ -2,7 +2,7 @@
 
 namespace App\GraphQL\Type;
 
-use App\Models\{Locataire,CompteLocataire};
+use App\Models\{Locataire,CompteLocataire,LocataireTaxe};
 use Carbon\Carbon;
 use GraphQL\Type\Definition\Type;
 use Rebing\GraphQL\Support\Type as GraphQLType;
@@ -30,6 +30,7 @@ class LocataireType extends GraphQLType
             'adresse_profession'                => ['type' => Type::string()],
             'situation_matrimoniale'            => ['type' => Type::string()],
             'profession'                        => ['type' => Type::string()],
+            'type_location'                     => ['type' => Type::string()],
             'montant_loyer_ttc'                 => ['type' => Type::float()],
             'montant_loyer_ht'                  => ['type' => Type::float()],
             'descriptif_loyer'                  => ['type' => Type::string()],
@@ -37,6 +38,8 @@ class LocataireType extends GraphQLType
             'bien_immo_id'                      => ['type' => Type::int()],
             'caution'                           => ['type' => Type::int()],
             'multipli'                          => ['type' => Type::int()],
+            'date_echeance_contrat'             => ['type' => Type::string()],
+            'email'                             => ['type' => Type::string()],
             'resilier'                          => ['type' => Type::boolean()],
             'unite'                             => ['type' => GraphQL::type('Unite')],
             'cc'                                => ['type' => Type::int()],
@@ -117,5 +120,18 @@ class LocataireType extends GraphQLType
             $total_credit += $compte_locataire->credit;
         }
         return $total_debit - $total_credit;
+    }
+
+    protected function resolveMontantLoyerTtcField($root, $args)
+    {
+        $taxe = 0;
+        $loyer_ttc = 0;
+        $locataire_taxes = LocataireTaxe::where('locataire_id',$root['id'])->get();
+        foreach ($locataire_taxes as $locataire_taxe) {
+            $taxe += $locataire_taxe->value/100;
+        }
+        $somme_tva = 1 + $taxe;
+        $loyer_ttc = $root['montant_loyer_ht'] * $somme_tva;
+        return $loyer_ttc;
     }
 }

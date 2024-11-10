@@ -35,6 +35,7 @@ class JournalController extends Controller
                 $item->solde = $request->solde;
                 $item->user_id = $user->id;
                 $item->save();
+                // dd($detail_journals);
                 foreach ($detail_journals as $detail) 
                 {
                     $detail_journals = new DetailJournal();
@@ -50,7 +51,7 @@ class JournalController extends Controller
                     // {
                     //     $errors = "Renseignez le libelle";
                     // }
-                    if (empty($detail['entree']) && empty($detail['sortie']))
+                    if ($detail['entree'] == 0 && $detail['sortie'] == 0)
                     {
                         $errors = "veuillez préciser le type d'opération";
                     }
@@ -77,7 +78,8 @@ class JournalController extends Controller
                         {
                             $id = $item->id; 
                             // ENTREE
-                            if($detail['entree']!=0 && $detail['sortie'] ==0){
+                            if($detail['entree']!=0 && $detail['sortie'] ==0)
+                            {
                                 if(!empty($detail['locataire_id'])){
                                         $locataire_id = $detail['locataire_id'];
                                         $locataire = Locataire::find($locataire_id);
@@ -92,6 +94,7 @@ class JournalController extends Controller
                                             $compte_proprietaire->locataire_id = $locataire->id;
                                             $compte_proprietaire->proprietaire_id = $proprio_id;
                                             $compte_proprietaire->montant_compte = $detail['entree'];
+                                            $compte_proprietaire->detail_journal_id = $detail_journals->id;
                                             $compte_proprietaire->save();
                                             // Calculer la commission
                                             $commission = $detail['entree'] * ($commission_percentage/100);
@@ -101,6 +104,7 @@ class JournalController extends Controller
                                             $compte_agence->locataire_id = $locataire->id;
                                             $compte_agence->nature = "Honoraire pour paiement locataire `{$locataire->prenom}`";
                                             $compte_agence->commission = $commission * 0.18;
+                                            $compte_agence->detail_journal_id = $detail_journals->id;
                                             $isSaved = $compte_agence->save();
                                             // DEPENSE HONORAIRE
                                             if ($isSaved) {
@@ -108,9 +112,9 @@ class JournalController extends Controller
                                                 $compte_proprietaire->libelle = "Honoraire d'agence ($commission_percentage % de $montant)";
                                                 $compte_proprietaire->proprietaire_id = $locataire->bien_immo->proprietaire_id;
                                                 $compte_proprietaire->montant_compte = $commission;
+                                                $compte_proprietaire->detail_journal_id = $detail_journals->id;
                                                 $compte_proprietaire->save();
                                             }
-
                                             // Compte Locataire
                                             $compte_locataire = new CompteLocataire();
                                             $compte_locataire->locataire_id = $locataire->id;
@@ -121,6 +125,7 @@ class JournalController extends Controller
                                             $compte_locataire->debit = 0;
                                             $compte_locataire->credit = $detail['entree'];
                                             $compte_locataire->statut_paye = true;
+                                            $compte_locataire->detail_journal_id = $detail_journals->id;
                                             $compte_locataire->save();
                                             $locataire->solde += $compte_locataire->debit - $compte_locataire->credit;
                                             $locataire->save();
@@ -136,6 +141,7 @@ class JournalController extends Controller
                                     $compte_proprietaire->libelle = $detail['libelle'];
                                     $compte_proprietaire->proprietaire_id = $detail['proprietaire_id'];
                                     $compte_proprietaire->montant_compte = -1 * $detail['sortie'];
+                                    $compte_proprietaire->detail_journal_id = $detail_journals->id;
                                     $compte_proprietaire->save();
                                 }
                             }
@@ -168,7 +174,7 @@ class JournalController extends Controller
 
         // Initialiser la requête
         $query = DetailJournal::with('proprietaire', 'locataire');
-
+        
         // Vérifier si des dates de début et de fin sont fournies et si l'utilisateur est authentifié
         if ($start && $end && $user->structure_id) {
             // Ajouter la condition pour filtrer par structure_id
@@ -194,6 +200,10 @@ class JournalController extends Controller
             $query->whereBetween('created_at', [$start, $end]);
         }
 
+        $query->where(function ($q) {
+            $q->where('entree', '!=', 0)
+              ->orWhere('sortie', '!=', 0);
+        });
         // Récupérer les journaux filtrés
         $detailJournals = $query->get();
 
@@ -222,24 +232,29 @@ class JournalController extends Controller
              return response()->json(['message' => 'Token invalide'], 401);
          }
          // Récupérer l'utilisateur associé au token
-         $user = $accessToken->tokenable;
+         $user = $accessToken->tokenable;   
 
         if ($proprioId !== null && $user->structure_id) {
             $data = [];
             $proprietaire = Proprietaire::find($proprioId);
+            $proprios = $proprietaire->bien_immos()->get();
             $nom = "$proprietaire->prenom $proprietaire->nom";
 
             // Requête pour obtenir les locataires, total crédit, total débit et solde
             $locataires = CompteLocataire::select(
                 'locataires.id as locataire_id',
+                'bien_immos.commission_agence',
+                'bien_immos.nom_immeuble',
                 DB::raw("CONCAT(locataires.prenom, ' ', locataires.nom) as nom_complet"),
                 DB::raw('SUM(compte_locataires.debit) as total_debit'),
                 DB::raw('SUM(compte_locataires.credit) as total_credit'),
                 DB::raw('SUM(compte_locataires.credit - compte_locataires.debit) as solde')
             )->join('locataires', 'compte_locataires.locataire_id', '=', 'locataires.id')
             ->join('bien_immos', 'locataires.bien_immo_id', '=', 'bien_immos.id')
-            ->groupBy('locataires.id', 'locataires.prenom', 'locataires.nom');
-            
+            ->whereHas('detail_journal', function ($q) {
+                $q->where('annule', false);})
+            ->groupBy('locataires.id', 'locataires.prenom', 'locataires.nom','bien_immos.nom_immeuble','bien_immos.commission_agence');
+            // dd($locataires);
             $startDate = null;
             $endDate = null;
             $month = false;
@@ -295,7 +310,9 @@ class JournalController extends Controller
             $data['locataires'] = $locataires;
             $data['sorties'] = $depenses;
             $data['honoraire'] = $honoraire;
+            $data['proprios'] = $proprios;
 
+            
             // Ajout du token dans les données pour validation ou suivi si nécessaire
             $data['user'] = $user;
 
@@ -376,19 +393,29 @@ class JournalController extends Controller
             // return response()->json(['error' => 'Une erreur est survenue lors de la clôture de la caisse.']);
         }
     }
+
+    public function annulerpaimentloyer($id)
+    {
+        $detail_query = "detail_journals";
+        $detail_journal =  DetailJournal::find($id);
+        $detail_journal->annule = true;
+        $detail_journal->save();
+        $id = $detail_journal->id;
+        return  Outil::redirectgraphql($detail_query,"id:{$id}",Outil::$queries[$detail_query]);
+    }
     
 
 
-    public function situationgeneralparproprio($id)
+    public function situationgeneralparproprio($id,$token = null)
     {
-        // // Chercher le token dans la base de données pour récupérer l'utilisateur correspondant
-        // $accessToken = PersonalAccessToken::findToken($token);
-        // // Vérifier si le token est valide
-        // if (!$accessToken || !$accessToken->tokenable) {
-        //     return response()->json(['message' => 'Token invalide'], 401);
-        // }
-        // // Récupérer l'utilisateur associé au token
-        // $user = $accessToken->tokenable;
+        // Chercher le token dans la base de données pour récupérer l'utilisateur correspondant
+        $accessToken = PersonalAccessToken::findToken($token);
+        // Vérifier si le token est valide
+        if (!$accessToken || !$accessToken->tokenable) {
+            return response()->json(['message' => 'Token invalide'], 401);
+        }
+        // Récupérer l'utilisateur associé au token
+        $user = $accessToken->tokenable;
 
         if ($id !== null) {
             $data = [];
@@ -396,17 +423,19 @@ class JournalController extends Controller
 
             // Récupérer les données des locataires avec la somme des crédits
             $locataires = DB::table('compte_locataires')
-                ->join('locataires', 'compte_locataires.locataire_id', '=', 'locataires.id')
-                ->join('bien_immos', 'locataires.bien_immo_id', '=', 'bien_immos.id')
-                ->where('bien_immos.proprietaire_id', $proprietaire->id)
-                ->select(
-                    'locataires.nom',
-                    'locataires.prenom',
-                    DB::raw('SUM(compte_locataires.debit) as total_debit'),
-                    DB::raw('SUM(compte_locataires.credit) as total_credit')
-                )
-                ->groupBy('locataires.id', 'locataires.nom', 'locataires.prenom')
-                ->get();
+            ->join('locataires', 'compte_locataires.locataire_id', '=', 'locataires.id')
+            ->join('bien_immos', 'locataires.bien_immo_id', '=', 'bien_immos.id')
+            ->join('detail_journals', 'detail_journals.locataire_id', '=', 'locataires.id')
+            ->where('bien_immos.proprietaire_id', $proprietaire->id)
+            ->where('detail_journals.annule', false)
+            ->select(
+                'locataires.nom',
+                'locataires.prenom',
+                DB::raw('SUM(compte_locataires.debit) as total_debit'),
+                DB::raw('SUM(compte_locataires.credit) as total_credit')
+            )
+            ->groupBy('locataires.id', 'locataires.nom', 'locataires.prenom')
+            ->get();
 
             // Calculer le total des crédits pour ce propriétaire
             $totalCredits = $locataires->sum('total_credit');
@@ -418,7 +447,8 @@ class JournalController extends Controller
                 'prenomProprietaire' => $proprietaire->prenom,
                 'totalCredits' => $totalCredits,
                 'totalDebits' => $totalDebits,
-                'locataires' => $locataires
+                'locataires' => $locataires,
+                'user' => $user
             ];
             $pdf = PDF::loadView("pdf.situationgeneralproprio",$data);
             return $pdf->stream();

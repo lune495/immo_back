@@ -31,4 +31,8 @@ class BienImmo extends Model
     {
         return $this->belongsTo(TypeBienImmo::class);
     }
+    public function valeurLocative()
+    {
+        return $this->unites->sum('montant_loyer');
+    }
 }

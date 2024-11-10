@@ -3,7 +3,7 @@
 namespace App\Models;
 
 
-use Illuminate\Support\Facades\DB; 
+use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\Model;
 
 use Illuminate\Http\Request;
@@ -23,14 +23,14 @@ class Outil extends Model
 
     public static $queries = array(
         "proprietaires"              =>  " id,code,nom,prenom,telephone,user{id,name},bien_immos{id,code,adresse,description},cgf,foncier_bati",
-        "locataires"                 =>  " id,code,caution,solde,url_qr_code,unite{numero,dispo,nature_local{id,nom},etage,superficie_en_m2,annee_achevement,nombre_piece_principale,nombre_salle_de_bain,type_localisation,balcon},cni,adresse_profession,profession,situation_matrimoniale,nom,prenom,telephone,montant_loyer_ttc,montant_loyer_ht,descriptif_loyer,bien_immo_id,bien_immo{id,code,description,proprietaire_id,proprietaire{id,code,cgf,nom,prenom,telephone}},locataire_taxes{locataire{nom,solde,prenom,url_qr_code,cni,adresse_profession,situation_matrimoniale},taxe{nom,value}}",
+        "locataires"                 =>  " id,code,caution,type_location,solde,url_qr_code,unite{numero,dispo,nature_local{id,nom},etage,superficie_en_m2,annee_achevement,nombre_piece_principale,nombre_salle_de_bain,type_localisation,balcon},cni,adresse_profession,profession,situation_matrimoniale,nom,prenom,telephone,montant_loyer_ttc,montant_loyer_ht,descriptif_loyer,bien_immo_id,bien_immo{id,code,description,proprietaire_id,proprietaire{id,code,cgf,nom,prenom,telephone}},locataire_taxes{locataire{id,nom,prenom},taxe{id,nom,value}}",
         "users"                      =>  " id,name,email,role{id,nom}",
         "bien_immos"                 =>  " id,code,nom_immeuble,nbr_dispo,adresse,description,nbr_etage,nbr_total_appartement,nbr_magasin,proprietaire_id,proprietaire{id,cgf,code,nom,prenom,telephone},locataires{id,code,solde,url_qr_code,nom,prenom,telephone},unites{numero,dispo,nature_local{id,nom},etage,locataires{nom,prenom,solde,resilier},superficie_en_m2,annee_achevement,nombre_piece_principale,nombre_salle_de_bain,type_localisation,balcon}",
         "unite"                      =>  " id,numero,dispo,nature_local{id nom},locataires{nom,prenom,solde,resilier},type_localisation,etage,bien_immo{id,code,nom_immeuble,proprietaire{id,code,cgf,nom,prenom}},superficie_en_m2,annee_achevement,nombre_piece_principale,nombre_salle_de_bain,balcon",
         "taxes"                      =>  " id,nom,value",
         "nature_locations"           =>  " id,nom",
         "journals"                   =>  " id,solde,detail_journals{libelle,code,entree,sortie,proprietaire_id,proprietaire{id,code,nom,cgf},locataire_id,locataire{id,solde,code,url_qr_code,cni,adresse_profession,situation_matrimoniale,nom,prenom,bien_immo{id,code,description,proprietaire_id,proprietaire{id,code,cgf,nom,prenom,telephone}}}}",
-        "detail_journals"            =>  " id,code,libelle,user{id,name},entree,sortie,created_at_fr,updated_at_fr,locataire_id,proprietaire_id,proprietaire{id,code,cgf},journal_id,journal{id solde},locataire{id,solde,url_qr_code,code,cni,adresse_profession,situation_matrimoniale,nom,prenom,bien_immo{id,code,description,proprietaire_id,proprietaire{id,code,cgf,nom,prenom,telephone}}}",
+        "detail_journals"            =>  " id,code,annule,libelle,user{id,name},entree,sortie,created_at_fr,updated_at_fr,locataire_id,proprietaire_id,proprietaire{id,code,cgf},journal_id,journal{id solde},locataire{id,solde,url_qr_code,code,cni,adresse_profession,situation_matrimoniale,nom,prenom,bien_immo{id,code,description,proprietaire_id,proprietaire{id,code,cgf,nom,prenom,telephone}}}",
         "journal_proprios"           =>  " id,solde,libelle,entree,sortie,locataire_id,proprietaire_id,locataire{id,solde,url_qr_code,code,cni,adresse_profession,situation_matrimoniale,nom,prenom,bien_immo{id,code,description,proprietaire_id,proprietaire{id,code,cgf,nom,prenom,telephone}}}",
         "type_bien_immos"            =>  " id,nom,bien_immos{id,code,adresse,description,locataires{id,solde,url_qr_code,code,nom,prenom,telephone,montant_loyer_ttc,montant_loyer_ht,descriptif_loyer}}",
         // "proprio_bien_immos"      =>  " id,user_id,user{id,name,email,role{id,nom}},proprietaire_id,proprietaire{id,code,nom,prenom,telephone,agence_id,agence{id,nom_agence}},bien_immo_id,bien_immo{id,code,description,montant}",
@@ -58,13 +58,14 @@ class Outil extends Model
         return $loyer_ht;
     }
 
-    public static function loyerttc($montant_loyer_ht,$tva,$tom,$tlv,$cc)
+    public static function loyerttc($montant_loyer_ht,$locataire_taxes)
     {
-       $tva =  $tva != false ? $tva = $tva->value/100 : 0;
-       $tom =  $tom != false ? $tom = $tom->value/100 : 0;
-       $tlv =  $tlv != false ? $tlv = $tlv->value/100 : 0;
-       $cc =   $cc != false ?  $cc = $cc/100 : 0;
-        $somme_tva = 1 + ($tva+$tom+$tlv+$cc);
+        $taxe = 0;
+        // dd($locataire_taxes);
+        foreach ($locataire_taxes as $locataire_taxe) {
+            $taxe += $locataire_taxe['value']/100;
+        }
+        $somme_tva = 1 + $taxe;
         $loyer_ttc = $montant_loyer_ht * $somme_tva;
         return $loyer_ttc;
     }

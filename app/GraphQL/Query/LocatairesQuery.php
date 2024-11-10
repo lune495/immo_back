@@ -28,6 +28,7 @@ class LocatairesQuery extends Query
             'nom'                 =>    ['type' => Type::string()],
             'prenom'              =>    ['type' => Type::string()],
             'search'              =>    ['type' => Type::string()],
+            'bien_immo_id'        =>    ['type' => Type::int()],
         ];
     }
 
@@ -46,6 +47,11 @@ class LocatairesQuery extends Query
         // Ajout des filtres selon les arguments
         if (isset($args['id'])) {
             $query->where('id', $args['id']);
+        }
+
+         // Ajout des filtres selon les arguments
+         if (isset($args['bien_immo_id'])) {
+            $query->where('bien_immo_id', $args['bien_immo_id']);
         }
     
         if (isset($args['search'])) {
@@ -94,6 +100,9 @@ class LocatairesQuery extends Query
                 'resilier'                => $item->resilier,
                 'locataire_taxes'         => $item->locataire_taxes,
                 'solde'                   => $item->solde,
+                'email'                   => $item->email,
+                'date_echeance_contrat'   => $item->date_echeance_contrat,
+                'type_location'           => $item->type_location,
             ];
         });
     }

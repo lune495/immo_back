@@ -47,9 +47,15 @@ class ProprietairesQuery extends Query
         }
         if (isset($args['search']))
         {
-            $query = $query->where('code',Outil::getOperateurLikeDB(),'%'.$args['search'].'%')
-            ->orWhere('nom', Outil::getOperateurLikeDB(),'%'. $args['search'] . '%')
-            ->orWhere('prenom', Outil::getOperateurLikeDB(),'%'. $args['search'] . '%');;
+            // $query = $query->where('code',Outil::getOperateurLikeDB(),'%'.$args['search'].'%')
+            // ->orWhere('nom', Outil::getOperateurLikeDB(),'%'. $args['search'] . '%')
+            // ->orWhere('prenom', Outil::getOperateurLikeDB(),'%'. $args['search'] . '%');
+
+            $query->where(function ($q) use ($args) {
+                $q->where('code', Outil::getOperateurLikeDB(), '%' . $args['search'] . '%')
+                  ->orWhere('nom', Outil::getOperateurLikeDB(), '%' . $args['search'] . '%')
+                  ->orWhere('prenom', Outil::getOperateurLikeDB(), '%' . $args['search'] . '%');
+            });
         }
         $query->orderBy('id', 'asc');
         $query = $query->get();

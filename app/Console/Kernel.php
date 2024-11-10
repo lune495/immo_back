@@ -15,8 +15,10 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        // $schedule->command('update:credits')->dailyAt('00:00');
-          $schedule->command('update:credits')->everyMinute();
+        $schedule->command('update:credits')->dailyAt('00:00');
+        //   $schedule->command('update:credits')->everyMinute();
+        //   $schedule->command('email:send-rent-reminders')->everyMinute();
+          $schedule->command('notif:echance-contrat')->everyMinute();
     }
 
     /**

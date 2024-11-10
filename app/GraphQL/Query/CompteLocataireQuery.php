@@ -55,7 +55,9 @@ class CompteLocataireQuery extends Query
                 $q->where('nom', 'like', '%' . $args['nom'] . '%');
             });
         }
-
+        $query->whereHas('detail_journal', function ($q) {
+            $q->where('annule', false);
+        });
         $query = $query->orderBy('id','asc');
         $query = $query->get();
 

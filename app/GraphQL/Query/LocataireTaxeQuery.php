@@ -42,7 +42,7 @@ class LocataireTaxeQuery extends Query
                 'locataire_id'            => $item->locataire_id,
                 'locataire'               => $item->locataire,
                 'taxe_id'                 => $item->taxe_id,
-                'taxe'                    => $item->taxe
+                'taxe'                    => $item->value
             ];
         });
 

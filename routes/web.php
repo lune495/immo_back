@@ -1,8 +1,10 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Mail;
 use App\Http\Controllers\JournalController;
 use App\Http\Controllers\LocataireController;
+use App\Mail\HelloMail;
 use Illuminate\Support\Facades\Auth;
 
 /*
@@ -21,9 +23,16 @@ Route::get('/doc', [LocataireController::class,'documentation']);
 Route::get('/situation-par-proprio-pdf/{id?}/{mois?}/{token?}', [JournalController::class,'generatesituationparproprio']);
 Route::get('/situation-par-locataire-pdf/{id?}/{start?}/{end?}/{token?}', [LocataireController::class,'generatesituationparlocataire']);
 Route::get('/quittance-pdf/{id?}/{token?}', [LocataireController::class,'generatequittancelocataire']);
+Route::get('/annule_paiment/{id}', [JournalController::class,'annulerpaimentloyer']);
 Route::get('/situation-generale-par-proprio-pdf/{id}/{token?}', [JournalController::class,'situationgeneralparproprio']);
 Route::get('/', function () {
     return view('welcome');
+});
+
+Route::get('/test_mail', function () {
+    Mail::to('badaralune9@gmail.com')
+          ->send(new HelloMail());
+    // return view('mail.')
 });
 
 Route::get('/test-auth', function () {

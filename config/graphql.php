@@ -76,6 +76,7 @@ return [
             'query' => [
                 // ExampleQuery::class,
                 \App\GraphQL\Query\StructureQuery::class,
+                \App\GraphQL\Query\NotifEcheanceContratQuery::class,
                 \App\GraphQL\Query\NatureLocalQuery::class,
                 \App\GraphQL\Query\CompteLocataireQuery::class,
                 \App\GraphQL\Query\CompteCautionLocataireQuery::class,
@@ -110,6 +111,7 @@ return [
             'types' => [
                 // ExampleType::class,
                 \App\GraphQL\Type\StructureType::class,
+                \App\GraphQL\Type\NotifEcheanceContratType::class,
                 \App\GraphQL\Type\CompteLocataireType::class,
                 \App\GraphQL\Type\CompteCautionLocataireType::class,
                 \App\GraphQL\Type\CompteLocatairePaginatedType::class,

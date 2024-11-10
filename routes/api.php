@@ -42,6 +42,7 @@ Route::group(['middleware' => ['auth:sanctum']],function()
     // Route::post('/agences',[AgenceController::class,'save']);
     // Route::delete('/proprietaires/{id}',[ProprietaireController::class,'delete']);
     Route::post('/agence',[AgenceController::class, 'save']);
+    Route::post('/annule_paiment/{id}',[JournalController::class, 'annulerpaimentloyer']);
     Route::post('/typebien',[TypeBienImmoController::class, 'save']);
     Route::post('/cloture_caisse',[JournalController::class,'closeCaisse']);
     Route::post('/proprietaire',[ProprietaireController::class,'save']);
@@ -50,8 +51,10 @@ Route::group(['middleware' => ['auth:sanctum']],function()
     Route::post('/nature_location',[NatureLocationController::class,'save']);
     Route::post('/depense_proprio',[DepenseProprioController::class,'save']);
     Route::post('/locataire',[LocataireController::class,'save']);
+    Route::post('/update_locataire/{id}',[LocataireController::class,'update']);
     Route::post('/bienimmo',[BienImmoController::class,'save']);
     Route::put('/bienimmo_update/{id}', [BienImmoController::class, 'update']);
     Route::post('/journal',[JournalController::class,'save']);
     Route::post('/resilier_contrat/{id}',[LocataireController::class,'resilier']);
+    Route::post('/update_notif',[LocataireController::class,'update_notification']);
 });
