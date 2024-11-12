@@ -169,21 +169,17 @@
             </tr>
         @endforeach
 
-        @if($user->structure_id == 2)
-            @php $totalDepenses += $honoraire; @endphp
-        @elseif($user->structure_id == 1)
-            @php $totalDepenses += $honoraire + ($honoraire * 0.18); @endphp
-        @endif
-
         <tr>
             <td style="padding: 10px; border: 1px solid #ddd;">Honoraire d'agence ( {{$commission}}% de {{$totalRecettes}} )</td>
-            <td style="padding: 10px; border: 1px solid #ddd;">{{ number_format($honoraire * ($commission/100), 0, ',', ' ') }}</td>
+            <td style="padding: 10px; border: 1px solid #ddd;">{{ number_format($honoraire, 0, ',', ' ') }}</td>
+            @php $totalDepenses += $honoraire; @endphp
         </tr>
         
-        @if($user->structure_id == 1)
+        @if($user->structure_id != 2)
         <tr>
             <td style="padding: 10px; border: 1px solid #ddd;">TVA 18% de ({{$honoraire}})</td>
             <td style="padding: 10px; border: 1px solid #ddd;">{{ number_format($honoraire * 0.18, 0, ',', ' ') }}</td>
+            @php $totalDepenses += $honoraire + ($honoraire * 0.18); @endphp
         </tr>
         @endif
 
