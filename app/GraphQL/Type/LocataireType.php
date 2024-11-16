@@ -27,6 +27,9 @@ class LocataireType extends GraphQLType
             'prenom'                            => ['type' => Type::string()],
             'telephone'                         => ['type' => Type::string()],
             'cni'                               => ['type' => Type::string()],
+            'lieu_naissance'                    => ['type' => Type::string()],
+            'date_naissance'                    => ['type' => Type::string()],
+            'date_delivrance'                   => ['type' => Type::string()],
             'adresse_profession'                => ['type' => Type::string()],
             'situation_matrimoniale'            => ['type' => Type::string()],
             'profession'                        => ['type' => Type::string()],
@@ -67,7 +70,7 @@ class LocataireType extends GraphQLType
     protected function resolveCautionField($root, $args){
 
         $multipli = is_array($root) ? $root['multipli'] : $root->multipli;
-        $montant_loyer = is_array($root) ? $root['montant_loyer_ttc'] : $root->montant_loyer_ttc;
+        $montant_loyer = is_array($root) ? $root['montant_loyer_ht'] : $root->montant_loyer_ht;
     
         return $multipli * round($montant_loyer);
     }

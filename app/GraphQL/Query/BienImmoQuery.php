@@ -70,7 +70,8 @@ class BienImmoQuery extends Query
                 'locataires'              => $item->locataires,
                 'proprietaire_id'         => $item->proprietaire_id,
                 'proprietaire'            => $item->proprietaire,
-                'nbr_dispo'               => $item->nbr_dispo
+                'nbr_dispo'               => $item->nbr_dispo,
+                'commission_agence'       => $item->commission_agence,
             ];
         });
     }

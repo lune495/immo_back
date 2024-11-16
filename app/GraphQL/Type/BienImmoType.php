@@ -33,6 +33,7 @@ class BienImmoType extends GraphQLType
             'unites'                            => ['type' => Type::listOf(GraphQL::type('Unite'))],
             'proprietaire_id'                   => ['type' => Type::int()],
             'nbr_dispo'                         => ['type' => Type::int()],
+            'commission_agence'                 => ['type' => Type::float()],
             'proprietaire'                      => ['type' => GraphQL::type('Proprietaire')]
 
         ];

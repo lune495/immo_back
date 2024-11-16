@@ -23,9 +23,9 @@ class Outil extends Model
 
     public static $queries = array(
         "proprietaires"              =>  " id,code,nom,prenom,telephone,user{id,name},bien_immos{id,code,adresse,description},cgf,foncier_bati",
-        "locataires"                 =>  " id,code,caution,type_location,solde,url_qr_code,unite{numero,dispo,nature_local{id,nom},etage,superficie_en_m2,annee_achevement,nombre_piece_principale,nombre_salle_de_bain,type_localisation,balcon},cni,adresse_profession,profession,situation_matrimoniale,nom,prenom,telephone,montant_loyer_ttc,montant_loyer_ht,descriptif_loyer,bien_immo_id,bien_immo{id,code,description,proprietaire_id,proprietaire{id,code,cgf,nom,prenom,telephone}},locataire_taxes{locataire{id,nom,prenom},taxe{id,nom,value}}",
+        "locataires"                 =>  " id,code,lieu_naissance,date_naissance,date_delivrance,caution,type_location,solde,url_qr_code,unite{numero,dispo,nature_local{id,nom},etage,superficie_en_m2,annee_achevement,nombre_piece_principale,nombre_salle_de_bain,type_localisation,balcon},cni,adresse_profession,profession,situation_matrimoniale,nom,prenom,telephone,montant_loyer_ttc,montant_loyer_ht,descriptif_loyer,bien_immo_id,bien_immo{id,code,description,proprietaire_id,proprietaire{id,code,cgf,nom,prenom,telephone}},locataire_taxes{locataire{id,nom,prenom},taxe{id,nom,value}}",
         "users"                      =>  " id,name,email,role{id,nom}",
-        "bien_immos"                 =>  " id,code,nom_immeuble,nbr_dispo,adresse,description,nbr_etage,nbr_total_appartement,nbr_magasin,proprietaire_id,proprietaire{id,cgf,code,nom,prenom,telephone},locataires{id,code,solde,url_qr_code,nom,prenom,telephone},unites{numero,dispo,nature_local{id,nom},etage,locataires{nom,prenom,solde,resilier},superficie_en_m2,annee_achevement,nombre_piece_principale,nombre_salle_de_bain,type_localisation,balcon}",
+        "bien_immos"                 =>  " id,code,commission_agence,nom_immeuble,nbr_dispo,adresse,description,nbr_etage,nbr_total_appartement,nbr_magasin,proprietaire_id,proprietaire{id,cgf,code,nom,prenom,telephone},locataires{id,code,solde,url_qr_code,nom,prenom,telephone},unites{numero,dispo,nature_local{id,nom},etage,locataires{nom,prenom,solde,resilier},superficie_en_m2,annee_achevement,nombre_piece_principale,nombre_salle_de_bain,type_localisation,balcon}",
         "unite"                      =>  " id,numero,dispo,nature_local{id nom},locataires{nom,prenom,solde,resilier},type_localisation,etage,bien_immo{id,code,nom_immeuble,proprietaire{id,code,cgf,nom,prenom}},superficie_en_m2,annee_achevement,nombre_piece_principale,nombre_salle_de_bain,balcon",
         "taxes"                      =>  " id,nom,value",
         "nature_locations"           =>  " id,nom",
@@ -177,6 +177,12 @@ class Outil extends Model
     {
         return "Y-m-d H:i:s";
     }
+
+    public static function toutEnMajuscule($val)
+    {
+        return strtoupper($val);
+    }
+    
     public static function premereLettreMajuscule($val)
     {
         return ucfirst($val);

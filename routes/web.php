@@ -19,6 +19,7 @@ use Illuminate\Support\Facades\Auth;
 */
 
 Route::get('/journalpdf/{start?}/{end?}/{token?}', [JournalController::class,'generePDfGrandJournal']);
+Route::get('/contratpdf/{id?}/{token?}', [LocataireController::class,'generePDfContrat']);
 Route::get('/doc', [LocataireController::class,'documentation']);
 Route::get('/situation-par-proprio-pdf/{id?}/{mois?}/{token?}', [JournalController::class,'generatesituationparproprio']);
 Route::get('/situation-par-locataire-pdf/{id?}/{start?}/{end?}/{token?}', [LocataireController::class,'generatesituationparlocataire']);

@@ -23,6 +23,7 @@ class LocataireController extends Controller
     public function save(Request $request)
     {
         //dd($request->all());
+        // dd($request->nbr_mois_arriere);
         try {
             return DB::transaction(function () use ($request)
             {
@@ -89,6 +90,9 @@ class LocataireController extends Controller
                         $item->user_id = $user->id;
                         // $item->user_id = 1;
                         $item->CNI = $request->cni;
+                        // $item->lieu_naissance = $request->lieu_naissance;
+                        // $item->date_naissance = $request->date_naissance;
+                        // $item->date_delivrance = $request->date_delivrance;
                         $item->adresse_profession = $request->adresse_profession;
                         $item->situation_matrimoniale = $request->situation_matrimoniale;
                         $item->profession = $request->profession;
@@ -99,6 +103,7 @@ class LocataireController extends Controller
                         $item->unite_id = $request->unite_id;
                         $item->bien_immo_id = $request->bien_immo_id;
                         $item->cc = $request->cc;
+                        $item->nbr_mois_arriere = $request->nbr_mois_arriere;
                         $item->type_location = $request->statut;
                         $item->descriptif_loyer = $request->descriptif_loyer;
                         $item->save();
@@ -126,6 +131,7 @@ class LocataireController extends Controller
                         // $notif->user_id = $user->id;
                         // $notif->save();
                         $caution = $request->caution;
+                        $arriere = $request->nbr_mois_arriere * $montant_loyer_ht;
                         // Vérifier si caution est un nombre
                         if (is_numeric($caution)) {
                         // Convertir caution en nombre flottant
@@ -145,6 +151,19 @@ class LocataireController extends Controller
                         $compte_locataire->statut_paye = false;
                         $compte_locataire->detail_journal_id = $detail_journal->id;
                         $compte_locataire->save();
+                        if($arriere != 0){
+                            // Assigner la valeur négative à credit
+                            $compte_locataire = new CompteLocataire();
+                            $compte_locataire->locataire_id = $id;
+                            $compte_locataire->libelle = 'Arrière Paiement';
+                            $compte_locataire->dernier_date_paiement = Carbon::now();
+                            // $compte_locataire->dernier_date_paiement = $date_test;
+                            $compte_locataire->debit = $arriere;
+                            $compte_locataire->credit = 0;
+                            $compte_locataire->statut_paye = false;
+                            $compte_locataire->detail_journal_id = $detail_journal->id;
+                            $compte_locataire->save();
+                        }
                         $item->solde = $compte_locataire->debit;
                         $item->save();
                         // Compte Locataire
@@ -303,6 +322,28 @@ public function uploadContract(Request $request)
         return $pdf->stream();
     }
 
+    public function generePDfContrat($id,$token){
+         // Chercher le token dans la base de données pour récupérer l'utilisateur correspondant
+         $accessToken = PersonalAccessToken::findToken($token);
+         // Vérifier si le token est valide
+         if (!$accessToken || !$accessToken->tokenable) {
+             return response()->json(['message' => 'Token invalide'], 401);
+         }
+         // Récupérer l'utilisateur associé au token
+         $user = $accessToken->tokenable;
+        if ($id !== null && $user !== null) {
+            $locataire = Locataire::find($id);
+            $data['locataire'] = $locataire;
+            $data['user'] = $user;
+            $pdf = PDF::loadView("pdf.contratpdflocataire", $data);
+            $measure = array(0,0,825.772,570.197);
+            return $pdf->stream();
+        }else {
+            return view('notfound'); // Si l'ID du locataire n'est pas fourni
+        }
+
+    }
+
     public function generatequittancelocataire($id,$token)
     {
         // Chercher le token dans la base de données pour récupérer l'utilisateur correspondant
@@ -354,7 +395,7 @@ public function uploadContract(Request $request)
 
     public function update(Request $request, $id)
     {
-        // dd($request->all());
+        //dd($request->all());
         try {
             return DB::transaction(function () use ($request, $id) {
                 $errors = null;

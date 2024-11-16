@@ -109,6 +109,7 @@ class BienImmoController extends Controller
                 $bienImmo->nbr_etage = $request->nbr_etage ?? $bienImmo->nbr_etage;
                 $bienImmo->nbr_total_appartement = $request->nbr_total_appartement ?? $bienImmo->nbr_total_appartement;
                 $bienImmo->nbr_magasin = $request->nbr_magasin ?? $bienImmo->nbr_magasin;
+                $bienImmo->commission_agence = $request->commission_agence ?? $bienImmo->commission_agence;
 
                 $bienImmo->save();
 
