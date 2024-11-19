@@ -30,6 +30,7 @@ use App\Http\Controllers\DepenseProprioController;
 // Public Routes
 //Route::resource('produits', ProduitController::class);
 Route::post('/upload_contract', [LocataireController::class, 'uploadContract']);
+Route::get('/locataires', [JournalController::class,'produits']);
 Route::get('/upload/{id?}', function () {
     return view('pdf.upload');
 });

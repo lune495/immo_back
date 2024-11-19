@@ -179,7 +179,7 @@
         <tr>
             <td style="padding: 10px; border: 1px solid #ddd;">TVA 18% de ({{$honoraire}})</td>
             <td style="padding: 10px; border: 1px solid #ddd;">{{ number_format($honoraire * 0.18, 0, ',', ' ') }}</td>
-            @php $totalDepenses += $honoraire + ($honoraire * 0.18); @endphp
+            @php $totalDepenses += ($honoraire * 0.18); @endphp
         </tr>
         @endif
 

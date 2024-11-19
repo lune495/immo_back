@@ -58,6 +58,12 @@ class Outil extends Model
         return $loyer_ht;
     }
 
+    public static function convertirNombreEnTexte($nombre)
+    {
+        $f = new \NumberFormatter("fr", \NumberFormatter::SPELLOUT);
+        return ucfirst($f->format($nombre));
+    }
+
     public static function loyerttc($montant_loyer_ht,$locataire_taxes)
     {
         $taxe = 0;

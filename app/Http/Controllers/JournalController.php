@@ -222,7 +222,12 @@ class JournalController extends Controller
     
 
 
+    public function produits()
+    {
+        $locataire = Locataire::all();
+        return response()->json($locataire);
 
+    }
     public function generatesituationparproprio($proprioId = null, $param3 = false, $token = null)
     {
          // Chercher le token dans la base de données pour récupérer l'utilisateur correspondant

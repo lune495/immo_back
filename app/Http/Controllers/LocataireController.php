@@ -335,7 +335,14 @@ public function uploadContract(Request $request)
             $locataire = Locataire::find($id);
             $data['locataire'] = $locataire;
             $data['user'] = $user;
-            $pdf = PDF::loadView("pdf.contratpdflocataire", $data);
+            // CIS
+            if($user->structure->id == 1){
+                $pdf = PDF::loadView("pdf.contratpdflocataire", $data);
+            }
+            // BICO
+            if($user->structure->id == 5){
+                $pdf = PDF::loadView("pdf.contratbicopdflocataire", $data);
+            }
             $measure = array(0,0,825.772,570.197);
             return $pdf->stream();
         }else {

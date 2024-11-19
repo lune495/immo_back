@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class MakeCcNullableInLocatairesTable extends Migration
+class MakeTelephoneNullableInLocatairesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -14,8 +14,8 @@ class MakeCcNullableInLocatairesTable extends Migration
     public function up()
     {
         Schema::table('locataires', function (Blueprint $table) {
-                $table->integer('cc')->nullable()->change();
-            });
+            $table->string('telephone')->nullable()->change();
+        });
     }
 
     /**
@@ -26,7 +26,7 @@ class MakeCcNullableInLocatairesTable extends Migration
     public function down()
     {
         Schema::table('locataires', function (Blueprint $table) {
-                $table->integer('cc')->change();
+            $table->string('telephone')->change();
         });
     }
 }

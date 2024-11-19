@@ -88,7 +88,7 @@
         <div style=" text-align: center; margin-bottom: 1px;">
             <img src="{{ asset('app-assets/assets/images/' . $user->structure->tag_logo) }}" alt="Bannière" class="banner" style="width: 500px; max-width: 100%; height: auto;">
         </div>
-    @endifp
+    @endif
     <div class="header">
         <!-- <img src="logo.png" alt="Logo de la Compagnie Immobilière du Sénégal"> -->
         <h3>LOCATIONS – GERANCE – ACHATS – VENTES – CONSTRUCTION RENOVATION</h3>
@@ -101,7 +101,7 @@
     </div>
 
     <div class="content">
-    <p><span class="bold">Les soussignés : </span><span class="bold">MR MUSSA SYLLA</span>, représentant de la <span class="bold">COMPAGNIE IMMOBILIÈRE DU SÉNÉGAL (C.I.S)</span>, immatriculée sous le numéro SN-DKR-2023-B-792, habilitée à représenter la Propriétaire en vertu du Mandat d’administration de biens.</p>
+    <p><span class="bold">Les soussignés : </span><span class="bold">{{$locataire->bien_immo->proprietaire->prenom}} {{$locataire->bien_immo->proprietaire->nom}}</span>, représentant de la <span class="bold">COMPAGNIE IMMOBILIÈRE DU SÉNÉGAL (C.I.S)</span>, immatriculée sous le numéro SN-DKR-2023-B-792, habilitée à représenter la Propriétaire en vertu du Mandat d’administration de biens.</p>
         <p>Ci-après dénommée <span class="bold">"la bailleresse"</span> d’une part, et</p>
         <p><span class="bold">{{$locataire->prenom}} {{$locataire->nom}}</span> né(e) le 31/07/1984 à NGUIDILE, titulaire de la CDI n° {{$locataire->CNI}} délivrée le 12/08/2021.</p>
         <p>Ci-après dénommé <span class="bold">"le preneur"</span> d’autre part.</p>
@@ -167,8 +167,8 @@ La période de préavis est fixée à six (6) mois pour le bailleur et deux (02)
  <ul>
     <li>Loyer de base : {{number_format($locataire->montant_loyer_ht, 0, ',', ' ')}} F.CFA</li>
     @php
-    {{$tva= null;}}
-    {{$tom= null;}}
+    $tva= null;
+    $tom= null;
     @endphp
     @foreach($locataire->locataire_taxes as $t)
         @if($t->taxe->nom == 'TVA')
@@ -198,5 +198,4 @@ La période de préavis est fixée à six (6) mois pour le bailleur et deux (02)
         <strong class="signature-right">LE PRENEUR</strong>
     </div>
 </body>
-
 </html>
