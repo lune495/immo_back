@@ -116,6 +116,7 @@ class JournalController extends Controller
                                                 $compte_proprietaire->save();
                                             }
                                             // Compte Locataire
+                                            // $cc = $locataire->cc ? $locataire->cc : 0;
                                             $compte_locataire = new CompteLocataire();
                                             $compte_locataire->locataire_id = $locataire->id;
                                             $compte_locataire->libelle = "Paiement Location `{$detail['date_location']}`";
@@ -252,6 +253,7 @@ class JournalController extends Controller
                 'bien_immos.nom_immeuble',
                 DB::raw("CONCAT(locataires.prenom, ' ', locataires.nom) as nom_complet"),
                 DB::raw('SUM(compte_locataires.debit) as total_debit'),
+                DB::raw('SUM(compte_locataires.cc) as total_cc'),
                 DB::raw('SUM(compte_locataires.credit) as total_credit'),
                 DB::raw('SUM(compte_locataires.credit - compte_locataires.debit) as solde')
             )->join('locataires', 'compte_locataires.locataire_id', '=', 'locataires.id')
@@ -320,9 +322,12 @@ class JournalController extends Controller
             
             // Ajout du token dans les données pour validation ou suivi si nécessaire
             $data['user'] = $user;
-
+            if($user->structure->id == 1){
+                $pdf = PDF::loadView("pdf.situationproprio2", $data);
+            }else {
+                $pdf = PDF::loadView("pdf.situationproprio3", $data);
+            }
             // Générer le PDF
-            $pdf = PDF::loadView("pdf.situationproprio2", $data);
             return $pdf->stream();
         } else {
             return view('notfound'); // Si l'ID du propriétaire n'est pas fourni
