@@ -88,7 +88,7 @@
 <div class="container">
     @if($user->structure->tag_logo)
     <div style=" text-align: center; margin-bottom: 1px;">
-        <img src="{{ asset('app-assets/assets/images/' . $user->structure->tag_logo) }}" alt="Bannière" class="banner" style="width: 500px; max-width: 100%; height: auto;">
+        <img src="{{ asset('app-assets/assets/images/' . $user->structure->tag_logo) }}" alt="Bannière" class="banner" style="width: 200px; max-width: 100%; height: auto;">
     </div>
     @endif
     <!-- En-tête avec les informations principales -->
@@ -97,8 +97,8 @@
         <div class="left">
             <p><strong>{{$user->structure->nom_structure}}</strong></p>
             <p>Location - Gestion - Achat - Construction - Rénovation</p>
-            <p><strong>Adresse :</strong> {{$user->structure->adresse_structure ? $user->structure->adresse_structure : ''}}</p>
-            <p><strong>Téléphone :</strong> {{$user->structure->numero_tel1_structure ? $user->structure->numero_tel1_structure : ''}}</p>
+            <p><strong>Adresse Mail:</strong> {{$user->structure->email_structure ? $user->structure->email_structure : ''}}</p>
+            <p><strong>Téléphone :</strong> {{$user->structure->numero_tel1_structure ? $user->structure->numero_tel1_structure : ''}}/{{$user->structure->numero_tel2_structure ? $user->structure->numero_tel2_structure : ''}}</p>
         </div>
         <div class="right">
             <p><strong>Quittance N° :</strong> {{ $quittance->id }}</p>

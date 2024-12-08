@@ -106,10 +106,10 @@ class UpdateCredits extends Command
                         $locataire->solde += 2500;
                         $locataire->save();
 
-                        if($locataire->date_echeance_contrat->isSameDay(Carbon::today())){
-                            Mail::to($locataire->email)->send(new RappelEcheanceContrat($locataire));
-                        }
-                        Mail::to($locataire->email)->send(new RentReminderMail($locataire));
+                        // if($locataire->date_echeance_contrat->isSameDay(Carbon::today())){
+                        //     Mail::to($locataire->email)->send(new RappelEcheanceContrat($locataire));
+                        // }
+                        // Mail::to($locataire->email)->send(new RentReminderMail($locataire));
                         // Log pour la pénalité appliquée
                         Log::info("Une pénalité de retard de 2500 XOF a été appliquée pour le locataire {$locataire->id} pour le jour {$dayOfMonth}.");
                     }
@@ -118,8 +118,9 @@ class UpdateCredits extends Command
             // Pour les locataires de la structure 1
             else if ($locataire->user->structure->id != 2) {
                 // dd($dayOfMonth);
+                //dd($dernierDate->addMonth());
                 // Si la date est supérieure ou égale à la dernière date de paiement plus 1 mois et 2 jours, appliquer le loyer dû
-                if ($today->greaterThanOrEqualTo($dernierDate->addDays(5)) && $locataire->resilier == false) {
+                if ($today->greaterThanOrEqualTo($dernierDate->addMonth()) && $locataire->resilier == false) {
                 // if ($dayOfMonth == 1 && $locataire->resilier == false) {
                     $solde = round($locataire->montant_loyer_ht);
                     $journal->solde = $solde;
@@ -149,14 +150,14 @@ class UpdateCredits extends Command
                     $locataire->solde += $compte_locataire->debit - $compte_locataire->credit;
                     $locataire->save();
                     // Envoie du mail pour la date d'echeance de son contrat
-                    if($locataire->date_echeance_contrat){
-                        $date_echeance = Carbon::parse($locataire->date_echeance_contrat);
-                        if($date_echeance->isSameDay(Carbon::today())){
-                            Mail::to($locataire->email)->send(new RappelEcheanceContrat($locataire));
-                        }
-                    }
+                    // if($locataire->date_echeance_contrat){
+                    //     $date_echeance = Carbon::parse($locataire->date_echeance_contrat);
+                    //     if($date_echeance->isSameDay(Carbon::today())){
+                    //         Mail::to($locataire->email)->send(new RappelEcheanceContrat($locataire));
+                    //     }
+                    // }
                     //envoie du mail pour le rappel de paiement 
-                    Mail::to($locataire->email)->send(new RentReminderMail($locataire));
+                    // Mail::to($locataire->email)->send(new RentReminderMail($locataire));
                     // Envoyer un message WhatsApp si nécessaire
                     // $message = "Bonjour " . $locataire->nom . ", votre loyer de " . $compte_locataire->debit . " est dû. Veuillez effectuer le paiement dès que possible. Merci!";
                     // $this->twilioService->sendWhatsAppMessage($locataire->telephone, $message);

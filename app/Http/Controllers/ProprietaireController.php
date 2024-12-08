@@ -33,6 +33,7 @@ class ProprietaireController extends Controller
                 {
                     $errors = "Renseignez le prenom du proprietaire";
                 }
+                
                 if (empty($request->telephone))
                 {
                     $errors = "Renseignez le numero de téléphone du proprietaire";
@@ -41,6 +42,14 @@ class ProprietaireController extends Controller
                 if (empty($request->id))
                 {
                     $item->code = "B000-0";
+                }
+                if (!isset($errors))
+                {
+                    $existingProprio = Proprietaire::where('nom', $request->nom)->where('prenom', $request->prenom)->first();
+                
+                    if ($existingProprio) {
+                        $errors = "Ce bailleur existe déjà.";
+                    }
                 }
                 if (!isset($errors))
                 {

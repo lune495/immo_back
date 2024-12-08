@@ -5,207 +5,192 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Situation Loyer</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            color: #333;
-        }
-        .container {
-            width: 80%;
-            margin: 0 auto;
-            padding: 20px;
-        }
-        .header {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-        .header h1 {
-            margin: 0;
-            font-size: 18px;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-        }
-        .header .contact-info {
-            margin-top: 10px;
-            font-size: 12px;
-            color: #666;
-        }
         table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 20px;
+            margin-top: 10px;
+            page-break-inside: auto;
+            table-layout: fixed;
         }
         th, td {
-            padding: 5px;
-            border: 1px solid #ddd;
-            text-align: left;
+            padding: 8px;
+            border: 1px solid #000;
+            text-align: center;
+            word-wrap: break-word;
         }
         th {
             background-color: #f2f2f2;
             font-weight: bold;
         }
-        .total-row td {
+        .total-row {
             font-weight: bold;
-            text-align: center;
+            background-color: #f9f9f9;
         }
-        .total-row td:last-child {
-            text-align: center;
+        .section-title {
+            margin-top: 20px;
+            font-weight: bold;
         }
-        .footer {
+        .signature-section {
             margin-top: 40px;
-            text-align: center;
-            font-size: 12px;
         }
-        .signatures {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 50px;
+
+        .signature-left {
+            float: left;
+            font-size: 9pt;
         }
-        .signatures div {
-            text-align: center;
-            width: 45%;
+
+        .signature-right {
+            float: right;
+            font-size: 9pt;
         }
     </style>
 </head>
 <body>
-
 <div class="container">
     @if($user->structure->tag_logo)
-        <div style="text-align: center; margin-bottom: 1px;">
-            <img src="{{ asset('app-assets/assets/images/' . $user->structure->tag_logo) }}" alt="Bannière" style="width: 500px; max-width: 100%; height: auto;">
+        <div style="text-align: center; margin-bottom: 10px;">
+            <img src="{{ asset('app-assets/assets/images/' . $user->structure->tag_logo) }}" alt="Bannière" style="width: {{$user->structure_id == 5 ? '200px' : '700px' }}; max-width: 100%; height: auto;">
         </div>
     @endif
 
-    <div class="header">
+    <!-- <div class="header" style="text-align: center; margin: 20px auto;">
         <h1>{{$user->structure->nom_structure}}</h1>
         <div class="contact-info">
             <p>L'IMMOBILIER GARANTI</p>
-            <p>{{$user->structure->adresse_structure}}, Tel: {{$user->structure->numero_tel1_structure}} </p>
+            <p>{{$user->structure->adresse_structure}}, Tel: {{$user->structure->numero_tel1_structure}}</p>
             <p>Email: {{$user->structure->email_structure}}</p>
         </div>
-    </div>
+    </div> -->
+
     <center><p><u>SITUATION LOYER DU MOIS DE {{$mois}}</u></p></center>
     <u>Bailleur</u>: <strong>{{ $nom_proprio }}</strong>
-    <table>
-        <tr>
-            <th>Nom Immeuble</th>
-            <th>Valeur Locataive</th>
-        </tr>
 
+    <!-- Première table -->
+    <table>
+        <thead>
+            <tr>
+                <th>Nom Immeuble</th>
+                <th>Valeur Locative</th>
+            </tr>
+        </thead>
+        <tbody>
         @foreach($proprios as $proprio)
-        <tr>
-            <td>{{ $proprio->nom_immeuble}}</td>
-            <td><strong>{{number_format($proprio->valeurLocative(), 0, ',', ' ') }} FCFA</strong></td>
-        </tr>
-         @endforeach
+            <tr>
+                <td>{{ $proprio->nom_immeuble }}</td>
+                <td><strong>{{ number_format($proprio->valeurLocative(), 0, ',', ' ') }} FCFA</strong></td>
+            </tr>
+        @endforeach
+        </tbody>
     </table>
-    <table>
-        <tr>
-            <th>Bien. Immo</th>
-            <th>Locataires</th>
-            <th>Montants</th>
-            <th>Impayé</th>
-            <th>Mnt/Bien</th>
-        </tr>
 
-        @php $totalRecettes = 0; $totalcredits = 0; $totalsoldes = 0; $commission = 0; @endphp
-
-        @foreach($locataires as $locataire)
+    <!-- Deuxième table -->
+    <div class="section-title">Détail par immeuble :</div>
+    @php
+        $totalRecettes = 0;
+        $totalDepenses = 0;
+        $commission = 0;
+    @endphp
+    @foreach($locataires as $locataire)
             @php 
-                $totalRecettes += $locataire->total_credit + $locataire->total_cc; 
-                $totalcredits += $locataire->total_credit; 
-                $commission = $locataire->commission_agence; 
-                $totalsoldes += $locataire->solde;
+                $commission = $locataire->commission_agence;
             @endphp
         @endforeach
-
-        @php $currentBien = null; @endphp
-
-        @php
-
-        $bienSums = $locataires->groupBy('nom_immeuble')->map(function($group) {
-        return $group->sum('total_credit');
-        });
-        
-        @endphp
-
-        @foreach($locataires as $locataire)
-            @if($locataire->nom_immeuble !== $currentBien)
-                @php 
-                    $currentBien = $locataire->nom_immeuble;
-                    $bienTotal = $bienSums[$currentBien];
-                @endphp
+    <table>
+        <thead>
+            <tr>
+                <th>Bien. Immo</th>
+                <th>Locataires</th>
+                <th>Montants</th>
+                <th>Impayé</th>
+            </tr>
+        </thead>
+        <tbody>
+        @foreach($locataires->groupBy('nom_immeuble') as $immeuble => $locatairesGroup)
+            <tr class="total-row">
+                <td colspan="4"><strong>{{ $immeuble }}</strong></td>
+            </tr>
+            @php $immeubleTotal = 0; @endphp
+            @foreach($locatairesGroup as $locataire)
+                @php $immeubleTotal += $locataire->total_credit + $locataire->total_cc; @endphp
                 <tr>
-                    <td rowspan="{{ $locataires->where('nom_immeuble', $currentBien)->count() }}">{{ $currentBien }}</td>
-                    <td>{{ $locataire->nom_complet }}</td>
-                    <td>{{ number_format($locataire->total_credit + $locataire->total_cc, 0, ',', ' ') }}</td>
-                    <td>{{ number_format($locataire->solde, 0, ',', ' ') }}</td>
-                    <td rowspan="{{ $locataires->where('nom_immeuble', $currentBien)->count() }}">{{ number_format($bienTotal, 0, ',', ' ') }}</td>
+                    <td>{{ $immeuble }}</td>
+                    <td>{{\App\Models\Outil::toutEnMajuscule($locataire->nom_complet)}}</td>
+                    <td>{{ number_format($locataire->total_credit + $locataire->total_cc, 0, ',', ' ') }} FCFA</td>
+                    <td>{{ number_format($locataire->solde, 0, ',', ' ') }} FCFA</td>
                 </tr>
-                @else
-                    <tr>
-                        <td>{{ $locataire->nom_complet }}</td>
-                        <td>{{ number_format($locataire->total_credit, 0, ',', ' ') }}</td>
-                        <td>{{ number_format($locataire->solde, 0, ',', ' ') }}</td>
-                    </tr>
-                @endif
+            @endforeach
+            <tr class="total-row">
+                <td colspan="2">Total {{ $immeuble }}</td>
+                <td colspan="2">{{ number_format($immeubleTotal, 0, ',', ' ') }} FCFA</td>
+            </tr>
+            @php $totalRecettes += $immeubleTotal; @endphp
         @endforeach
 
+        <!-- Ligne du total général -->
         <tr class="total-row">
-            <td>Reçu Total loyer</td>
-            <td colspan="4">{{ number_format($totalRecettes, 0, ',', ' ') }}</td>
+            <td colspan="2"><strong>Total Général</strong></td>
+            <td colspan="2"><strong>{{ number_format($totalRecettes, 0, ',', ' ') }} FCFA</strong></td>
         </tr>
+        </tbody>
     </table>
-
+    <!-- Tableau des dépenses -->
+    
     <h3><u>Dépenses :</u></h3>
     <table>
         @php $totalDepenses = 0; @endphp
         @foreach($sorties as $sortie)
-            @php $totalDepenses += -1 * $sortie->montant_compte; @endphp
+            @php $totalDepenses += (-1 * $sortie->montant_compte); @endphp
             <tr>
-                <td style="padding: 10px; border: 1px solid #ddd;">{{ $sortie->libelle }}</td>
-                <td style="padding: 10px; border: 1px solid #ddd;">{{ number_format(-1 * $sortie->montant_compte, 0, ',', ' ') }}</td>
+                <td>{{\App\Models\Outil::toutEnMajuscule($sortie->libelle)}}</td>
+                <td>{{ number_format(-1 * $sortie->montant_compte, 0, ',', ' ') }}</td>
             </tr>
         @endforeach
-
+      @if($commission > 1 && $commission <= 50)
         <tr>
-            <td style="padding: 10px; border: 1px solid #ddd;">Honoraire d'agence ( 50000F de {{$totalRecettes}} )</td>
-            <td style="padding: 10px; border: 1px solid #ddd;">{{ number_format(50000, 0, ',', ' ') }}</td>
-            @php $totalDepenses += 50000; @endphp
-        </tr>
-        
-        @if($user->structure_id != 2)
-        <tr>
-            <td style="padding: 10px; border: 1px solid #ddd;">TVA 18% de 50000</td>
-            <td style="padding: 10px; border: 1px solid #ddd;">{{ number_format(50000 * 0.18, 0, ',', ' ') }}</td>
-            @php $totalDepenses += (50000 * 0.18); @endphp
+            <td>Honoraire d'agence ( {{$commission}}% de  {{$totalRecettes}})</td>
+            <td>{{ number_format(($commission * $totalRecettes)/100, 0, ',', ' ') }}</td>
+            @php $totalDepenses += (($commission * $totalRecettes)/100); @endphp
         </tr>
         @endif
 
+        @if($commission > 50)
+        <tr>
+            <td>Honoraire d'agence ( {{$commission}} )</td>
+            <td>{{ number_format($commission, 0, ',', ' ') }}</td>
+            @php $totalDepenses += $commission; @endphp
+        </tr>
+        @endif
+      @if($user->structure_id != 3 && $user->structure_id != 5)
+        @if($commission > 50)
+            <tr>
+                <td>TVA 18% de {{$commission}}</td>
+                <td>{{ number_format($commission * 0.18, 0, ',', ' ') }}</td>
+                @php $totalDepenses += ($commission * 0.18); @endphp
+            </tr>
+        @endif
+        @if($commission > 1 && $commission <= 50)
+        <tr>
+                <td>TVA 18% de {{($commission * $totalRecettes)/100}}</td>
+                <td>{{ number_format((($commission * $totalRecettes)/100) * 0.18, 0, ',', ' ') }}</td>
+                @php $totalDepenses += ((($commission * $totalRecettes)/100) * 0.18); @endphp
+         </tr>
+        @endif
+      @endif
         <tr class="total-row">
-            <td>Total Dépense</td>
-            <td>{{ number_format($totalDepenses, 0, ',', ' ') }}</td>
+            <td>Total Dépenses</td>
+            <td>{{ number_format($totalDepenses, 0, ',', ' ') }} FCFA</td>
         </tr>
     </table>
-
     <h3>À verser :</h3>
-    <p>{{ number_format($totalRecettes, 0, ',', ' ') }} - {{ number_format($totalDepenses, 0, ',', ' ') }} F = {{ number_format($totalRecettes - $totalDepenses, 0, ',', ' ') }}</p>
-    
+    <p>{{ number_format($totalRecettes, 0, ',', ' ') }} - {{ number_format($totalDepenses, 0, ',', ' ') }} F = {{ number_format($totalRecettes - $totalDepenses, 0, ',', ' ') }} FCFA</p>
+
     @if(($totalRecettes - $totalDepenses) < 0)
-        <p>Le bailleur nous doit : {{ number_format($totalRecettes - $totalDepenses, 0, ',', ' ') }} F CFA</p>
+        <p>Le bailleur nous doit : {{ number_format(abs($totalRecettes - $totalDepenses), 0, ',', ' ') }} F CFA</p>
     @endif
-    
-    <div class="signatures">
-        <div><p>Dakar le {{ \Carbon\Carbon::now()->format('d/m/Y') }}</p></div>
-        <div><p>LE BAILLEUR</p></div>
+    <div class="signature-section">
+        <strong class="signature-left"><u> COMPAGNIE IMMOBILIERE DU SENEGAL</u></strong>
+        <strong class="signature-right">LE PRENEUR</strong>
     </div>
 </div>
 </body>
 </html>
-
-
-
-
-
-

@@ -48,7 +48,7 @@
                     <td style="padding: 8px; border: 1px solid #dddddd;">{{$detail_journal["created_at_fr"]}}</td>
                     <td style="padding: 8px; border: 1px solid #dddddd;">{{$detail_journal["code"]}}</td>
                     <td style="padding: 8px; border: 1px solid #dddddd;">
-                        {{isset($detail_journal["locataire"]) ? $detail_journal["locataire"]["code"] : $detail_journal["proprietaire"]["code"]}}
+                        {{isset($detail_journal["locataire"]) ? $detail_journal["locataire"]["code"].$detail_journal["locataire"]["prenom"]  : $detail_journal["proprietaire"]["code"]}}
                     </td>
                     <td style="padding: 8px; border: 1px solid #dddddd;">{{$detail_journal["libelle"]}}</td>
                     <td style="padding: 8px; border: 1px solid #dddddd;">{{$detail_journal["entree"]}}</td>

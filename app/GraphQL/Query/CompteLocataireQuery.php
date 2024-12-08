@@ -72,6 +72,7 @@ class CompteLocataireQuery extends Query
                 'credit'                            => $item->credit,
                 'debit'                             => $item->debit,
                 'statut_paye'                       => $item->statut_paye,
+                'credit_ttc'                        => $item->credit_ttc,
                 //'deleted_at'                        => empty($item->deleted_at) ? $item->deleted_at : $item->deleted_at->format(Outil::formatdate()),
             ];
         });

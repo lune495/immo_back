@@ -131,7 +131,7 @@ class LocataireController extends Controller
                         // $notif->user_id = $user->id;
                         // $notif->save();
                         $caution = $request->caution;
-                        $arriere = $request->nbr_mois_arriere * $montant_loyer_ht;
+                        $arriere = $request->nbr_mois_arriere;
                         // Vérifier si caution est un nombre
                         if (is_numeric($caution)) {
                         // Convertir caution en nombre flottant
@@ -238,14 +238,12 @@ class LocataireController extends Controller
                     return response()->json(['message' => 'Dates invalides'], 400);
                 }
             }
-            
             // Requête pour obtenir les transactions du locataire
             $transactions = CompteLocataire::where('locataire_id', $locataireId)
                 ->whereBetween('created_at', [$startDate, $endDate])
                 ->whereHas('detail_journal', function ($q) {
                     $q->where('annule', false);
                 })->get();
-    
             // Initialisation des variables
             $totalCredits = 0;
             $totalDebits = 0;
@@ -337,11 +335,15 @@ public function uploadContract(Request $request)
             $data['user'] = $user;
             // CIS
             if($user->structure->id == 1){
-                $pdf = PDF::loadView("pdf.contratpdflocataire", $data);
+                $pdf = PDF::loadView("pdf.contratcispdflocataire", $data);
             }
             // BICO
             if($user->structure->id == 5){
                 $pdf = PDF::loadView("pdf.contratbicopdflocataire", $data);
+            }
+
+            if($user->structure->id == 3){
+                $pdf = PDF::loadView("pdf.contrathannepdflocataire", $data);
             }
             $measure = array(0,0,825.772,570.197);
             return $pdf->stream();
@@ -378,7 +380,7 @@ public function uploadContract(Request $request)
             // $data['transactions'] = $transactions;
             $data['locataire'] = $locataire;
             // $data['montant_ttc'] = $montant_loyer_ttc;
-            $data['montant_ttc'] = $locataire->montant_loyer_ht;
+            $data['montant_ttc'] = $locataire->montant_loyer_ttc;
             $data['user'] = $user;
         //  $pdf = PDF::loadView("pdf.quittancelocataire2", $data);
             $pdf = PDF::loadView("pdf.quittancelocataire2", $data);
@@ -456,6 +458,14 @@ public function uploadContract(Request $request)
                 $item->email = $request->email;
                 $item->date_echeance_contrat = $request->date_echeance_contrat;
                 $item->save();
+
+                if ($item->save()) 
+                {
+                    $compte_caution_locataire =  CompteCautionLocataire::where('locataire_id',$item->id)->first();
+                    $compte_caution_locataire->locataire_id = $id;    
+                    $compte_caution_locataire->montant_compte = $request->caution;
+                    $compte_caution_locataire->save();
+                }
                 // $notif->locataire_id = $item->id;
                 // $notif->date_echeance_contrat = $request->date_echeance_contrat;
                 // $notif->user_id = $user->id;

@@ -143,6 +143,7 @@ return [
             ],
 
             // Laravel HTTP middleware
+            // 'middleware' => ['web'],
             'middleware' => ['web','auth:sanctum'],
 
             // Which HTTP methods to support; must be given in UPPERCASE!

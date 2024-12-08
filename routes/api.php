@@ -37,6 +37,7 @@ Route::get('/upload/{id?}', function () {
 // Route::post('/affectationbien',[AffectationBienController::class,'save']);
 Route::post('/register',[AuthController::class,'register']);
 Route::post('/login',[AuthController::class,'login']);
+
 // Protected Routes
 Route::group(['middleware' => ['auth:sanctum']],function()
 {

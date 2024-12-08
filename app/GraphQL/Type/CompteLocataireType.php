@@ -2,7 +2,7 @@
 
 namespace App\GraphQL\Type;
 
-use App\Models\{CompteLocataire};
+use App\Models\{CompteLocataire,LocataireTaxe};
 use Carbon\Carbon;
 use GraphQL\Type\Definition\Type;
 use Rebing\GraphQL\Support\Type as GraphQLType;
@@ -25,6 +25,7 @@ class CompteLocataireType extends GraphQLType
             'dernier_date_paiement'             => ['type'  => Type::string()],
             'debit'                             => ['type'  => Type::int()],
             'credit'                            => ['type'  => Type::int()],
+            'credit_ttc'                        => ['type'  => Type::int()],
             'montan'                            => ['type'  => Type::int()],
             'statut_paye'                       => ['type'  => Type::boolean()],
             'locataire_id'                      => ['type'  => Type::int()],
@@ -35,6 +36,21 @@ class CompteLocataireType extends GraphQLType
             'updated_at'                        => [ 'type' => Type::string(), 'description' => ''],
             'updated_at_fr'                     => [ 'type' => Type::string(), 'description' => ''],
         ];
+    }
+
+
+
+    protected function resolveCreditTtcField($root, $args)
+    {
+        $taxe = 0;
+        $loyer_ttc = 0;
+        $locataire_taxes = LocataireTaxe::where('locataire_id',$root['locataire_id'])->get();
+        foreach ($locataire_taxes as $locataire_taxe) {
+            $taxe += $locataire_taxe->value/100;
+        }
+        $somme_tva = 1 + $taxe;
+        $loyer_ttc = $root['credit'] * $somme_tva;
+        return $loyer_ttc;
     }
 
     /*************** Pour les dates ***************/

@@ -17,7 +17,8 @@ class JournalController extends Controller
     private $queryName = "journals";
 
      public function save(Request $request)
-    {
+     {
+        //dd($request->all());
         try {
             return DB::transaction(function () use ($request)
             {
@@ -65,7 +66,7 @@ class JournalController extends Controller
                         // $depense = isset($detail['depense_proprio_id']) ? DepenseProprio::find($detail['depense_proprio_id']) : null;
                         $detail_journals->code = "JN0000{$item->id}";
                         $detail_journals->libelle = empty($detail['locataire_id']) ? $detail['libelle'] : "Paiement Loyer du {$detail['date_location']}";
-                        $detail_journals->date_location = isset($detail['locataire_id']) ? $detail['date_location'] : null;
+                        $detail_journals->date_location = isset($detail['locataire_id']) ? Carbon::createFromFormat('Y-m', $detail['date_location'])->endOfMonth() : null;
                         $detail_journals->entree = empty($detail['entree']) ? 0 : $detail['entree'];
                         $detail_journals->sortie = empty($detail['sortie']) ? 0 : $detail['sortie'];
                         $detail_journals->locataire_id = isset($detail['locataire_id']) ? $detail['locataire_id'] : null;
@@ -80,10 +81,12 @@ class JournalController extends Controller
                             // ENTREE
                             if($detail['entree']!=0 && $detail['sortie'] ==0)
                             {
-                                if(!empty($detail['locataire_id'])){
+                                if(!empty($detail['locataire_id']))
+                                {
                                         $locataire_id = $detail['locataire_id'];
                                         $locataire = Locataire::find($locataire_id);
-                                        if(!$locataire->resilier){
+                                        if(!$locataire->resilier)
+                                        {
                                             $proprio_id = $locataire->bien_immo->proprietaire_id;
                                             $immo = $locataire->bien_immo; // Récupérer l'immeuble
                                             $commission_percentage = $immo->commission_agence ?? 0.07; // 7% par défaut si non spécifié
@@ -92,9 +95,11 @@ class JournalController extends Controller
                                             $compte_proprietaire = new Compte();
                                             $compte_proprietaire->libelle = "Paiement de `{$locataire->prenom}`";
                                             $compte_proprietaire->locataire_id = $locataire->id;
+                                            $compte_proprietaire->date_paiement = Carbon::createFromFormat('Y-m', $detail['date_location'])->endOfMonth();
                                             $compte_proprietaire->proprietaire_id = $proprio_id;
                                             $compte_proprietaire->montant_compte = $detail['entree'];
                                             $compte_proprietaire->detail_journal_id = $detail_journals->id;
+                                            
                                             $compte_proprietaire->save();
                                             // Calculer la commission
                                             $commission = $detail['entree'] * ($commission_percentage/100);
@@ -121,7 +126,7 @@ class JournalController extends Controller
                                             $compte_locataire->locataire_id = $locataire->id;
                                             $compte_locataire->libelle = "Paiement Location `{$detail['date_location']}`";
                                             $compte_locataire->dernier_date_paiement = isset($detail['date_location']) 
-                                            ? Carbon::parse($detail['date_location'])->setTimeFromTimeString(Carbon::now()->toTimeString()) 
+                                            ? Carbon::createFromFormat('Y-m', $detail['date_location'])->endOfMonth()
                                             : Carbon::now();
                                             $compte_locataire->debit = 0;
                                             $compte_locataire->credit = $detail['entree'];
@@ -136,12 +141,15 @@ class JournalController extends Controller
                                 }
                             }
                             // SORTIE
-                            if($detail['entree'] ==0 && $detail['sortie'] !=0){
-                                if(!empty($detail['proprietaire_id'])){
+                            if($detail['entree'] ==0 && $detail['sortie'] !=0)
+                            {
+                                if(!empty($detail['proprietaire_id']))
+                                {
                                     $compte_proprietaire = new Compte();
                                     $compte_proprietaire->libelle = $detail['libelle'];
                                     $compte_proprietaire->proprietaire_id = $detail['proprietaire_id'];
                                     $compte_proprietaire->montant_compte = -1 * $detail['sortie'];
+                                    $compte_proprietaire->date_paiement = $detail['date_depense'] ? $detail['date_depense'] :  Carbon::now();
                                     $compte_proprietaire->detail_journal_id = $detail_journals->id;
                                     $compte_proprietaire->save();
                                 }
@@ -198,7 +206,7 @@ class JournalController extends Controller
             $end = Carbon::parse($end)->endOfDay();       // 23:59:59
 
             // Appliquer le filtre entre les deux dates
-            $query->whereBetween('created_at', [$start, $end]);
+            $query->whereBetween('date_location', [$start, $end]);
         }
 
         $query->where(function ($q) {
@@ -227,7 +235,6 @@ class JournalController extends Controller
     {
         $locataire = Locataire::all();
         return response()->json($locataire);
-
     }
     public function generatesituationparproprio($proprioId = null, $param3 = false, $token = null)
     {
@@ -265,7 +272,6 @@ class JournalController extends Controller
             $startDate = null;
             $endDate = null;
             $month = false;
-
             // Vérifier si le paramètre est un mois (YYYY-MM)
             if ($param3 && preg_match('/^\d{4}-\d{2}$/', $param3)) {
                 // Traiter comme un mois
@@ -274,14 +280,14 @@ class JournalController extends Controller
 
             // Si un mois est fourni, le convertir en début et fin de mois
             if ($month !== false) {
-                $startDate = Carbon::createFromFormat('Y-m', $month)->startOfMonth()->format('Y-m-d H:i:s');
-                $endDate = Carbon::createFromFormat('Y-m', $month)->endOfMonth()->format('Y-m-d H:i:s');
+                $startDate = Carbon::createFromFormat('Y-m', $month)->startOfMonth();
+                $endDate = Carbon::createFromFormat('Y-m', $month)->endOfMonth();
                 // Formater le mois en lettres (ex: SEPTEMBRE 2024)
                 $data['mois'] = strtoupper(Carbon::createFromFormat('Y-m', $month)->locale('fr')->isoFormat('MMMM YYYY'));
             } else {
                 // Utiliser le mois courant si aucun mois n'est fourni
-                $startDate = Carbon::now()->startOfMonth()->format('Y-m-d H:i:s');
-                $endDate = Carbon::now()->endOfMonth()->format('Y-m-d H:i:s');
+                $startDate = Carbon::now()->startOfMonth();
+                $endDate = Carbon::now()->endOfMonth();
                 $data['mois'] = strtoupper(Carbon::now()->locale('fr')->isoFormat('MMMM YYYY'));
             }
 
@@ -296,10 +302,11 @@ class JournalController extends Controller
                 ->where('locataire_id', '=', null)->where('montant_compte', '!=', 0)->where('montant_compte', '>', 0);
 
             // Appliquer le filtre de date
-            $entreesQuery->whereBetween('created_at', [$startDate, $endDate]);
-            $depensesQuery->whereBetween('created_at', [$startDate, $endDate]);
-            $depense_honoraires->whereBetween('created_at', [$startDate, $endDate]);
-            $locataires->where('bien_immos.proprietaire_id', $proprioId)->whereBetween('compte_locataires.created_at', [$startDate, $endDate]);
+            $entreesQuery->whereBetween('date_paiement', [$startDate, $endDate]);
+            $depensesQuery->whereBetween('date_paiement', [$startDate, $endDate]);
+            // $depensesQuery->whereBetween('date_paiement', [$startDate, $endDate]);
+            $depense_honoraires->whereBetween('date_paiement', [$startDate, $endDate]);
+            $locataires->where('bien_immos.proprietaire_id', $proprioId)->whereBetween('compte_locataires.dernier_date_paiement', [$startDate, $endDate]);
 
             // Exécuter les requêtes
             $entrees = $entreesQuery->get();
@@ -318,16 +325,16 @@ class JournalController extends Controller
             $data['sorties'] = $depenses;
             $data['honoraire'] = $honoraire;
             $data['proprios'] = $proprios;
-
+            // dd($data);
             
             // Ajout du token dans les données pour validation ou suivi si nécessaire
             $data['user'] = $user;
-            if($user->structure->id == 1){
-                $pdf = PDF::loadView("pdf.situationproprio2", $data);
-            }else {
-                $pdf = PDF::loadView("pdf.situationproprio3", $data);
-            }
+            // if($user->structure->id == 1){
+            // }else {
+            //     $pdf = PDF::loadView("pdf.situationproprio3", $data);
+            // }
             // Générer le PDF
+            $pdf = PDF::loadView("pdf.situationproprio2", $data);
             return $pdf->stream();
         } else {
             return view('notfound'); // Si l'ID du propriétaire n'est pas fourni

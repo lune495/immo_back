@@ -2,7 +2,7 @@
 
 namespace App\GraphQL\Type;
 
-use App\Models\{DetailJournal};
+use App\Models\{DetailJournal,Outil};
 use Carbon\Carbon;
 use GraphQL\Type\Definition\Type;
 use Rebing\GraphQL\Support\Type as GraphQLType;
@@ -42,6 +42,17 @@ class DetailJournalType extends GraphQLType
             'updated_at'                        => [ 'type' => Type::string(), 'description' => ''],
             'updated_at_fr'                     => [ 'type' => Type::string(), 'description' => ''],
         ];
+    }
+
+    public function resolveLibelleField($root, $args)
+    {
+        if (isset($root['locataire']) && isset($root['locataire']['prenom'])) {
+            $paiement = "Paiement de " . $root['locataire']['prenom']." ".$root['locataire']['nom'];
+            return Outil::toutEnMajuscule($paiement);
+        } elseif (isset($root['proprietaire']) && isset($root['proprietaire']['prenom'])) {
+            $depense = "Depense du bailleur " . $root['proprietaire']['prenom']." ".$root['proprietaire']['nom'];
+            return Outil::toutEnMajuscule($depense);
+        }    
     }
 
     // /*************** Pour les dates ***************/

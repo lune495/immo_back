@@ -57,15 +57,19 @@
             text-align: center;
             font-size: 12px;
         }
-        .signatures {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 50px;
-        }
-        .signatures div {
-            text-align: center;
-            width: 45%;
-        }
+        .signature-section {
+        margin-top: 40px;
+    }
+
+    .signature-left {
+        float: left;
+        font-size: 9pt;
+    }
+
+    .signature-right {
+        float: right;
+        font-size: 9pt;
+    }
     </style>
 </head>
 <body>
@@ -115,7 +119,7 @@
             @php 
                 $totalRecettes += $locataire->total_credit + $locataire->total_cc; 
                 $totalcredits += $locataire->total_credit; 
-                $commission = $locataire->commission_agence; 
+                $commission = $locataire->commission_agence;
                 $totalsoldes += $locataire->solde;
             @endphp
         @endforeach
@@ -196,9 +200,10 @@
         <p>Le bailleur nous doit : {{ number_format($totalRecettes - $totalDepenses, 0, ',', ' ') }} F CFA</p>
     @endif
     
-    <div class="signatures">
-        <div><p>Dakar le {{ \Carbon\Carbon::now()->format('d/m/Y') }}</p></div>
-        <div><p>LE BAILLEUR</p></div>
+    <div class="signature-right">Fait à Dakar le {{\Carbon\Carbon::now()->format('d/m/Y') }}</div>
+    <div class="signature-section">
+        <strong class="signature-left"><u> COMPAGNIE IMMOBILIERE DU SENEGAL</u></strong>
+        <strong class="signature-right">LE PRENEUR</strong>
     </div>
 </div>
 </body>

@@ -5,7 +5,7 @@
 @section('content')
     @if($user->structure->tag_logo)
         <div style=" text-align: center; margin-bottom: 1px;">
-            <img src="{{ asset('app-assets/assets/images/' . $user->structure->tag_logo) }}" alt="Bannière" class="banner" style="width: 500px; max-width: 100%; height: auto;">
+            <img src="{{ asset('app-assets/assets/images/' . $user->structure->tag_logo) }}" alt="Bannière" class="banner" style="width: 300px; max-width: 100%; height: auto;">
         </div>
     @endif
     <table style="border: none; margin-top:1px;font-size: 11px; width: 100%;">
